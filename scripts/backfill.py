@@ -37,6 +37,9 @@ from bullion.models import LEAGUES, Sport, now_utc  # noqa: E402
 from bullion.store import Store  # noqa: E402
 
 REINDEX_PAGES = 25
+#: A 45-minute job that spends its last seconds backfilling loses the cache save
+#: and the receipt commit. Warn well before a budget can crowd those steps out.
+JOB_TIMEOUT_WARNING_SECONDS = 2400.0
 
 
 def select_leagues(selector: str):
@@ -174,7 +177,7 @@ def run(
     max_events: int,
     delay_seconds: float = 0.15,
     workers: int = 6,
-    max_seconds: Optional[float] = 900.0,
+    max_seconds: Optional[float] = 1800.0,
 ) -> dict:
     """Backfill finals inside a wall-clock budget, newest season first.
 
@@ -185,6 +188,7 @@ def run(
     resumes from the same event index.
     """
     ordered_seasons = sorted({int(season) for season in seasons}, reverse=True)
+    run_started = time.monotonic()
     deadline = (
         time.monotonic() + float(max_seconds)
         if isinstance(max_seconds, (int, float)) and max_seconds and max_seconds > 0
@@ -209,6 +213,7 @@ def run(
         league_manifest: Dict[str, Any] = {}
         for season in ordered_seasons:
             counters = {"stored": 0, "failed": 0}
+            season_started = time.monotonic()
             sample_errors: List[Dict[str, str]] = []
             already_stopped = manifest["stopped_early"]
             if already_stopped:
@@ -244,6 +249,7 @@ def run(
                     deadline,
                 )
             processed = counters["stored"] + counters["failed"]
+            elapsed = max(time.monotonic() - season_started, 1e-9)
             entry: Dict[str, Any] = {
                 "indexed": len(ids),
                 "pending_at_start": len(pending),
@@ -251,6 +257,8 @@ def run(
                 "skipped_existing": skipped,
                 "failed": counters["failed"],
                 "unprocessed": len(pending) - processed,
+                "elapsed_seconds": round(elapsed, 3),
+                "processed_per_second": round(processed / elapsed, 3),
                 "stopped_early": stopped,
             }
             if sample_errors:
@@ -259,12 +267,36 @@ def run(
             print(
                 f"[backfill] {league.key} {season}: stored={entry['stored']} "
                 f"skipped={entry['skipped_existing']} failed={entry['failed']} "
-                f"unprocessed={entry['unprocessed']}",
+                f"unprocessed={entry['unprocessed']} "
+                f"in {entry['elapsed_seconds']:.1f}s "
+                f"({entry['processed_per_second']:.2f}/s)",
                 file=sys.stderr,
             )
             if stopped:
                 manifest["stopped_early"] = True
         manifest["leagues"][league.key] = league_manifest
+    total_processed = sum(
+        item.get("stored", 0) + item.get("failed", 0)
+        for league_manifest in manifest["leagues"].values()
+        for item in league_manifest.values()
+        if isinstance(item, dict)
+    )
+    total_unprocessed = sum(
+        item.get("unprocessed", 0)
+        for league_manifest in manifest["leagues"].values()
+        for item in league_manifest.values()
+        if isinstance(item, dict)
+    )
+    elapsed_total = max(time.monotonic() - run_started, 1e-9)
+    rate = total_processed / elapsed_total
+    manifest["elapsed_seconds"] = round(elapsed_total, 3)
+    manifest["processed_per_second"] = round(rate, 3)
+    # Evidence for the next budget decision instead of a guess: the observed rate
+    # plus what is left says whether 30 minutes, more workers, or fewer events is
+    # the right lever.
+    manifest["projected_remaining_seconds"] = (
+        round(total_unprocessed / rate, 1) if rate > 0 and total_unprocessed else 0.0
+    )
     manifest["counts"] = store.counts()
     return manifest
 
@@ -288,10 +320,21 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument(
         "--max-seconds",
         type=float,
-        default=900.0,
-        help="wall-clock budget; 0 disables. Stopping early still exits 0 and resumes next run",
+        default=1800.0,
+        help=(
+            "wall-clock budget (default 1800 = 30 min); 0 disables. Must stay below "
+            "the workflow's timeout-minutes minus the time daily/parity/commit need"
+        ),
     )
     args = parser.parse_args(argv)
+    if args.max_seconds and args.max_seconds >= JOB_TIMEOUT_WARNING_SECONDS:
+        print(
+            f"[backfill] warning: --max-seconds {args.max_seconds:.0f} is at or above "
+            f"{JOB_TIMEOUT_WARNING_SECONDS:.0f}s. A budget stop exits 0 and saves the "
+            "manifest, but a job timeout does not save the cache or commit the receipts; "
+            "keep the budget under the job's timeout-minutes.",
+            file=sys.stderr,
+        )
 
     # Newest first: the current season's finals are what the live lanes need
     # ratings from, so a budget stop must never cost us those.

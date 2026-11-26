@@ -309,3 +309,81 @@ def test_sequential_mode_still_works_and_honours_delay(backfill, tmp_path):
     assert stored == ["801", "802"]
     assert manifest["workers"] == 1
     assert manifest["leagues"]["nhl"]["2026"]["stored"] == 2
+
+
+def test_default_budget_is_thirty_minutes_and_under_the_job_timeout(backfill):
+    import inspect
+
+    default = inspect.signature(backfill.run).parameters["max_seconds"].default
+    assert default == 1800.0
+    assert default < backfill.JOB_TIMEOUT_WARNING_SECONDS
+
+
+def test_manifest_records_rate_and_projection(backfill, tmp_path):
+    client = FakeClient({2026: ["1101", "1102"]})
+    manifest, stored = _run(backfill, tmp_path, client, seasons=(2026,))
+    assert stored == ["1101", "1102"]
+    assert manifest["elapsed_seconds"] > 0
+    assert manifest["processed_per_second"] > 0
+    assert manifest["projected_remaining_seconds"] == 0.0
+    entry = manifest["leagues"]["nhl"]["2026"]
+    assert entry["elapsed_seconds"] > 0
+    assert entry["processed_per_second"] > 0
+
+
+def test_projection_estimates_what_a_budget_stop_left_behind(backfill, tmp_path):
+    client = FakeClient({2026: [str(1200 + index) for index in range(4)]})
+    manifest, _ = _run(
+        backfill, tmp_path, client, seasons=(2026,), workers=4, max_seconds=1e-9
+    )
+    assert manifest["stopped_early"] is True
+    entry = manifest["leagues"]["nhl"]["2026"]
+    assert entry["unprocessed"] == 4
+    # Nothing was processed, so there is no observed rate to extrapolate from —
+    # the projection must say 0.0 rather than invent a number.
+    assert manifest["projected_remaining_seconds"] == 0.0
+
+
+def test_cli_warns_when_the_budget_crowds_out_the_job_steps(backfill, tmp_path, monkeypatch, capsys):
+    client = FakeClient({2026: ["1301"]})
+    monkeypatch.setattr(backfill, "EspnClient", lambda *a, **k: client)
+    code = backfill.main(
+        [
+            "--league",
+            "nhl",
+            "--seasons",
+            "2026",
+            "--db",
+            str(tmp_path / "db.sqlite"),
+            "--out",
+            str(tmp_path / "manifest.json"),
+            "--max-seconds",
+            "3000",
+        ]
+    )
+    assert code == 0
+    stderr = capsys.readouterr().err
+    assert "warning" in stderr
+    assert "timeout-minutes" in stderr
+
+
+def test_cli_default_budget_is_written_into_the_manifest(backfill, tmp_path, monkeypatch):
+    client = FakeClient({2026: ["1401"]})
+    monkeypatch.setattr(backfill, "EspnClient", lambda *a, **k: client)
+    out = tmp_path / "manifest.json"
+    code = backfill.main(
+        [
+            "--league",
+            "nhl",
+            "--seasons",
+            "2026",
+            "--db",
+            str(tmp_path / "db.sqlite"),
+            "--out",
+            str(out),
+        ]
+    )
+    assert code == 0
+    payload = json.loads(out.read_text())
+    assert payload["max_seconds"] == 1800.0
+    assert payload["season_order"] == "newest_first"
