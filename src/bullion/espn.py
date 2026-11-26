@@ -34,6 +34,8 @@ or raise :class:`EspnIdentityError`.
 
 from __future__ import annotations
 
+import gzip
+import http.client
 import json
 import math
 import re
@@ -118,22 +120,54 @@ def season_events_url(league: League, season: int, page: int) -> str:
 # ---------------------------------------------------------------------------
 
 
-def http_fetch(url: str, *, timeout: float = 20.0, retries: int = 2) -> Any:
-    """Fetch JSON with stdlib only. Raises :class:`EspnFetchError` after retries."""
+#: Errors that mean "the network or the CDN hiccuped", not "the request was
+#: wrong". ``http.client.HTTPException`` is the important addition: a chunked
+#: summary response can end mid-stream and raise ``IncompleteRead``, which is a
+#: ``HTTPException`` — *not* an ``OSError`` or ``URLError`` — so it used to escape
+#: the retry loop entirely and kill the backfill (live 2026-11-26:
+#: ``IncompleteRead(397213 bytes read)`` on the first cold run).
+RETRYABLE_FETCH_ERRORS = (
+    urllib.error.URLError,
+    http.client.HTTPException,
+    TimeoutError,
+    json.JSONDecodeError,
+    OSError,
+)
+
+#: ESPN summary payloads are several hundred KB. Requesting gzip measurably
+#: shortens the transfer, which is the main practical defence against the
+#: mid-stream drops above.
+FETCH_HEADERS = {
+    "User-Agent": "bullion/0.1 (keyless ESPN reader; contact: operator)",
+    "Accept": "application/json",
+    "Accept-Encoding": "gzip",
+}
+
+
+def _decode_body(raw: bytes, content_encoding: str) -> bytes:
+    """Undo ``Content-Encoding: gzip``; tolerate servers that ignore it."""
+    if "gzip" in (content_encoding or "").lower() or raw[:2] == b"\x1f\x8b":
+        return gzip.decompress(raw)
+    return raw
+
+
+def http_fetch(url: str, *, timeout: float = 20.0, retries: int = 3) -> Any:
+    """Fetch JSON with stdlib only. Raises :class:`EspnFetchError` after retries.
+
+    Every attempt is a full retry: a failed download never leaves partial state,
+    and a gzip body is decompressed before parsing. ``retries=3`` (four attempts
+    with linear backoff) is enough for a CDN blip without turning a genuinely
+    dead route into a multi-minute hang.
+    """
     last_error: Optional[Exception] = None
     for attempt in range(retries + 1):
         try:
-            request = urllib.request.Request(
-                url,
-                headers={
-                    "User-Agent": "bullion/0.1 (keyless ESPN reader; contact: operator)",
-                    "Accept": "application/json",
-                },
-            )
+            request = urllib.request.Request(url, headers=FETCH_HEADERS)
             with urllib.request.urlopen(request, timeout=timeout) as response:
-                payload = response.read()
-            return json.loads(payload.decode("utf-8"))
-        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError) as exc:
+                raw = response.read()
+                content_encoding = response.headers.get("Content-Encoding") or ""
+            return json.loads(_decode_body(raw, content_encoding).decode("utf-8"))
+        except RETRYABLE_FETCH_ERRORS as exc:
             last_error = exc
             if attempt < retries:
                 time.sleep(1.5 * (attempt + 1))

@@ -18,8 +18,9 @@ import argparse
 import json
 import sys
 import time
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from pathlib import Path
-from typing import Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -67,6 +68,103 @@ def season_event_ids(client: EspnClient, league, season: int) -> List[str]:
     return ids
 
 
+def _fetch_final(
+    client: EspnClient, league, event_id: str
+) -> Tuple[str, Optional[Any], Optional[str]]:
+    """Fetch and parse one final. Worker-thread safe: no store access here."""
+    try:
+        payload = client.summary(league, event_id)
+        game = game_from_summary(payload, league, event_id)
+        final_game, _gaps = parse_summary(payload, game, league)
+        return event_id, final_game, None
+    except (EspnFetchError, ValueError) as exc:
+        # A scheduled future event, a non-post summary, or a dead request is a
+        # skipped row, never a reason to abandon the other 6,000.
+        return event_id, None, str(exc)
+
+
+def _handle(
+    result: Tuple[str, Optional[Any], Optional[str]],
+    store: Store,
+    counters: Dict[str, int],
+    sample_errors: List[Dict[str, str]],
+) -> None:
+    event_id, final_game, error = result
+    if final_game is None:
+        counters["failed"] += 1
+        if len(sample_errors) < 3:
+            sample_errors.append({"event_id": event_id, "error": str(error)})
+        return
+    store.upsert_game(final_game)
+    counters["stored"] += 1
+
+
+def _sequential(
+    client: EspnClient,
+    league,
+    pending: List[str],
+    store: Store,
+    counters: Dict[str, int],
+    sample_errors: List[Dict[str, str]],
+    delay_seconds: float,
+    deadline: Optional[float],
+) -> bool:
+    """Fetch one at a time (keeps ``--delay`` meaningful). Returns stopped_early."""
+    for event_id in pending:
+        if deadline is not None and time.monotonic() >= deadline:
+            return True
+        _handle(_fetch_final(client, league, event_id), store, counters, sample_errors)
+        if delay_seconds:
+            time.sleep(delay_seconds)
+    return False
+
+
+def _concurrent(
+    client: EspnClient,
+    league,
+    pending: List[str],
+    store: Store,
+    counters: Dict[str, int],
+    sample_errors: List[Dict[str, str]],
+    workers: int,
+    deadline: Optional[float],
+) -> bool:
+    """Fetch with a bounded pool; every SQLite write stays on this thread.
+
+    Returns ``True`` when the wall-clock budget stopped the run early. Outstanding
+    requests are cancelled rather than waited on, so a hung request cannot push
+    the job past its budget.
+    """
+    pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="backfill")
+    futures = {}
+    submitted_all = True
+    try:
+        for event_id in pending:
+            if deadline is not None and time.monotonic() >= deadline:
+                submitted_all = False
+                break
+            futures[pool.submit(_fetch_final, client, league, event_id)] = event_id
+        remaining = set(futures)
+        while remaining:
+            wait_timeout = 5.0
+            if deadline is not None:
+                left = deadline - time.monotonic()
+                if left <= 0:
+                    break
+                wait_timeout = min(wait_timeout, left)
+            done, remaining = wait(
+                remaining, timeout=wait_timeout, return_when=FIRST_COMPLETED
+            )
+            for future in done:
+                _handle(future.result(), store, counters, sample_errors)
+        stopped_early = bool(remaining) or not submitted_all
+    finally:
+        for future in futures:
+            future.cancel()
+        pool.shutdown(wait=not (deadline is not None and time.monotonic() >= deadline))
+    return stopped_early
+
+
 def run(
     *,
     store: Store,
@@ -75,12 +173,32 @@ def run(
     seasons: Iterable[int],
     max_events: int,
     delay_seconds: float = 0.15,
+    workers: int = 6,
+    max_seconds: Optional[float] = 900.0,
 ) -> dict:
-    manifest = {
+    """Backfill finals inside a wall-clock budget, newest season first.
+
+    The budget exists because the cold-cache path used to be a 30-minute job
+    timeout waiting to happen: 9 leagues x 3 seasons x 250 events, sequential,
+    0.15s apart. Stopping early is a normal outcome, not an error: whatever was
+    stored stays stored, the manifest records the remainder, and the next run
+    resumes from the same event index.
+    """
+    ordered_seasons = sorted({int(season) for season in seasons}, reverse=True)
+    deadline = (
+        time.monotonic() + float(max_seconds)
+        if isinstance(max_seconds, (int, float)) and max_seconds and max_seconds > 0
+        else None
+    )
+    manifest: Dict[str, Any] = {
         "schema_version": "bullion.backfill_manifest",
         "generated_utc": now_utc(),
-        "seasons": list(seasons),
+        "seasons": ordered_seasons,
+        "season_order": "newest_first",
         "max_events_per_season": max_events,
+        "workers": workers,
+        "max_seconds": max_seconds,
+        "stopped_early": False,
         "leagues": {},
         "note": (
             "Finals only. No historical prices are used as ticket or calibration "
@@ -88,38 +206,64 @@ def run(
         ),
     }
     for league in leagues:
-        league_manifest = {}
-        for season in seasons:
+        league_manifest: Dict[str, Any] = {}
+        for season in ordered_seasons:
+            counters = {"stored": 0, "failed": 0}
+            sample_errors: List[Dict[str, str]] = []
+            already_stopped = manifest["stopped_early"]
+            if already_stopped:
+                league_manifest[str(season)] = {"status": "skipped_budget_exhausted"}
+                continue
             try:
                 ids = season_event_ids(client, league, season)[:max_events]
             except (EspnFetchError, ValueError) as exc:
                 league_manifest[str(season)] = {"error": str(exc)}
                 continue
-            stored = skipped = failed = 0
-            for event_id in ids:
-                if store.get_game(event_id) is not None:
-                    skipped += 1
-                    continue
-                try:
-                    payload = client.summary(league, event_id)
-                    game = game_from_summary(payload, league, event_id)
-                    final_game, _gaps = parse_summary(payload, game, league)
-                    store.upsert_game(final_game)
-                    stored += 1
-                except (EspnFetchError, ValueError) as exc:
-                    failed += 1
-                    if failed <= 3:
-                        league_manifest.setdefault("sample_errors", []).append(
-                            {"event_id": event_id, "error": str(exc)}
-                        )
-                time.sleep(delay_seconds)
-            league_manifest[str(season)] = {
+            pending = [event_id for event_id in ids if store.get_game(event_id) is None]
+            skipped = len(ids) - len(pending)
+            if workers > 1:
+                stopped = _concurrent(
+                    client,
+                    league,
+                    pending,
+                    store,
+                    counters,
+                    sample_errors,
+                    workers,
+                    deadline,
+                )
+            else:
+                stopped = _sequential(
+                    client,
+                    league,
+                    pending,
+                    store,
+                    counters,
+                    sample_errors,
+                    delay_seconds,
+                    deadline,
+                )
+            processed = counters["stored"] + counters["failed"]
+            entry: Dict[str, Any] = {
                 "indexed": len(ids),
-                "stored": stored,
+                "pending_at_start": len(pending),
+                "stored": counters["stored"],
                 "skipped_existing": skipped,
-                "failed": failed,
+                "failed": counters["failed"],
+                "unprocessed": len(pending) - processed,
+                "stopped_early": stopped,
             }
-            print(f"[backfill] {league.key} {season}: {league_manifest[str(season)]}", file=sys.stderr)
+            if sample_errors:
+                entry["sample_errors"] = sample_errors
+            league_manifest[str(season)] = entry
+            print(
+                f"[backfill] {league.key} {season}: stored={entry['stored']} "
+                f"skipped={entry['skipped_existing']} failed={entry['failed']} "
+                f"unprocessed={entry['unprocessed']}",
+                file=sys.stderr,
+            )
+            if stopped:
+                manifest["stopped_early"] = True
         manifest["leagues"][league.key] = league_manifest
     manifest["counts"] = store.counts()
     return manifest
@@ -132,10 +276,28 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--max-events", type=int, default=400)
     parser.add_argument("--db", default="localdata/bullion.db")
     parser.add_argument("--out", default="localdata/_backfill/manifest.json")
-    parser.add_argument("--delay", type=float, default=0.15)
+    parser.add_argument(
+        "--delay", type=float, default=0.15, help="seconds between requests when --workers 1"
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=6,
+        help="bounded parallel summary fetches (1 = sequential, honours --delay)",
+    )
+    parser.add_argument(
+        "--max-seconds",
+        type=float,
+        default=900.0,
+        help="wall-clock budget; 0 disables. Stopping early still exits 0 and resumes next run",
+    )
     args = parser.parse_args(argv)
 
-    seasons = [int(item) for item in args.seasons.split(",") if item.strip()]
+    # Newest first: the current season's finals are what the live lanes need
+    # ratings from, so a budget stop must never cost us those.
+    seasons = sorted(
+        {int(item) for item in args.seasons.split(",") if item.strip()}, reverse=True
+    )
     db_path = Path(args.db)
     if not db_path.is_absolute():
         db_path = ROOT / db_path
@@ -147,6 +309,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             seasons=seasons,
             max_events=args.max_events,
             delay_seconds=args.delay,
+            workers=max(1, args.workers),
+            max_seconds=args.max_seconds,
         )
     out = Path(args.out)
     if not out.is_absolute():

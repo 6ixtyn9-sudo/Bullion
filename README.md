@@ -177,8 +177,9 @@ pytest -q
 # 1) capture real ESPN evidence (needs network; run in Actions)
 python3 scripts/probe_espn.py --out localdata/_probes/espn_probe_latest.json
 
-# 2) warm the ratings (finals only)
+# 2) warm the ratings (finals only; newest season first, resumable)
 python3 scripts/backfill.py --league all --seasons 2024,2025,2026 --max-events 400
+python3 scripts/backfill.py --league all --workers 6 --max-seconds 900   # bounded cold run
 
 # 3) daily lane runs (freeze only at/after cutoff, only with a probe report)
 python3 scripts/daily.py --league all --date 2026-11-28
@@ -192,6 +193,15 @@ python3 scripts/replay_harness.py --variant legs=3 --against legs=2 --ab
 
 `python3 scripts/replay_harness.py` on a clean checkout prints
 `zero settled bet-days: no profit, edge, or readiness claim is supported`.
+
+The backfill is budgeted and resumable: seasons are processed newest-first (so a
+budget stop never costs the current season), summary fetches run on a bounded
+pool while every SQLite write stays on the main thread, and `--max-seconds`
+(default 900) stops cleanly with exit code 0, leaving the manifest and stored
+finals behind for the next run to continue from. Transient CDN failures —
+including chunked-transfer `IncompleteRead`, which is a `HTTPException` and not
+an `OSError` — are retried with gzip-encoded requests before becoming an
+`EspnFetchError`.
 
 ## Receipt contract (`Ma_Golide_Satellites`-compatible)
 
