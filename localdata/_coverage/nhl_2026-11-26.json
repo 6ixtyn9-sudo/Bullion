@@ -1,0 +1,113 @@
+{
+  "gate": {
+    "brier_cap": 0.25,
+    "brier_cap_three_way": 0.22,
+    "max_leg_odds": 3.0,
+    "min_leg_odds": 1.2,
+    "min_roi_samples": 5,
+    "require_named_book": true
+  },
+  "generated_utc": "2026-11-26T14:15:17Z",
+  "run": {
+    "candidate_pool": 0,
+    "cutoff_utc": null,
+    "day": "2026-11-26",
+    "eligible_legs": 0,
+    "forecasts": 0,
+    "games": 14,
+    "gaps": [
+      {
+        "field": "pickcenter",
+        "game_id": "401892781",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892782",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892783",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892784",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892785",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892786",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892787",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892788",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892789",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892790",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892791",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892792",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892794",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401892793",
+        "league": "nhl",
+        "reason": "no odds offers on event"
+      }
+    ],
+    "lane": "nhl",
+    "reason": "no scheduled fixtures on the requested day",
+    "receipt_path": null,
+    "refreshed_finals": 0,
+    "status": "no_slate",
+    "ticket_markets": [],
+    "tickets": 0
+  },
+  "schema_version": "bullion.lane_run"
+}

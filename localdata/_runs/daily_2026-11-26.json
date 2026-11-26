@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-26T12:43:55Z",
+  "generated_utc": "2026-11-26T14:15:20Z",
   "probe_report_used": true,
   "runs": [
     {
@@ -98,16 +98,17 @@
       "lane": "nhl",
       "reason": "no scheduled fixtures on the requested day",
       "receipt_path": null,
+      "refreshed_finals": 0,
       "status": "no_slate",
       "ticket_markets": [],
       "tickets": 0
     },
     {
-      "candidate_pool": 20,
+      "candidate_pool": 24,
       "cutoff_utc": "2026-11-26T14:00:00Z",
       "day": "2026-11-26",
       "eligible_legs": 0,
-      "forecasts": 20,
+      "forecasts": 24,
       "games": 4,
       "gaps": [
         {
@@ -118,9 +119,10 @@
         }
       ],
       "lane": "nfl",
-      "reason": "decision cutoff 2026-11-26T14:00:00Z not reached; scan only",
+      "reason": "no qualifying pre-tip ticket at cutoff",
       "receipt_path": null,
-      "status": "pre_cutoff_scan",
+      "refreshed_finals": 0,
+      "status": "frozen_no_bet",
       "ticket_markets": [
         "moneyline",
         "spread",
@@ -139,6 +141,7 @@
       "lane": "cfb",
       "reason": "no scheduled fixtures on the requested day",
       "receipt_path": null,
+      "refreshed_finals": 0,
       "status": "no_slate",
       "ticket_markets": [
         "moneyline",
@@ -158,6 +161,7 @@
       "lane": "eng.1",
       "reason": "no scheduled fixtures on the requested day",
       "receipt_path": null,
+      "refreshed_finals": 0,
       "status": "no_slate",
       "ticket_markets": [
         "moneyline",
@@ -177,6 +181,7 @@
       "lane": "esp.1",
       "reason": "no scheduled fixtures on the requested day",
       "receipt_path": null,
+      "refreshed_finals": 0,
       "status": "no_slate",
       "ticket_markets": [
         "moneyline",
@@ -196,6 +201,7 @@
       "lane": "ger.1",
       "reason": "no scheduled fixtures on the requested day",
       "receipt_path": null,
+      "refreshed_finals": 0,
       "status": "no_slate",
       "ticket_markets": [
         "moneyline",
@@ -215,6 +221,7 @@
       "lane": "ita.1",
       "reason": "no scheduled fixtures on the requested day",
       "receipt_path": null,
+      "refreshed_finals": 0,
       "status": "no_slate",
       "ticket_markets": [
         "moneyline",
@@ -234,6 +241,7 @@
       "lane": "fra.1",
       "reason": "no scheduled fixtures on the requested day",
       "receipt_path": null,
+      "refreshed_finals": 0,
       "status": "no_slate",
       "ticket_markets": [
         "moneyline",
@@ -308,6 +316,7 @@
       "lane": "uefa.champions",
       "reason": "no scheduled fixtures on the requested day",
       "receipt_path": null,
+      "refreshed_finals": 0,
       "status": "no_slate",
       "ticket_markets": [],
       "tickets": 0

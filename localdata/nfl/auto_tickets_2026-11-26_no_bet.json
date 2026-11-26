@@ -1,0 +1,2514 @@
+{
+  "candidate_pool": [
+    {
+      "alternative_probabilities": {
+        "away": 0.487999,
+        "home": 0.512001
+      },
+      "away": "Chicago Bears",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873081",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.99009900990099,
+        "side_prices": {
+          "away": 1.8620689655172413,
+          "home": 1.99009900990099
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.512001,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 0.3743,
+      "expected_total": 44.6385,
+      "forecast_id": "0860ef5a8d65e193696a",
+      "game_id": "401873081",
+      "grade_status": "pending",
+      "home": "Detroit Lions",
+      "league": "nfl",
+      "line": null,
+      "market": "moneyline",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "0860ef5a8d65e193696a",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.99009900990099
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.512001,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T18:00:00Z",
+      "selection": "home",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.487999,
+        "home": 0.512001
+      },
+      "away": "Chicago Bears",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873081",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8620689655172413,
+        "side_prices": {
+          "away": 1.8620689655172413,
+          "home": 1.99009900990099
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.487999,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 0.3743,
+      "expected_total": 44.6385,
+      "forecast_id": "63f6eec6438f2b4307cd",
+      "game_id": "401873081",
+      "grade_status": "pending",
+      "home": "Detroit Lions",
+      "league": "nfl",
+      "line": null,
+      "market": "moneyline",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "63f6eec6438f2b4307cd",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.8620689655172413
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.487999,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T18:00:00Z",
+      "selection": "away",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.203905,
+        "under": 0.796095
+      },
+      "away": "Chicago Bears",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873081",
+        "line": 55.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8928571428571428,
+        "side_prices": {
+          "over": 1.8928571428571428,
+          "under": 1.9345794392523366
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.203905,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "total",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 44.6385,
+      "forecast_id": "a5dffed9e164b7274477",
+      "game_id": "401873081",
+      "grade_status": "pending",
+      "home": "Detroit Lions",
+      "league": "nfl",
+      "line": 55.5,
+      "market": "total",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "a5dffed9e164b7274477",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "selected_decimal_price": 1.8928571428571428
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.203905,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T18:00:00Z",
+      "selection": "over",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.203905,
+        "under": 0.796095
+      },
+      "away": "Chicago Bears",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873081",
+        "line": 55.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.9345794392523366,
+        "side_prices": {
+          "over": 1.8928571428571428,
+          "under": 1.9345794392523366
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.796095,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "total",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 44.6385,
+      "forecast_id": "5d8c84aa20f4d814cf1e",
+      "game_id": "401873081",
+      "grade_status": "pending",
+      "home": "Detroit Lions",
+      "league": "nfl",
+      "line": 55.5,
+      "market": "total",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "5d8c84aa20f4d814cf1e",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "selected_decimal_price": 1.9345794392523366
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.796095,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T18:00:00Z",
+      "selection": "under",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.183008,
+        "under": 0.816992
+      },
+      "away": "Chicago Bears",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873081",
+        "line": 56.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.9433962264150944,
+        "side_prices": {
+          "over": 1.9433962264150944,
+          "under": 1.8849557522123894
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.183008,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "total",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 44.6385,
+      "forecast_id": "dc7ff4c95f10a9b4ffec",
+      "game_id": "401873081",
+      "grade_status": "pending",
+      "home": "Detroit Lions",
+      "league": "nfl",
+      "line": 56.5,
+      "market": "total",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "dc7ff4c95f10a9b4ffec",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.9433962264150944
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.183008,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T18:00:00Z",
+      "selection": "over",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.183008,
+        "under": 0.816992
+      },
+      "away": "Chicago Bears",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873081",
+        "line": 56.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8849557522123894,
+        "side_prices": {
+          "over": 1.9433962264150944,
+          "under": 1.8849557522123894
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.816992,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "total",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 44.6385,
+      "forecast_id": "425e948efdeff26c06d1",
+      "game_id": "401873081",
+      "grade_status": "pending",
+      "home": "Detroit Lions",
+      "league": "nfl",
+      "line": 56.5,
+      "market": "total",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "425e948efdeff26c06d1",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.8849557522123894
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.816992,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T18:00:00Z",
+      "selection": "under",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.440126,
+        "home": 0.559874
+      },
+      "away": "Chicago Bears",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873081",
+        "line": 1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8849557522123894,
+        "side_prices": {
+          "away": 1.9433962264150944,
+          "home": 1.8849557522123894
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.559874,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "spread",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 0.3743,
+      "expected_total": null,
+      "forecast_id": "ffa231698f426277fe13",
+      "game_id": "401873081",
+      "grade_status": "pending",
+      "home": "Detroit Lions",
+      "league": "nfl",
+      "line": 1.5,
+      "market": "spread",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "ffa231698f426277fe13",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "selected_decimal_price": 1.8849557522123894
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.559874,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T18:00:00Z",
+      "selection": "home",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.440126,
+        "home": 0.559874
+      },
+      "away": "Chicago Bears",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873081",
+        "line": 1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.0,
+        "side_prices": {
+          "away": 2.0,
+          "home": 1.8403361344537816
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.440126,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "spread",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 0.3743,
+      "expected_total": null,
+      "forecast_id": "ac566ee3d127e142eb9b",
+      "game_id": "401873081",
+      "grade_status": "pending",
+      "home": "Detroit Lions",
+      "league": "nfl",
+      "line": 1.5,
+      "market": "spread",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "ac566ee3d127e142eb9b",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 2.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.440126,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T18:00:00Z",
+      "selection": "away",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.440792,
+        "home": 0.559208
+      },
+      "away": "Chicago Bears",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873081",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.99009900990099,
+        "side_prices": {
+          "away": 1.8620689655172413,
+          "home": 1.99009900990099
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.559208,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "espn_fpi_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 1.368,
+      "expected_total": null,
+      "forecast_id": "ec1b619f7d761a65adf8",
+      "game_id": "401873081",
+      "grade_status": "pending",
+      "home": "Detroit Lions",
+      "league": "nfl",
+      "line": null,
+      "market": "moneyline",
+      "model": "espn_fpi_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "ec1b619f7d761a65adf8",
+      "prediction": {
+        "frozen": true,
+        "model": "espn_fpi_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.99009900990099
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.559208,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T18:00:00Z",
+      "selection": "home",
+      "source": "espn_fpi_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.440792,
+        "home": 0.559208
+      },
+      "away": "Chicago Bears",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873081",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8620689655172413,
+        "side_prices": {
+          "away": 1.8620689655172413,
+          "home": 1.99009900990099
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.440792,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "espn_fpi_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 1.368,
+      "expected_total": null,
+      "forecast_id": "0e73e200a60814823549",
+      "game_id": "401873081",
+      "grade_status": "pending",
+      "home": "Detroit Lions",
+      "league": "nfl",
+      "line": null,
+      "market": "moneyline",
+      "model": "espn_fpi_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "0e73e200a60814823549",
+      "prediction": {
+        "frozen": true,
+        "model": "espn_fpi_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.8620689655172413
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.440792,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T18:00:00Z",
+      "selection": "away",
+      "source": "espn_fpi_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.408845,
+        "home": 0.591155
+      },
+      "away": "Chicago Bears",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873081",
+        "line": 1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8849557522123894,
+        "side_prices": {
+          "away": 1.9433962264150944,
+          "home": 1.8849557522123894
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.591155,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "spread",
+          "period": "full_game",
+          "source": "espn_fpi_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 1.368,
+      "expected_total": null,
+      "forecast_id": "ffcf9df6f733a9495be5",
+      "game_id": "401873081",
+      "grade_status": "pending",
+      "home": "Detroit Lions",
+      "league": "nfl",
+      "line": 1.5,
+      "market": "spread",
+      "model": "espn_fpi_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "ffcf9df6f733a9495be5",
+      "prediction": {
+        "frozen": true,
+        "model": "espn_fpi_v1",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "selected_decimal_price": 1.8849557522123894
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.591155,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T18:00:00Z",
+      "selection": "home",
+      "source": "espn_fpi_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.408845,
+        "home": 0.591155
+      },
+      "away": "Chicago Bears",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873081",
+        "line": 1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.0,
+        "side_prices": {
+          "away": 2.0,
+          "home": 1.8403361344537816
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.408845,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "spread",
+          "period": "full_game",
+          "source": "espn_fpi_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 1.368,
+      "expected_total": null,
+      "forecast_id": "5f2f93ce386120338049",
+      "game_id": "401873081",
+      "grade_status": "pending",
+      "home": "Detroit Lions",
+      "league": "nfl",
+      "line": 1.5,
+      "market": "spread",
+      "model": "espn_fpi_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "5f2f93ce386120338049",
+      "prediction": {
+        "frozen": true,
+        "model": "espn_fpi_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 2.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.408845,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T18:00:00Z",
+      "selection": "away",
+      "source": "espn_fpi_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.36888,
+        "home": 0.63112
+      },
+      "away": "Philadelphia Eagles",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873080",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.2320185614849188,
+        "side_prices": {
+          "away": 4.37,
+          "home": 1.2320185614849188
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.63112,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 4.1657,
+      "expected_total": 45.8857,
+      "forecast_id": "fed2806b37b0bec5e28d",
+      "game_id": "401873080",
+      "grade_status": "pending",
+      "home": "Dallas Cowboys",
+      "league": "nfl",
+      "line": null,
+      "market": "moneyline",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "fed2806b37b0bec5e28d",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.2320185614849188
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.63112,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T21:30:00Z",
+      "selection": "home",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.36888,
+        "home": 0.63112
+      },
+      "away": "Philadelphia Eagles",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873080",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 4.4,
+        "side_prices": {
+          "away": 4.4,
+          "home": 1.230414746543779
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.36888,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "price_outside_ticket_band",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 4.1657,
+      "expected_total": 45.8857,
+      "forecast_id": "1bcc28c18afdf45cda05",
+      "game_id": "401873080",
+      "grade_status": "pending",
+      "home": "Dallas Cowboys",
+      "league": "nfl",
+      "line": null,
+      "market": "moneyline",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "1bcc28c18afdf45cda05",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "selected_decimal_price": 4.4
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.36888,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T21:30:00Z",
+      "selection": "away",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.421038,
+        "under": 0.578962
+      },
+      "away": "Philadelphia Eagles",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873080",
+        "line": 48.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8695652173913042,
+        "side_prices": {
+          "over": 1.8695652173913042,
+          "under": 1.9615384615384617
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.421038,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "total",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 45.8857,
+      "forecast_id": "fb701f1198858f788579",
+      "game_id": "401873080",
+      "grade_status": "pending",
+      "home": "Dallas Cowboys",
+      "league": "nfl",
+      "line": 48.5,
+      "market": "total",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "fb701f1198858f788579",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "selected_decimal_price": 1.8695652173913042
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.421038,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T21:30:00Z",
+      "selection": "over",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.421038,
+        "under": 0.578962
+      },
+      "away": "Philadelphia Eagles",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873080",
+        "line": 48.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.9615384615384617,
+        "side_prices": {
+          "over": 1.8695652173913042,
+          "under": 1.9615384615384617
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.578962,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "total",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 45.8857,
+      "forecast_id": "cf93a16bb80aa3888ec2",
+      "game_id": "401873080",
+      "grade_status": "pending",
+      "home": "Dallas Cowboys",
+      "league": "nfl",
+      "line": 48.5,
+      "market": "total",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "cf93a16bb80aa3888ec2",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "selected_decimal_price": 1.9615384615384617
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.578962,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T21:30:00Z",
+      "selection": "under",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.391486,
+        "under": 0.608514
+      },
+      "away": "Philadelphia Eagles",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873080",
+        "line": 49.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.9174311926605505,
+        "side_prices": {
+          "over": 1.9174311926605505,
+          "under": 1.9090909090909092
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.391486,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "total",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 45.8857,
+      "forecast_id": "190cad3528367ea8cb8d",
+      "game_id": "401873080",
+      "grade_status": "pending",
+      "home": "Dallas Cowboys",
+      "league": "nfl",
+      "line": 49.5,
+      "market": "total",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "190cad3528367ea8cb8d",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.9174311926605505
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.391486,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T21:30:00Z",
+      "selection": "over",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.391486,
+        "under": 0.608514
+      },
+      "away": "Philadelphia Eagles",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873080",
+        "line": 49.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.9090909090909092,
+        "side_prices": {
+          "over": 1.9174311926605505,
+          "under": 1.9090909090909092
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.608514,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "total",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 45.8857,
+      "forecast_id": "8dc7f9ab3c99c5c25e56",
+      "game_id": "401873080",
+      "grade_status": "pending",
+      "home": "Dallas Cowboys",
+      "league": "nfl",
+      "line": 49.5,
+      "market": "total",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "8dc7f9ab3c99c5c25e56",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.9090909090909092
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.608514,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T21:30:00Z",
+      "selection": "under",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.636219,
+        "home": 0.363781
+      },
+      "away": "Philadelphia Eagles",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873080",
+        "line": -8.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.900900900900901,
+        "side_prices": {
+          "away": 1.925925925925926,
+          "home": 1.900900900900901
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.363781,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "spread",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 4.1657,
+      "expected_total": null,
+      "forecast_id": "928cb0e08f5f42c7828d",
+      "game_id": "401873080",
+      "grade_status": "pending",
+      "home": "Dallas Cowboys",
+      "league": "nfl",
+      "line": -8.5,
+      "market": "spread",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "928cb0e08f5f42c7828d",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.900900900900901
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.363781,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T21:30:00Z",
+      "selection": "home",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.636219,
+        "home": 0.363781
+      },
+      "away": "Philadelphia Eagles",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873080",
+        "line": -8.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.925925925925926,
+        "side_prices": {
+          "away": 1.925925925925926,
+          "home": 1.900900900900901
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.636219,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "spread",
+          "period": "full_game",
+          "source": "empirical_score_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 4.1657,
+      "expected_total": null,
+      "forecast_id": "30d58cd215be4a483645",
+      "game_id": "401873080",
+      "grade_status": "pending",
+      "home": "Dallas Cowboys",
+      "league": "nfl",
+      "line": -8.5,
+      "market": "spread",
+      "model": "empirical_score_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "30d58cd215be4a483645",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.925925925925926
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.636219,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T21:30:00Z",
+      "selection": "away",
+      "source": "empirical_score_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.176711,
+        "home": 0.823289
+      },
+      "away": "Philadelphia Eagles",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873080",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.2320185614849188,
+        "side_prices": {
+          "away": 4.37,
+          "home": 1.2320185614849188
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.823289,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "espn_fpi_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 9.24,
+      "expected_total": null,
+      "forecast_id": "6ed31eb5359836d7cb21",
+      "game_id": "401873080",
+      "grade_status": "pending",
+      "home": "Dallas Cowboys",
+      "league": "nfl",
+      "line": null,
+      "market": "moneyline",
+      "model": "espn_fpi_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "6ed31eb5359836d7cb21",
+      "prediction": {
+        "frozen": true,
+        "model": "espn_fpi_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.2320185614849188
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.823289,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T21:30:00Z",
+      "selection": "home",
+      "source": "espn_fpi_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.176711,
+        "home": 0.823289
+      },
+      "away": "Philadelphia Eagles",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873080",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 4.4,
+        "side_prices": {
+          "away": 4.4,
+          "home": 1.230414746543779
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.176711,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "espn_fpi_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "price_outside_ticket_band",
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 9.24,
+      "expected_total": null,
+      "forecast_id": "dc913bf9c6e5e4a7f42c",
+      "game_id": "401873080",
+      "grade_status": "pending",
+      "home": "Dallas Cowboys",
+      "league": "nfl",
+      "line": null,
+      "market": "moneyline",
+      "model": "espn_fpi_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "dc913bf9c6e5e4a7f42c",
+      "prediction": {
+        "frozen": true,
+        "model": "espn_fpi_v1",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T12:43:51Z",
+        "selected_decimal_price": 4.4
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.176711,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T21:30:00Z",
+      "selection": "away",
+      "source": "espn_fpi_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.476286,
+        "home": 0.523714
+      },
+      "away": "Philadelphia Eagles",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873080",
+        "line": -8.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.900900900900901,
+        "side_prices": {
+          "away": 1.925925925925926,
+          "home": 1.900900900900901
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.523714,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "spread",
+          "period": "full_game",
+          "source": "espn_fpi_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 9.24,
+      "expected_total": null,
+      "forecast_id": "26949f0aa8b681ec0ff1",
+      "game_id": "401873080",
+      "grade_status": "pending",
+      "home": "Dallas Cowboys",
+      "league": "nfl",
+      "line": -8.5,
+      "market": "spread",
+      "model": "espn_fpi_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "26949f0aa8b681ec0ff1",
+      "prediction": {
+        "frozen": true,
+        "model": "espn_fpi_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.900900900900901
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.523714,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T21:30:00Z",
+      "selection": "home",
+      "source": "espn_fpi_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.476286,
+        "home": 0.523714
+      },
+      "away": "Philadelphia Eagles",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873080",
+        "line": -8.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.925925925925926,
+        "side_prices": {
+          "away": 1.925925925925926,
+          "home": 1.900900900900901
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.476286,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "spread",
+          "period": "full_game",
+          "source": "espn_fpi_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-26",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": 9.24,
+      "expected_total": null,
+      "forecast_id": "343181a6db5d62dfd0cc",
+      "game_id": "401873080",
+      "grade_status": "pending",
+      "home": "Dallas Cowboys",
+      "league": "nfl",
+      "line": -8.5,
+      "market": "spread",
+      "model": "espn_fpi_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "343181a6db5d62dfd0cc",
+      "prediction": {
+        "frozen": true,
+        "model": "espn_fpi_v1",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-26T14:15:17Z",
+        "selected_decimal_price": 1.925925925925926
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.476286,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-26T21:30:00Z",
+      "selection": "away",
+      "source": "espn_fpi_v1",
+      "training_games": 0
+    }
+  ],
+  "captured_at": "2026-11-26T14:15:17Z",
+  "date": "2026-11-26",
+  "decision_id": "9cec1a09bcfddcc4f7d7",
+  "frozen_at": "2026-11-26T14:15:17Z",
+  "league": "NFL",
+  "paper_only": true,
+  "positions": [],
+  "reason": "no_qualifying_pre_tip_ticket_at_decision_cutoff",
+  "schema_version": "magolide.no_bet_decision",
+  "selection_policy": {
+    "allow_provisional": false,
+    "brier_cap": 0.25,
+    "brier_cap_three_way": 0.22,
+    "brier_cap_two_way": 0.25,
+    "cap_vs_base_rate": true,
+    "forbid_conflicting_game_sides": true,
+    "lane_permission": "probe_covered",
+    "limit": 3,
+    "max_combined_odds": 4.5,
+    "max_leg_odds": 3.0,
+    "min_combined_odds": 3.0,
+    "min_games": 30,
+    "min_leg_odds": 1.2,
+    "min_samples": 30,
+    "paper_only": true,
+    "price_weight": 0.15,
+    "probe_captured_utc": "2026-11-26T12:29:46Z",
+    "probe_market_evidence": {
+      "moneyline": {
+        "event_coverage": 1.0,
+        "sample_size": 4,
+        "status": "ok"
+      },
+      "moneyline_draw": {
+        "event_coverage": 0.0,
+        "sample_size": 4,
+        "status": "ok"
+      },
+      "spread": {
+        "event_coverage": 1.0,
+        "sample_size": 4,
+        "status": "ok"
+      },
+      "total": {
+        "event_coverage": 1.0,
+        "sample_size": 4,
+        "status": "ok"
+      }
+    },
+    "probe_report_used": true,
+    "requested_legs": 2,
+    "require_disjoint_legs": true,
+    "stake_units_per_acca": 1.0,
+    "surface_resolution": "no_surface_evidence",
+    "ticket_markets": [
+      "moneyline",
+      "spread",
+      "total"
+    ]
+  },
+  "status": "frozen_no_bet",
+  "target_date": "2026-11-26",
+  "ticket_decision": {
+    "candidate_count": 24,
+    "captured_utc": "2026-11-26T14:15:17Z",
+    "eligible_count": 0,
+    "permission": "probe_covered",
+    "planned_cutoff_utc": "2026-11-26T14:00:00Z",
+    "probe_captured_utc": "2026-11-26T12:29:46Z",
+    "status": "frozen_no_bet"
+  }
+}
