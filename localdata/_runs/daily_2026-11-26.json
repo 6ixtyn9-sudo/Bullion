@@ -1,6 +1,12 @@
 {
-  "generated_utc": "2026-11-26T14:15:20Z",
+  "generated_utc": "2026-11-26T21:15:26Z",
   "probe_report_used": true,
+  "rehydrated": {
+    "files": 1,
+    "restored": 24,
+    "rows": 24,
+    "skipped": 0
+  },
   "runs": [
     {
       "candidate_pool": 0,
@@ -104,16 +110,22 @@
       "tickets": 0
     },
     {
-      "candidate_pool": 24,
+      "candidate_pool": 12,
       "cutoff_utc": "2026-11-26T14:00:00Z",
       "day": "2026-11-26",
       "eligible_legs": 0,
-      "forecasts": 24,
+      "forecasts": 12,
       "games": 4,
       "gaps": [
         {
           "field": "pickcenter",
           "game_id": "401873079",
+          "league": "nfl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401873081",
           "league": "nfl",
           "reason": "no odds offers on event"
         }
