@@ -546,3 +546,213 @@ def test_draw_selection_loses_when_the_game_is_not_level():
     assert resolve_outcome("moneyline", "draw", None, 2.0, 2.0) == "win"
     assert resolve_outcome("moneyline", "draw", None, 2.0, 1.0) == "loss"
     assert resolve_outcome("moneyline", "home", None, 2.0, 2.0) == "loss"
+
+
+# ---------------------------------------------------------------------------
+# Silent-stall regressions: the ROI band and the no-bet lock (2026-11-26 audit)
+# ---------------------------------------------------------------------------
+
+
+def _final_games(game_ids, *, home_score: int = 4, away_score: int = 1) -> dict:
+    games = {}
+    for game_id in game_ids:
+        game = _game(0)
+        game.game_id = game_id
+        game.actual = ActualResult(home_score=home_score, away_score=away_score)
+        game.status = Status.FINAL
+        games[game_id] = game
+    return games
+
+
+def test_settled_pick_history_counts_only_the_model_side(tmp_path):
+    """Bug 3: grading both sides made ROI identically the bookmaker's vig."""
+    league, rows = _pool(tmp_path, n=1)  # home @1.95, calibrated p=0.62 (+EV)
+    home = rows[0]
+    away = json.loads(json.dumps(home))
+    away.update(
+        {
+            "forecast_id": "fid-away",
+            "pick_id": "fid-away",
+            "selection": "away",
+            "calibrated_probability": 0.35,
+            "raw_probability": 0.35,
+            "book": {**home["book"], "selected_decimal_price": 1.95},
+        }
+    )
+    freeze_receipt(
+        tmp_path,
+        league=league,
+        day=DAY,
+        captured_utc="2026-11-28T15:00:00Z",
+        candidate_pool=[home, away],
+        accas=[],
+        selection_policy={"min_leg_odds": 1.20, "max_leg_odds": 3.00},
+        decision_state={"status": "frozen_no_bet"},
+    )
+    settle_lane(tmp_path, league, _final_games([home["game_id"]]))
+
+    from bullion.tickets import settled_pick_history
+
+    picks = settled_pick_history(tmp_path, league)
+    assert picks == [(DAY, pytest.approx(1.95), "win")], (
+        "the -EV away side must never enter the ROI band"
+    )
+
+
+def test_no_bet_lock_preserves_and_grades_its_pool(tmp_path):
+    """Bug 4: a no-bet lock used to discard the pool, so nothing accrued."""
+    league, rows = _pool(tmp_path, n=4, report=_calibrated_report(n=5))
+    receipt, _ = _freeze(tmp_path, rows, league=league)
+    assert receipt is None
+    no_bet_path = tmp_path / "nhl" / f"auto_tickets_{DAY}_no_bet.json"
+    no_bet = json.loads(no_bet_path.read_text())
+    assert no_bet["schema_version"] == "magolide.no_bet_decision"
+    assert len(no_bet["candidate_pool"]) == 4
+    assert no_bet["selection_policy"]["requested_legs"] == 2
+    assert no_bet["positions"] == []
+    assert no_bet["decision_id"]
+
+    report = settle_lane(tmp_path, league, _final_games([row["game_id"] for row in rows]))
+    day = next(item for item in report["history"] if item["date"] == DAY)
+    assert day["status"] == "frozen_no_bet"
+    assert day["positions"] == []
+    assert len(day["candidate_pool_outcomes"]) == 4
+    assert set(day["candidate_pool_outcomes"].values()) == {"win"}
+    # A no-bet day moves ticket P&L by exactly nothing.
+    assert report["settled_positions"] == 0
+    assert report["profit_units"] == 0.0
+
+
+def test_no_bet_day_replays_as_a_zero_ticket_day_with_parity(tmp_path):
+    league, rows = _pool(tmp_path, n=4, report=_calibrated_report(n=5))
+    _freeze(tmp_path, rows, league=league)
+    settle_lane(tmp_path, league, _final_games([row["game_id"] for row in rows]))
+
+    days = load_evidence(tmp_path)
+    assert len(days) == 1, "a no-bet lock with a frozen pool is replayable evidence"
+    assert days[0].candidate_pool
+    parity = check_parity(days)
+    assert parity["parity"] is True, parity["mismatches"]
+    assert parity["checked"] == 1 and parity["matched"] == 1
+    result = replay(days, ReplaySpec())
+    assert result["no_ticket_days"] == 1
+    assert result["settled_days"] == 0
+
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "bullion_replay_harness",
+        Path(__file__).resolve().parents[1] / "scripts" / "replay_harness.py",
+    )
+    harness = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(harness)
+    assert harness.main(["--parity", "--localdata", str(tmp_path), "--json"]) == 0
+
+
+def test_prior_roi_escapes_insufficient_sample_through_no_bet_pools(tmp_path):
+    """1 <= n < 5 must be escapable: graded no-bet pools keep adding picks.
+
+    Day 1 settles three picks and freezes no-bet (blocked by
+    ``prior_roi_insufficient_sample``). Without grading that day's pool, day 2
+    would freeze no-bet for the same reason, add nothing, and deadlock forever.
+    """
+    from bullion.tickets import settled_pick_history
+
+    league, rows = _pool(tmp_path, n=5)
+    games = _final_games([row["game_id"] for row in rows])
+    policy = {"min_leg_odds": 1.20, "max_leg_odds": 3.00}
+
+    freeze_receipt(
+        tmp_path,
+        league=league,
+        day="2026-11-26",
+        captured_utc="2026-11-26T15:00:00Z",
+        candidate_pool=rows[:3],
+        accas=[],
+        selection_policy=policy,
+    )
+    settle_lane(tmp_path, league, games)
+    blocked = roi_band(settled_pick_history(tmp_path, league), as_of_day="2026-11-28")
+    assert blocked["status"] == "insufficient_sample"
+    assert blocked["n"] == 3
+
+    freeze_receipt(
+        tmp_path,
+        league=league,
+        day="2026-11-27",
+        captured_utc="2026-11-27T15:00:00Z",
+        candidate_pool=rows[3:],
+        accas=[],
+        selection_policy=policy,
+    )
+    settle_lane(tmp_path, league, games)
+    escaped = roi_band(settled_pick_history(tmp_path, league), as_of_day="2026-11-29")
+    assert escaped["n"] == 5
+    assert escaped["status"] in {"positive", "non_positive"}, escaped
+
+
+def test_harness_reports_no_bet_days_explicitly(tmp_path):
+    import importlib.util
+
+    league, rows = _pool(tmp_path, n=4, report=_calibrated_report(n=5))
+    _freeze(tmp_path, rows, league=league)
+    settle_lane(tmp_path, league, _final_games([row["game_id"] for row in rows]))
+    spec = importlib.util.spec_from_file_location(
+        "bullion_replay_harness",
+        Path(__file__).resolve().parents[1] / "scripts" / "replay_harness.py",
+    )
+    harness = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(harness)
+    days = harness.load_evidence(tmp_path)
+    assert len(days) == 1
+    report_meta = harness.check_parity(days)
+    assert report_meta["checked"] == 1 and report_meta["parity"] is True
+
+
+def test_no_bet_pool_feeds_counterfactual_replay_at_parity(tmp_path):
+    """A declined pool is still replayable evidence, not a dead end.
+
+    Four eligible legs at 2.90 combine to 8.41 for two legs, outside the frozen
+    [3.00, 4.50] acca band — a genuine no-bet at parity. Widening that band in
+    the replay harness then has to be able to bet the same frozen pool.
+    """
+    league, rows = _pool(tmp_path, n=4, price=2.90)
+    policy = {
+        "requested_legs": 2,
+        "limit": 1,
+        "min_leg_odds": 1.20,
+        "max_leg_odds": 3.00,
+        "price_weight": 0.15,
+        "min_combined_odds": 3.00,
+        "max_combined_odds": 4.50,
+    }
+    eligible = eligible_rows(rows, policy=GatePolicy())
+    assert len(eligible) == 4
+    assert build_accas(
+        eligible, legs=2, limit=1, min_combined_odds=3.00, max_combined_odds=4.50
+    ) == []
+
+    assert (
+        freeze_receipt(
+            tmp_path,
+            league=league,
+            day=DAY,
+            captured_utc="2026-11-28T15:00:00Z",
+            candidate_pool=rows,
+            accas=[],
+            selection_policy=policy,
+            decision_state={"status": "frozen_no_bet", "planned_cutoff_utc": "2026-11-28T14:00:00Z"},
+        )
+        is None
+    )
+    settle_lane(tmp_path, league, _final_games([row["game_id"] for row in rows]))
+
+    days = load_evidence(tmp_path)
+    assert check_parity(days)["parity"] is True
+    frozen = replay(days, ReplaySpec())
+    assert frozen["no_ticket_days"] == 1 and frozen["settled_days"] == 0
+
+    wide = replay(days, ReplaySpec(min_combined_odds=0.0, max_combined_odds=1_000_000.0))
+    assert wide["settled_days"] == 1
+    assert wide["tickets_settled"] == 1
+    assert wide["profit_units"] > 0

@@ -125,6 +125,11 @@ def main(argv: Optional[List[str]] = None) -> int:
         "mode": args.mode,
         "lanes": lanes or "all",
         "days_with_pool": len(days),
+        # No-bet locks replay as 0-ticket days: their frozen pool is still
+        # evidence, and ``--parity`` still has to agree no ticket was due.
+        "no_bet_days": sum(
+            1 for day in days if day.receipt.get("schema_version") == "magolide.no_bet_decision"
+        ),
     }
     if args.parity:
         report["parity"] = check_parity(days)
