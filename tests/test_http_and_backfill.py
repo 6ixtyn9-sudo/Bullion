@@ -387,3 +387,97 @@ def test_cli_default_budget_is_written_into_the_manifest(backfill, tmp_path, mon
     payload = json.loads(out.read_text())
     assert payload["max_seconds"] == 1800.0
     assert payload["season_order"] == "newest_first"
+
+
+def _frozen_pool_row(forecast_id: str, game_id: str, *, raw: float = 0.62) -> dict:
+    return {
+        "forecast_id": forecast_id,
+        "pick_id": forecast_id,
+        "game_id": game_id,
+        "league": "nhl",
+        "market": "moneyline",
+        "period": "full_game",
+        "source": "nhl_poisson_v1",
+        "selection": "home",
+        "line": None,
+        "raw_probability": raw,
+        "push_probability": 0.0,
+    }
+
+
+def test_backfill_rebuilds_forecast_history_from_committed_receipts(backfill, tmp_path):
+    """One cache eviction must not reset walk-forward calibration to zero."""
+    localdata = tmp_path / "localdata"
+    lane = localdata / "nhl"
+    lane.mkdir(parents=True)
+    decision = {
+        "schema_version": "magolide.paper_ticket_receipt",
+        "date": "2026-11-28",
+        "league": "NHL",
+        "frozen_at": "2026-11-28T15:00:00Z",
+        "candidate_pool": [
+            _frozen_pool_row("fid-1", "401"),
+            _frozen_pool_row("fid-2", "402", raw=0.44),
+        ],
+    }
+    no_bet = {
+        "schema_version": "magolide.no_bet_decision",
+        "date": "2026-11-27",
+        "league": "NHL",
+        "frozen_at": "2026-11-27T15:00:00Z",
+        "candidate_pool": [_frozen_pool_row("fid-3", "403")],
+    }
+    legacy_no_bet = {
+        "schema_version": "magolide.no_bet_decision",
+        "target_date": "2026-11-26",
+        "league": "NHL",
+        "frozen_at": "2026-11-26T15:00:00Z",
+    }
+    (lane / "auto_tickets_2026-11-28_decision.json").write_text(json.dumps(decision))
+    (lane / "auto_tickets_2026-11-27_no_bet.json").write_text(json.dumps(no_bet))
+    (lane / "auto_tickets_2026-11-26_no_bet.json").write_text(json.dumps(legacy_no_bet))
+
+    db = tmp_path / "fresh.sqlite"
+    with Store(db) as store:
+        assert store.counts()["forecast_snapshots"] == 0, "a cold cache has no history"
+        counters = backfill.rehydrate_forecasts(store, localdata)
+        assert counters == {"files": 3, "rows": 3, "skipped": 0, "restored": 3}
+        assert store.counts()["forecast_snapshots"] == 3
+
+        days = {
+            row["observed_day"]
+            for row in store.conn.execute(
+                "SELECT DISTINCT observed_day FROM forecast_snapshots"
+            ).fetchall()
+        }
+        assert days == {"2026-11-27", "2026-11-28"}, (
+            "a restored row keeps the day it was frozen on, so walk-forward stays honest"
+        )
+
+        # A second run is a no-op, and a pre-pool legacy lock restores nothing.
+        assert backfill.rehydrate_forecasts(store, localdata)["restored"] == 0
+        assert store.counts()["forecast_snapshots"] == 3
+
+
+def test_rehydration_skips_rows_it_cannot_restore_verbatim(backfill, tmp_path):
+    localdata = tmp_path / "localdata"
+    lane = localdata / "nhl"
+    lane.mkdir(parents=True)
+    receipt = {
+        "schema_version": "magolide.paper_ticket_receipt",
+        "date": "2026-11-28",
+        "candidate_pool": [
+            _frozen_pool_row("fid-good", "401"),
+            {**_frozen_pool_row("fid-no-prob", "402"), "raw_probability": None},
+            {"forecast_id": "fid-no-source", "game_id": "403", "league": "nhl",
+             "market": "moneyline", "period": "full_game", "selection": "home",
+             "raw_probability": 0.5, "line": None},
+        ],
+    }
+    (lane / "auto_tickets_2026-11-28_decision.json").write_text(json.dumps(receipt))
+
+    with Store(tmp_path / "fresh.sqlite") as store:
+        counters = backfill.rehydrate_forecasts(store, localdata)
+        assert counters["restored"] == 1
+        assert counters["skipped"] == 2
+        assert store.counts()["forecast_snapshots"] == 1

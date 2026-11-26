@@ -19,11 +19,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from . import engines
-from .calibration import (
-    DEFAULT_BRIER_CAP_2WAY,
-    DEFAULT_BRIER_CAP_3WAY,
-    CalibrationBook,
-)
+from .calibration import CalibrationBook
 from .engines import football as football_engine
 from .engines import nhl as nhl_engine
 from .engines import soccer as soccer_engine
@@ -132,6 +128,7 @@ def _calibration_book(store: Store, league: League, as_of_utc: str) -> Calibrati
             row["line"],
             float(row["home_score"]),
             float(row["away_score"]),
+            has_draw=league.has_draw,
         )
         if outcome is None:
             continue
@@ -141,6 +138,7 @@ def _calibration_book(store: Store, league: League, as_of_utc: str) -> Calibrati
             float(row["raw_probability"]),
             None if outcome == "push" else (1 if outcome == "win" else 0),
             result_day,
+            str(row["game_id"]),
         )
     return book
 
@@ -150,16 +148,27 @@ def _segments(forecasts: Sequence[Forecast]) -> List[Tuple[str, str, str, str]]:
 
 
 def _reports(
-    book: CalibrationBook, league: League, forecasts: Sequence[Forecast], day: str
+    book: CalibrationBook,
+    league: League,
+    forecasts: Sequence[Forecast],
+    day: str,
+    policy: Optional[GatePolicy] = None,
 ) -> Dict[Tuple[str, str, str, str], Any]:
-    cap = DEFAULT_BRIER_CAP_3WAY if league.has_draw else DEFAULT_BRIER_CAP_2WAY
+    """One walk-forward report per segment, capped by that market's cardinality.
+
+    A soccer ``spread`` is a two-outcome market, so the 3-way capacity (0.22)
+    was the wrong bar for it; only a 3-way ``moneyline`` uses it. Every segment
+    is also measured against its own base-rate Brier, because a segment that
+    only matches "always predict the base rate" has no skill to sell.
+    """
+    policy = policy or GatePolicy()
     reports = {}
     for segment in _segments(forecasts):
         reports[segment] = book.report(
             segment,
             day,
-            brier_cap=cap,
-            cap_vs_base_rate=league.has_draw,
+            brier_cap=policy.brier_cap(league, segment[1]),
+            cap_vs_base_rate=True,
         )
     return reports
 
@@ -167,10 +176,12 @@ def _reports(
 #: A game whose tip passed more than this long ago should already have a final.
 #: The 06:15Z grade cron only discovers "today", so without a lookback a game
 #: that finished after rollover stays ``scheduled`` in SQLite and starves both
-#: calibration (``WHERE g.status='final'``) and settlement.
+#: calibration (``WHERE g.status='final'``) and settlement. There is no upper
+#: bound: a backlog that took a week to appear must still drain, oldest first,
+#: so the gap cannot widen. ``REFRESH_MAX_GAMES`` bounds one run's work, and a
+#: larger backlog is reported rather than silently dropped.
 REFRESH_AFTER_HOURS = 2.0
-REFRESH_LOOKBACK_HOURS = 7 * 24.0
-REFRESH_MAX_GAMES = 80
+REFRESH_MAX_GAMES = 40
 
 
 def _scoring_quotes(
@@ -240,14 +251,21 @@ def _refresh_recent_finals(
     """
     as_of = parse_utc(as_of_utc)
     newest = as_of - timedelta(hours=REFRESH_AFTER_HOURS)
-    oldest = as_of - timedelta(hours=REFRESH_LOOKBACK_HOURS)
     stale = [
         game
         for game in store.games_for_league(league.key)
-        if game.status is not Status.FINAL
-        and oldest <= parse_utc(game.scheduled_utc) <= newest
+        if game.status is not Status.FINAL and parse_utc(game.scheduled_utc) <= newest
     ]
-    stale.sort(key=lambda game: game.scheduled_utc, reverse=True)
+    stale.sort(key=lambda game: game.scheduled_utc)
+    if len(stale) > REFRESH_MAX_GAMES:
+        gaps.append(
+            CoverageGap(
+                league.key,
+                "summary.refresh.backlog",
+                f"{len(stale)} unsettled past-tip games; this run drains the oldest "
+                f"{REFRESH_MAX_GAMES}",
+            )
+        )
     refreshed = 0
     for game in stale[:REFRESH_MAX_GAMES]:
         try:
@@ -319,6 +337,7 @@ def _forecasts_for_game(
             prob_home=predictor.prob_home,
             expected_home=predictor.expected_home,
             expected_away=predictor.expected_away,
+            predicted_margin=predictor.predicted_margin,
         )
     except (EspnFetchError, EspnIdentityError, EspnParseError, ValueError) as exc:
         gaps.append(CoverageGap(league.key, "predictor", str(exc), game.game_id))
@@ -434,7 +453,7 @@ def run_lane(
     permission_markets = permission.ticket_markets
     ticket_forecasts = [f for f in forecasts if f.market in permission_markets]
     book = _calibration_book(store, league, as_of)
-    reports = _reports(book, league, ticket_forecasts, day)
+    reports = _reports(book, league, ticket_forecasts, day, policy)
     surface_resolution = "single_surface"
     if league.sport is Sport.FOOTBALL:
         brier_by_source = {
@@ -443,7 +462,17 @@ def run_lane(
             if (league.key, "moneyline", "full_game", source) in reports
         }
         winner = football_engine.resolve_surface(brier_by_source)
-        surface_resolution = winner or "undecided_both_surfaces_gated"
+        if winner is None:
+            # "Undecided" must still mean one surface. Leaving both in the pool
+            # lets a ticket mix FPI and empirical legs on the same market, which
+            # is a selection nobody measured; pick deterministically instead and
+            # say so in the receipt.
+            winner = football_engine.tiebreak_surface(brier_by_source)
+            surface_resolution = (
+                f"brier_tiebreak_{winner}" if winner else "no_surface_evidence"
+            )
+        else:
+            surface_resolution = winner
         if winner is not None:
             ticket_forecasts = [f for f in ticket_forecasts if f.source == winner]
     prior_roi = roi_band(settled_pick_history(localdata, league), as_of_day=day)
@@ -498,7 +527,11 @@ def run_lane(
         "max_combined_odds": max_combined_odds,
         "price_weight": PRICE_WEIGHT,
         "min_samples": 30,
-        "brier_cap": policy.brier_cap(league),
+        "min_games": 30,
+        "brier_cap": policy.brier_cap(league, "moneyline"),
+        "brier_cap_two_way": policy.brier_cap_2way,
+        "brier_cap_three_way": policy.brier_cap_3way,
+        "cap_vs_base_rate": True,
         "ticket_markets": sorted(permission_markets),
         "lane_permission": permission.reason,
         "probe_captured_utc": permission.captured_utc,

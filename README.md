@@ -232,6 +232,45 @@ Semantic notes for cross-sport readers: soccer 1X2 is
 and soccer handicaps are `market="spread"` with a **home-oriented** `line`;
 integer lines carry a real `push_probability`.
 
+## Settlement, calibration and acca rules
+
+* **Settlement follows the market's cardinality, not the sport's.** A two-way
+  moneyline (NFL/CFB, where no draw price exists) voids to `push` on a level
+  game; a three-way soccer `moneyline` pays `draw` and loses both sides.
+  `resolve_outcome(..., has_draw=...)` is told which one it is grading.
+* **Calibration counts fixtures, and weights them equally.** One game emits a
+  row per side and per market, so the gate reads `n_games` (unique settled
+  `game_id`s) and each row carries `1 / rows_for_game` inside the Brier score
+  and the Platt fit. Both numbers appear in every report (`n`, `n_games`).
+* **Brier capacity follows market cardinality.** 0.22 applies to a 3-way
+  `moneyline` only; binary `spread`/`total` markets in every league use 0.25.
+  Every segment is also required to beat its own base-rate Brier.
+* **Accas are built from distinct fixtures.** `eligible_rows()` keeps every
+  eligible market per game (collapsing to one row per game discarded the
+  `@1.90-@2.10` legs that reach the `@3.00` acca floor), and `build_accas()`
+  refuses any combination with two legs from the same fixture.
+* **`prior_roi` ignores pushes**, because a pushed stake returns exactly its own
+  unit and is not evidence of edge.
+* **Soccer is fail-closed on shape.** A `moneyline` without its draw price is a
+  draw-no-bet price and is not quoted as 1X2. Quarter lines (`.25`/`.75`) are
+  split stakes that binary grading would settle wrongly, so they are recorded as
+  `pickcenter.line.split` gaps instead of being priced.
+* **Prices never mix phases.** All sides of a market come from the same
+  `close`/`open` phase; a half-closed offer is not quoted at all.
+* **NHL overtime adds exactly one goal.** Overtime is sudden death and a
+  shootout winner is credited one goal, so `OT_GOAL_DISTRIBUTION = {1: 1.0}` and
+  a regulation draw is never settled at the regulation total.
+* **ESPN's projected margin is used when it is all FPI publishes.**
+  `teamPredPtDiff` prices the FPI spread surface, while `expected_total` stays
+  `None` rather than being invented from a missing expected score.
+* **Walk-forward history survives a cache eviction.** `scripts/backfill.py`
+  rehydrates `forecast_snapshots` from the committed receipts on every run
+  (`INSERT OR IGNORE`, so it is idempotent and additive), and the warehouse
+  migrates new columns onto an older cached `bullion.db`.
+* **A replay settles what settled.** A pending leg on one ticket no longer
+  discards a same-day win on another, and one lane's exception no longer aborts
+  the other lanes (`lane_error`, exit 1 after every lane has run).
+
 ## Immutability and sizing
 
 * Receipts and `auto_tickets_<day>_no_bet.json` locks are write-once. Later scans

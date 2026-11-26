@@ -37,6 +37,8 @@ from bullion.models import LEAGUES, Sport, now_utc  # noqa: E402
 from bullion.store import Store  # noqa: E402
 
 REINDEX_PAGES = 25
+#: Committed receipts are the durable copy of every frozen pre-tip forecast.
+RECEIPT_GLOBS = ("auto_tickets_*_decision.json", "auto_tickets_*_no_bet.json")
 #: A 45-minute job that spends its last seconds backfilling loses the cache save
 #: and the receipt commit. Warn well before a budget can crowd those steps out.
 JOB_TIMEOUT_WARNING_SECONDS = 2400.0
@@ -166,6 +168,82 @@ def _concurrent(
             future.cancel()
         pool.shutdown(wait=not (deadline is not None and time.monotonic() >= deadline))
     return stopped_early
+
+
+def rehydrate_forecasts(store: Store, localdata: Path) -> Dict[str, int]:
+    """Restore ``forecast_snapshots`` from the receipts committed in ``localdata``.
+
+    The warehouse is a gitignored cache; the receipts are not. Without this, a
+    single cache miss silently resets every lane's walk-forward calibration to
+    ``n = 0`` and the gate fails closed forever instead of reopening. Only the
+    frozen fields are restored — no probability is recomputed and no historical
+    price is introduced — so the restored rows are exactly the evidence that was
+    recorded before each tip.
+    """
+    counters = {"files": 0, "rows": 0, "skipped": 0}
+    if not localdata.exists():
+        return counters
+    rows = []
+    for pattern in RECEIPT_GLOBS:
+        for path in sorted(localdata.glob(f"*/{pattern}")):
+            try:
+                receipt = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                counters["skipped"] += 1
+                continue
+            if not isinstance(receipt, dict):
+                counters["skipped"] += 1
+                continue
+            day = receipt.get("date") or receipt.get("target_date") or ""
+            created = str(receipt.get("frozen_at") or receipt.get("captured_at") or "")
+            pool = receipt.get("candidate_pool") or []
+            if not day or not pool:
+                # A pre-fix receipt that never stored its pool: nothing to restore.
+                counters["files"] += 1
+                continue
+            counters["files"] += 1
+            for row in pool:
+                if not isinstance(row, dict):
+                    counters["skipped"] += 1
+                    continue
+                source = row.get("source") or row.get("model")
+                required = (
+                    row.get("forecast_id"),
+                    row.get("game_id"),
+                    row.get("league"),
+                    row.get("market"),
+                    row.get("period"),
+                    source,
+                    row.get("selection"),
+                    row.get("raw_probability"),
+                )
+                if any(value in (None, "") for value in required):
+                    counters["skipped"] += 1
+                    continue
+                try:
+                    float(row["raw_probability"])
+                except (TypeError, ValueError):
+                    counters["skipped"] += 1
+                    continue
+                rows.append(
+                    {
+                        "forecast_id": str(row["forecast_id"]),
+                        "game_id": str(row["game_id"]),
+                        "league": str(row["league"]),
+                        "market": str(row["market"]),
+                        "period": str(row["period"]),
+                        "source": str(source),
+                        "selection": str(row["selection"]),
+                        "line": row.get("line"),
+                        "raw_probability": float(row["raw_probability"]),
+                        "push_probability": row.get("push_probability"),
+                        "observed_day": str(day),
+                        "created_utc": created,
+                    }
+                )
+    counters["rows"] = len(rows)
+    counters["restored"] = store.restore_forecasts(rows) if rows else 0
+    return counters
 
 
 def run(
@@ -307,6 +385,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--seasons", default="2024,2025,2026")
     parser.add_argument("--max-events", type=int, default=400)
     parser.add_argument("--db", default="localdata/bullion.db")
+    parser.add_argument(
+        "--localdata",
+        default="localdata",
+        help="directory holding the committed receipts that restore forecast history",
+    )
     parser.add_argument("--out", default="localdata/_backfill/manifest.json")
     parser.add_argument(
         "--delay", type=float, default=0.15, help="seconds between requests when --workers 1"
@@ -355,6 +438,14 @@ def main(argv: Optional[List[str]] = None) -> int:
             workers=max(1, args.workers),
             max_seconds=args.max_seconds,
         )
+        # Runs on every invocation, not just a cold cache: it is idempotent, and
+        # a partially lost cache heals the same way a fully lost one does.
+        localdata_dir = Path(args.localdata)
+        if not localdata_dir.is_absolute():
+            localdata_dir = ROOT / localdata_dir
+        rehydrated = rehydrate_forecasts(store, localdata_dir)
+        manifest["rehydrated"] = rehydrated
+        manifest["counts"] = store.counts()
     out = Path(args.out)
     if not out.is_absolute():
         out = ROOT / out

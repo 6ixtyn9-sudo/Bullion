@@ -213,8 +213,15 @@ class GatePolicy:
     min_roi_samples: int = MIN_ROI_SAMPLES
     require_named_book: bool = True
 
-    def brier_cap(self, league: League) -> float:
-        return self.brier_cap_3way if league.has_draw else self.brier_cap_2way
+    def brier_cap(self, league: League, market: str = "moneyline") -> float:
+        """Brier capacity for one market: 3-way only where a draw is priced.
+
+        The cap follows the market's cardinality, not the sport's. A soccer
+        ``spread`` or ``total`` is a two-outcome market, so the looser 0.25 cap
+        applies; only a 3-way ``moneyline`` earns the stricter 0.22.
+        """
+        three_way = league.has_draw and market == "moneyline"
+        return self.brier_cap_3way if three_way else self.brier_cap_2way
 
     def to_policy_dict(self) -> Dict[str, Any]:
         return {
@@ -256,7 +263,7 @@ def gate_forecast(
             reasons.append("non_positive_expected_value")
     if not report.sufficient:
         reasons.append("calibration_not_sufficient_for_accas")
-    capacity = policy.brier_cap(league)
+    capacity = policy.brier_cap(league, str(forecast.market))
     if report.brier is not None and report.brier > capacity:
         reasons.append("brier_above_lane_cap")
     roi_status = (prior_roi or {}).get("status")
@@ -327,12 +334,15 @@ def roi_band(
     ``settled`` is ``(result_day, decimal_price, outcome)``. Only strictly
     earlier result days count. Zero settled picks in the whole lane is an
     explicit ``cold_start``; a positive-but-tiny sample is
-    ``insufficient_sample`` and blocks.
+    ``insufficient_sample`` and blocks. Pushes are dropped before weighting:
+    a pushed stake returns exactly its own unit, so counting it as a
+    zero-profit row drags ``shrunk`` ROI toward 0 and fakes a
+    ``prior_roi_not_positive`` lockout.
     """
     rows = [
         (day, price, outcome)
         for day, price, outcome in settled
-        if outcome in {"win", "loss", "push"} and day < as_of_day
+        if outcome in {"win", "loss"} and day < as_of_day
     ]
     if not rows:
         return {"status": "cold_start", "n": 0, "roi": None, "weight": 0.0}
@@ -345,7 +355,7 @@ def roi_band(
         weight = 0.5 ** (age / half_life_days) if half_life_days > 0 else 1.0
         if outcome == "win":
             weighted_profit += weight * (price - 1.0)
-        elif outcome == "loss":
+        else:
             weighted_profit -= weight
         weight_sum += weight
     if len(rows) < min_samples:
@@ -389,11 +399,23 @@ def _wager_key(row: Dict[str, Any]) -> tuple:
     )
 
 
+def _fixture_key(row: Dict[str, Any]) -> tuple:
+    return (row.get("league"), row.get("game_id"))
+
+
 def eligible_rows(
     rows: Sequence[Dict[str, Any]], *, policy: GatePolicy = GatePolicy()
 ) -> List[Dict[str, Any]]:
-    """One usable row per fixture: eligibility passed, priced inside the band."""
-    by_game: Dict[Tuple[str, str], Dict[str, Any]] = {}
+    """Every usable wager: eligibility passed, priced inside the band.
+
+    Collapsing to one row per fixture here was wrong. The surviving row was
+    almost always a heavy moneyline favourite (``@1.25-@1.45``), so two legs
+    could not reach the ``@3.00`` acca floor and the lane starved — while the
+    ``@1.90-@2.10`` spread/total legs that would have reached it were discarded
+    as "the same game". Same-game exclusivity belongs in :func:`build_accas`,
+    which assembles the combination and can enforce it per acca.
+    """
+    by_wager: Dict[Tuple[Any, ...], Dict[str, Any]] = {}
     for row in rows:
         if not (row.get("eligibility") or {}).get("acca_eligible"):
             continue
@@ -403,18 +425,15 @@ def eligible_rows(
             continue
         if not 0.0 < probability <= 1.0:
             continue
-        key = (str(row.get("league")), str(row.get("game_id")))
-        current = by_game.get(key)
-        if current is None or probability > _row_probability(current):
-            by_game[key] = row
+        by_wager.setdefault(_wager_key(row), row)
     return sorted(
-        by_game.values(),
+        by_wager.values(),
         key=lambda row: (
             -_row_probability(row),
             str(row.get("league")),
             str(row.get("game_id")),
             str(row.get("market")),
-            str(row.get("season", "")),
+            str(row.get("line")),
             str(row.get("forecast_id")),
         ),
     )
@@ -483,15 +502,20 @@ def build_accas(
             cost, state = heapq.heappop(heap)
             popped += 1
             selected = [candidates[index] for index in state]
-            probability = math.exp(
-                sum(math.log(_row_probability(row)) for row in selected)
+            distinct_fixtures = (
+                len({_fixture_key(row) for row in selected}) == len(selected)
             )
             price = math.prod(float(row_price(row) or 1.0) for row in selected)
-            if (min_combined_odds is not None and price < min_combined_odds) or (
-                max_combined_odds is not None and price > max_combined_odds
-            ):
-                pass
-            else:
+            in_band = not (
+                (min_combined_odds is not None and price < min_combined_odds)
+                or (max_combined_odds is not None and price > max_combined_odds)
+            )
+            # Two legs from one fixture are one bet, not a parlay: keep walking
+            # the heap instead of emitting a correlated acca.
+            if in_band and (distinct_fixtures or not forbid_conflicting_game_sides):
+                probability = math.exp(
+                    sum(math.log(_row_probability(row)) for row in selected)
+                )
                 leg_ids = [str(row.get("forecast_id")) for row in selected]
                 output.append(
                     {
@@ -702,10 +726,25 @@ def freeze_receipt(
 
 
 def resolve_outcome(
-    market: str, selection: str, line: Optional[float], home: float, away: float
+    market: str,
+    selection: str,
+    line: Optional[float],
+    home: float,
+    away: float,
+    *,
+    has_draw: bool = True,
 ) -> Optional[str]:
-    """Pure settlement rule for one selection against a final score."""
+    """Pure settlement rule for one selection against a final score.
+
+    ``has_draw`` is the market's cardinality, not the sport's: a soccer 1X2
+    moneyline grades a level game as a win for ``draw`` and a loss for both
+    sides, while a two-way moneyline (NFL/CFB, where no draw price exists) voids
+    to ``"push"``. Grading a 2-way tie as a loss would book a real stake loss on
+    a market the book returns.
+    """
     if market == "moneyline":
+        if home == away and not has_draw:
+            return "push"
         result = "home" if home > away else "away" if away > home else "draw"
         return "win" if selection == result else "loss"
     if not isinstance(line, (int, float)) or isinstance(line, bool):
@@ -721,7 +760,7 @@ def resolve_outcome(
     return None
 
 
-def grade_row(row: Dict[str, Any], game: Any) -> Optional[str]:
+def grade_row(row: Dict[str, Any], game: Any, *, has_draw: bool = True) -> Optional[str]:
     """Grade one frozen row against a reconciled final. Never guesses."""
     actual = getattr(game, "actual", None)
     if actual is None or getattr(game, "status", None) is None:
@@ -734,6 +773,7 @@ def grade_row(row: Dict[str, Any], game: Any) -> Optional[str]:
         row.get("line"),
         float(actual.home_score),
         float(actual.away_score),
+        has_draw=has_draw,
     )
 
 
@@ -779,7 +819,7 @@ def _settle_position(position: Dict[str, Any]) -> None:
 
 
 def _grade_pool(
-    receipt: Dict[str, Any], games_by_id: Dict[str, Any]
+    receipt: Dict[str, Any], games_by_id: Dict[str, Any], *, has_draw: bool = True
 ) -> Dict[str, str]:
     """Grade a frozen candidate pool: ``forecast_id -> win|loss|push``."""
     pool_outcomes: Dict[str, str] = {}
@@ -787,7 +827,7 @@ def _grade_pool(
         if not isinstance(row, dict):
             continue
         game = games_by_id.get(str(row.get("game_id")))
-        outcome = grade_row(row, game) if game is not None else None
+        outcome = grade_row(row, game, has_draw=has_draw) if game is not None else None
         if outcome in {"win", "loss", "push"}:
             pool_outcomes[str(row.get("forecast_id"))] = outcome
     return pool_outcomes
@@ -812,14 +852,18 @@ def settle_lane(
             continue
         if receipt_match and schema != TICKET_SCHEMA:
             continue
-        pool_outcomes = _grade_pool(receipt, games_by_id)
+        pool_outcomes = _grade_pool(receipt, games_by_id, has_draw=league.has_draw)
         positions: List[Dict[str, Any]] = []
         # A no-bet lock has no positions by definition, so its graded pool moves
         # ticket P&L by exactly nothing while still accruing ROI evidence.
         for position in _positions(receipt) if schema == TICKET_SCHEMA else []:
             for leg in position.get("legs") or []:
                 game = games_by_id.get(str(leg.get("game_id")))
-                outcome = grade_row(leg, game) if game is not None else None
+                outcome = (
+                    grade_row(leg, game, has_draw=league.has_draw)
+                    if game is not None
+                    else None
+                )
                 leg["outcome"] = outcome
                 leg["grade_status"] = outcome or "pending"
             _settle_position(position)

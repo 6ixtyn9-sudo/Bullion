@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS predictor_snapshots (
     prob_home REAL NOT NULL,
     expected_home REAL,
     expected_away REAL,
+    predicted_margin REAL,
     UNIQUE (game_id, provider, observed_utc)
 );
 CREATE INDEX IF NOT EXISTS predictor_game ON predictor_snapshots (game_id);
@@ -105,7 +106,30 @@ class Store:
         self.conn = sqlite3.connect(self.path)
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(SCHEMA)
+        self._migrate()
         self.conn.commit()
+
+    def _migrate(self) -> None:
+        """Add columns introduced after a cached database was first created.
+
+        ``CREATE TABLE IF NOT EXISTS`` never alters an existing table, and the
+        workflow restores ``bullion.db`` from a cache that predates any new
+        column. Each entry is idempotent and additive only.
+        """
+        additions = {
+            "predictor_snapshots": {
+                "predicted_margin": "REAL",
+            },
+        }
+        for table, columns in additions.items():
+            existing = {
+                row["name"]
+                for row in self.conn.execute(f"PRAGMA table_info({table})").fetchall()
+            }
+            for column, sql_type in columns.items():
+                if column in existing:
+                    continue
+                self.conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {sql_type}")
 
     # -- lifecycle ---------------------------------------------------------
     def close(self) -> None:
@@ -242,13 +266,14 @@ class Store:
         prob_home: float,
         expected_home: Optional[float],
         expected_away: Optional[float],
+        predicted_margin: Optional[float] = None,
     ) -> None:
         self.conn.execute(
             """
             INSERT OR IGNORE INTO predictor_snapshots
                 (game_id, league, provider, model, observed_utc, prob_home,
-                 expected_home, expected_away)
-            VALUES (?,?,?,?,?,?,?,?)
+                 expected_home, expected_away, predicted_margin)
+            VALUES (?,?,?,?,?,?,?,?,?)
             """,
             (
                 game_id,
@@ -259,6 +284,7 @@ class Store:
                 float(prob_home),
                 expected_home,
                 expected_away,
+                predicted_margin,
             ),
         )
         self.conn.commit()
@@ -293,6 +319,43 @@ class Store:
             written += cursor.rowcount
         self.conn.commit()
         return written
+
+    def restore_forecasts(self, rows: Iterable[Dict[str, Any]]) -> int:
+        """Re-insert frozen pre-tip forecasts from committed receipts.
+
+        ``forecast_snapshots`` lives only in the gitignored SQLite cache, so one
+        cache eviction reset every lane's walk-forward history to zero. The
+        receipts in ``localdata/`` are the durable copy: they are write-once and
+        carry the exact ``forecast_id``, probability and day that were frozen.
+        ``INSERT OR IGNORE`` keeps this idempotent next to live recording.
+        """
+        restored = 0
+        for row in rows:
+            cursor = self.conn.execute(
+                """
+                INSERT OR IGNORE INTO forecast_snapshots
+                    (forecast_id, game_id, league, market, period, source, selection,
+                     line, raw_probability, push_probability, observed_day, created_utc)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                """,
+                (
+                    row["forecast_id"],
+                    row["game_id"],
+                    row["league"],
+                    row["market"],
+                    row["period"],
+                    row["source"],
+                    row["selection"],
+                    row.get("line"),
+                    float(row["raw_probability"]),
+                    float(row.get("push_probability") or 0.0),
+                    row["observed_day"],
+                    row["created_utc"],
+                ),
+            )
+            restored += cursor.rowcount
+        self.conn.commit()
+        return restored
 
     def calibration_observations(
         self, league: str, as_of_utc: str

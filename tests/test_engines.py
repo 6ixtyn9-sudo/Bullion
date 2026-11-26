@@ -271,3 +271,148 @@ def test_platt_shrinks_overconfidence_and_stays_monotone():
     shrunk = sigmoid(a * logit(0.9) + b)
     assert 0.3 < shrunk < 0.9
     assert sigmoid(a * logit(0.6) + b) < shrunk
+
+
+def test_calibration_counts_unique_games_not_correlated_sides():
+    """A fixture with three quoted sides is one observation, not three."""
+    segment = ("nfl", "moneyline", "full_game", "espn_fpi_v1")
+    book = CalibrationBook()
+    for index in range(10):
+        for side, probability, outcome in (("home", 0.6, 1), ("away", 0.35, 0), ("draw", 0.05, 0)):
+            book.add(segment, probability, outcome, "2026-11-01", f"game{index}")
+    report = book.report(segment, "2026-11-28")
+
+    assert report.n == 30, "thirty rows were recorded"
+    assert report.n_games == 10, "but only ten fixtures were actually settled"
+    assert not report.sufficient
+    assert "insufficient_walk_forward_samples" in report.reasons
+
+    for index in range(10, 30):
+        book.add(segment, 0.6, 1, "2026-11-01", f"game{index}")
+        book.add(segment, 0.35, 0, "2026-11-01", f"game{index}")
+    report = book.report(segment, "2026-11-28")
+    assert report.n_games == 30
+    assert report.to_dict()["n_games"] == 30
+
+
+def test_calibration_weights_every_fixture_equally():
+    """One row in game A must weigh as much as three rows in game B."""
+    segment = ("nhl", "moneyline", "full_game", "nhl_poisson_v1")
+    book = CalibrationBook()
+    book.add(segment, 1.0, 1, "2026-11-01", "quiet")  # single-row fixture, perfect
+    for _ in range(3):
+        book.add(segment, 0.0, 1, "2026-11-01", "busy")  # three-row fixture, all wrong
+    report = book.report(segment, "2026-11-28")
+
+    # Unweighted this is 0.75 (three of four rows are wrong); per fixture it is
+    # half of the games right and half wrong, i.e. 0.5.
+    assert report.brier == pytest.approx(0.5)
+    assert report.n == 4
+    assert report.n_games == 2
+
+
+def test_nhl_overtime_always_adds_exactly_one_goal():
+    """NHL OT is sudden death and a shootout winner is credited one goal."""
+    from bullion.engines import MAX_GOALS, poisson_pmf
+
+    assert nhl_engine.OT_GOAL_DISTRIBUTION == {1: 1.0}, (
+        "a drawn regulation game cannot also be drawn after overtime"
+    )
+    home_rate = away_rate = 1.35
+    _margin, total, regulation_draw = nhl_engine._final_distributions(home_rate, away_rate)
+
+    expected: dict[int, float] = {}
+    for home_goals in range(MAX_GOALS + 1):
+        for away_goals in range(MAX_GOALS + 1):
+            probability = poisson_pmf(home_rate, home_goals) * poisson_pmf(away_rate, away_goals)
+            extra = 1 if home_goals == away_goals else 0
+            expected[home_goals + away_goals + extra] = (
+                expected.get(home_goals + away_goals + extra, 0.0) + probability
+            )
+    assert regulation_draw > 0.2, "the OT rule has to matter at these rates"
+    # The production distribution renormalises the truncated Poisson grid.
+    total_sum = sum(expected.values())
+    expected = {goals: value / total_sum for goals, value in expected.items()}
+    assert set(total) == set(expected)
+    for goals, probability in expected.items():
+        assert total[goals] == pytest.approx(probability, abs=1e-12)
+
+
+def test_fpi_surface_uses_the_projected_margin_without_expected_scores():
+    """ESPN FPI publishes ``teamPredPtDiff`` and no expected score."""
+    from bullion.espn import PredictorEvidence
+
+    game = Game(
+        game_id="401",
+        league="nfl",
+        season="2026",
+        home_team_id="10",
+        away_team_id="20",
+        home_name="Home",
+        away_name="Away",
+        scheduled_utc="2026-11-28T23:00:00Z",
+    )
+    predictor_evidence = PredictorEvidence(
+        prob_home=0.62,
+        expected_home=None,
+        expected_away=None,
+        stats_side="home",
+        predicted_margin=-3.5,
+    )
+    quotes = [
+        BookQuote(
+            game_id="401",
+            book="DraftKings",
+            market="spread",
+            observed_utc="2026-11-28T12:00:00Z",
+            side_prices={"home": 1.9, "away": 1.9},
+            line=-2.5,
+            pre_match=True,
+        ),
+        BookQuote(
+            game_id="401",
+            book="DraftKings",
+            market="total",
+            observed_utc="2026-11-28T12:00:00Z",
+            side_prices={"over": 1.9, "under": 1.9},
+            line=45.0,
+            pre_match=True,
+        ),
+    ]
+    forecasts = football_engine.forecast(
+        game,
+        quotes,
+        results=[],
+        reference_day="2026-11-28",
+        surface=football_engine.FPI_SOURCE,
+        predictor=predictor_evidence,
+    )
+    spreads = [row for row in forecasts if row.market == "spread"]
+    assert spreads, "a projected margin is enough to price a spread"
+    assert all(row.expected_margin == pytest.approx(-3.5) for row in spreads)
+    # No expected score means no expected total, so totals stay unpriced.
+    assert not [row for row in forecasts if row.market == "total"]
+    home = next(row for row in forecasts if row.market == "moneyline" and row.selection == "home")
+    assert home.expected_margin == pytest.approx(-3.5)
+
+
+def test_surface_tiebreak_is_deterministic_when_briers_are_indistinguishable():
+    assert football_engine.resolve_surface(
+        {football_engine.FPI_SOURCE: 0.201, football_engine.EMPIRICAL_SOURCE: 0.202}
+    ) is None, "a coin flip is not a measurement"
+    assert (
+        football_engine.tiebreak_surface(
+            {football_engine.FPI_SOURCE: 0.201, football_engine.EMPIRICAL_SOURCE: 0.202}
+        )
+        == football_engine.FPI_SOURCE
+    )
+    assert (
+        football_engine.tiebreak_surface(
+            {football_engine.FPI_SOURCE: 0.2, football_engine.EMPIRICAL_SOURCE: 0.2}
+        )
+        == football_engine.EMPIRICAL_SOURCE
+    ), "an exact tie falls back to the empirical surface"
+    assert football_engine.tiebreak_surface({football_engine.FPI_SOURCE: 0.2}) == (
+        football_engine.FPI_SOURCE
+    )
+    assert football_engine.tiebreak_surface({}) is None

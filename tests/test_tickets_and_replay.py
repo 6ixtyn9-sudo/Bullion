@@ -756,3 +756,199 @@ def test_no_bet_pool_feeds_counterfactual_replay_at_parity(tmp_path):
     assert wide["settled_days"] == 1
     assert wide["tickets_settled"] == 1
     assert wide["profit_units"] > 0
+
+
+def _level_game(game_id: str = "nfl-tie", *, league: str = "nfl", home=20.0, away=20.0) -> Game:
+    game = Game(
+        game_id=game_id,
+        league=league,
+        season="2026",
+        home_team_id="h1",
+        away_team_id="a1",
+        home_name="Home Club",
+        away_name="Away Club",
+        scheduled_utc="2026-11-28T18:00:00Z",
+        status=Status.FINAL,
+        actual=ActualResult(home_score=home, away_score=away),
+    )
+    return game
+
+
+def test_a_two_way_moneyline_tie_pushes_and_a_three_way_tie_is_a_draw():
+    from bullion.tickets import resolve_outcome
+
+    for selection in ("home", "away"):
+        assert resolve_outcome("moneyline", selection, None, 20.0, 20.0, has_draw=False) == "push"
+    assert resolve_outcome("moneyline", "draw", None, 20.0, 20.0, has_draw=True) == "win"
+    assert resolve_outcome("moneyline", "home", None, 20.0, 20.0, has_draw=True) == "loss"
+    assert resolve_outcome("moneyline", "home", None, 24.0, 20.0, has_draw=False) == "win"
+    assert resolve_outcome("moneyline", "away", None, 24.0, 20.0, has_draw=False) == "loss"
+
+
+def _nfl_leg(forecast_id: str, game_id: str, *, price: float = 1.95) -> dict:
+    return {
+        "forecast_id": forecast_id,
+        "pick_id": forecast_id,
+        "game_id": game_id,
+        "league": "nfl",
+        "market": "moneyline",
+        "period": "full_game",
+        "selection": "home",
+        "line": None,
+        "raw_probability": 0.6,
+        "calibrated_probability": 0.62,
+        "push_probability": 0.0,
+        "eligibility": {"acca_eligible": True, "reasons": []},
+        "book": {
+            "book": "DraftKings",
+            "selected_decimal_price": price,
+            "side_prices": {"home": price, "away": 1.9},
+        },
+    }
+
+
+def test_a_pushed_leg_leaves_the_rest_of_the_acca_live(tmp_path):
+    """A two-way tie voids one leg; the other leg still settles at its own price."""
+    league = LEAGUES["nfl"]
+    legs = [_nfl_leg("fid-tie", "nfl-tie"), _nfl_leg("fid-win", "nfl-win")]
+    freeze_receipt(
+        tmp_path,
+        league=league,
+        day=DAY,
+        captured_utc="2026-11-28T15:00:00Z",
+        candidate_pool=[dict(leg) for leg in legs],
+        accas=[
+            {
+                "acca_id": "acca-1",
+                "legs": [dict(leg) for leg in legs],
+                "leg_count": 2,
+                "combined_decimal_odds": 1.95 * 1.95,
+                "estimated_joint_win_probability": 0.38,
+                "stake_units": 1.0,
+            }
+        ],
+        selection_policy={"min_leg_odds": 1.20, "max_leg_odds": 3.00},
+    )
+    games = {
+        "nfl-tie": _level_game("nfl-tie"),
+        "nfl-win": _level_game("nfl-win", home=27.0, away=17.0),
+    }
+    report = settle_lane(tmp_path, league, games)
+
+    position = report["history"][0]["positions"][0]
+    assert position["leg_outcomes"] == ["push", "win"]
+    assert position["push_legs"] == 1
+    assert position["effective_decimal_odds"] == pytest.approx(1.95)
+    assert position["profit_units"] == pytest.approx(0.95)
+    assert report["profit_units"] == pytest.approx(0.95)
+
+    all_push = {
+        "nfl-tie": _level_game("nfl-tie"),
+        "nfl-win": _level_game("nfl-win", home=20.0, away=20.0),
+    }
+    report = settle_lane(tmp_path, league, all_push)
+    position = report["history"][0]["positions"][0]
+    assert position["grade_status"] == "push"
+    assert position["profit_units"] == 0.0
+
+
+def _viable_row(
+    game_id: str,
+    market: str,
+    price: float,
+    probability: float,
+    *,
+    line: float | None = None,
+    selection: str = "home",
+) -> dict:
+    return {
+        "forecast_id": f"{game_id}-{market}-{selection}",
+        "pick_id": f"{game_id}-{market}-{selection}",
+        "game_id": game_id,
+        "league": "nfl",
+        "market": market,
+        "period": "full_game",
+        "selection": selection,
+        "line": line,
+        "raw_probability": probability,
+        "calibrated_probability": probability,
+        "push_probability": 0.0,
+        "eligibility": {"acca_eligible": True, "reasons": []},
+        "book": {
+            "book": "DraftKings",
+            "selected_decimal_price": price,
+            "side_prices": {selection: price, "away": 1.9, "under": 1.9},
+        },
+    }
+
+
+def test_eligible_rows_keeps_the_priced_markets_an_acca_needs():
+    """One row per game discarded exactly the legs that reach the @3.00 floor."""
+    rows = []
+    for index in range(4):
+        game = f"game{index}"
+        rows.append(_viable_row(game, "moneyline", 1.30, 0.80))
+        rows.append(_viable_row(game, "spread", 1.95, 0.55, line=-2.5))
+    eligible = eligible_rows(rows, policy=GatePolicy())
+
+    assert len(eligible) == 8, "both the favourite and the spread stay available"
+    tickets = build_accas(
+        eligible,
+        legs=2,
+        limit=1,
+        min_combined_odds=3.00,
+        max_combined_odds=4.50,
+    )
+    assert tickets, "two @1.95 legs combine to @3.80, inside the band"
+    ticket = tickets[0]
+    assert ticket["combined_decimal_odds"] == pytest.approx(1.95**2)
+    assert {leg["market"] for leg in ticket["legs"]} == {"spread"}
+    assert len({leg["game_id"] for leg in ticket["legs"]}) == 2
+
+
+def test_acca_assembly_refuses_two_legs_from_one_fixture():
+    """Same-game exclusivity is enforced where the combination is built."""
+    rows = [
+        _viable_row("one-game", "moneyline", 1.30, 0.80),
+        _viable_row("one-game", "spread", 1.95, 0.55, line=-2.5),
+    ]
+    assert build_accas(rows, legs=2, min_leg_odds=1.20, max_leg_odds=3.00) == []
+
+
+def test_roi_band_ignores_pushed_picks():
+    wins = [("2026-11-01", 1.20, "win")] * 5
+    losses = [("2026-11-01", 1.90, "loss")] * 2
+    baseline = roi_band(wins + losses, as_of_day=DAY)
+    with_pushes = roi_band(wins + losses + [("2026-11-01", 1.95, "push")] * 20, as_of_day=DAY)
+
+    assert with_pushes == baseline, "a push returns its own stake; it is not evidence"
+    assert baseline["n"] == 7
+
+
+def test_replay_settles_a_ticket_even_when_a_same_day_leg_is_pending():
+    from bullion.replay import DayEvidence
+
+    pool = []
+    for index in range(4):
+        pool.append(_viable_row(f"game{index}", "moneyline", 1.95, 0.70))
+    day = DayEvidence(
+        date=DAY,
+        lane="nfl",
+        league="NFL",
+        decision_id="d1",
+        frozen_at="2026-11-28T15:00:00Z",
+        receipt={"schema_version": "magolide.paper_ticket_receipt"},
+        candidate_pool=pool,
+        selection_policy={"requested_legs": 2, "limit": 2},
+        outcomes_by_fid={},
+    )
+    rebuilt = select_tickets(day, ReplaySpec(legs=2, limit=2))
+    assert len(rebuilt) == 2
+    settled_ids = {leg["forecast_id"] for leg in rebuilt[0]["legs"]}
+    day.outcomes_by_fid = {forecast_id: "win" for forecast_id in settled_ids}
+
+    result = replay([day], ReplaySpec(legs=2, limit=2))
+    assert result["tickets_settled"] == 1
+    assert result["pending_days"] == 1
+    assert result["settled_days"] == 1, "one settled ticket is a settled day"
+    assert result["profit_units"] == pytest.approx(1.95**2 - 1.0, rel=1e-6)
