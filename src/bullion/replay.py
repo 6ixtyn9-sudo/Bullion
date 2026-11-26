@@ -27,7 +27,9 @@ from .calibration import DEFAULT_BRIER_CAP_2WAY
 from .tickets import (
     MAX_LEG_ODDS,
     MIN_LEG_ODDS,
+    NO_BET_SCHEMA,
     PRICE_WEIGHT,
+    TICKET_SCHEMA,
     GatePolicy,
     build_accas,
     eligible_rows,
@@ -35,6 +37,7 @@ from .tickets import (
 )
 
 RECEIPT_RE = re.compile(r"^auto_tickets_(\d{4}-\d{2}-\d{2})_decision\.json$")
+NO_BET_RE = re.compile(r"^auto_tickets_(\d{4}-\d{2}-\d{2})_no_bet\.json$")
 LOW_SAMPLE_DAYS = 30
 STAKE_MODES = frozenset({"flat", "daily_pct", "kelly", "skim"})
 
@@ -83,16 +86,23 @@ def _read_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _evidence_files(target: Path) -> List[Path]:
+    return [
+        path
+        for path in target.iterdir()
+        if path.is_file() and (RECEIPT_RE.match(path.name) or NO_BET_RE.match(path.name))
+    ]
+
+
 def discovery_dirs(localdata: Path) -> List[Path]:
     if not localdata.exists():
         return []
-    if any(RECEIPT_RE.match(path.name) for path in localdata.iterdir() if path.is_file()):
+    if _evidence_files(localdata):
         return [localdata]
     return [
         child
         for child in sorted(localdata.iterdir())
-        if child.is_dir()
-        and any(RECEIPT_RE.match(path.name) for path in child.iterdir() if path.is_file())
+        if child.is_dir() and _evidence_files(child)
     ]
 
 
@@ -139,8 +149,8 @@ def load_evidence(
         if allowed and lane not in allowed:
             continue
         outcomes = _outcomes(lane_dir)
-        for path in sorted(lane_dir.iterdir()):
-            match = RECEIPT_RE.match(path.name)
+        for path in sorted(_evidence_files(lane_dir)):
+            match = RECEIPT_RE.match(path.name) or NO_BET_RE.match(path.name)
             if not match:
                 continue
             date = match.group(1)
@@ -151,11 +161,15 @@ def load_evidence(
             receipt = _read_json(path)
             if not isinstance(receipt, dict):
                 continue
-            if receipt.get("schema_version") != "magolide.paper_ticket_receipt":
+            # A no-bet lock is a legitimate 0-ticket day: it replays and passes
+            # parity only if the pool it declined is preserved with it.
+            if receipt.get("schema_version") not in {TICKET_SCHEMA, NO_BET_SCHEMA}:
                 continue
             pool = [row for row in receipt.get("candidate_pool") or [] if isinstance(row, dict)]
             if not pool:
                 continue
+            receipt.setdefault("accas", [])
+            receipt.setdefault("singles", [])
             decision_id = str(receipt.get("decision_id") or "")
             evidence.append(
                 DayEvidence(

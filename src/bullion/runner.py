@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
+from datetime import timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
@@ -37,9 +38,11 @@ from .espn import (
     parse_pickcenter,
     parse_predictor,
     parse_summary,
+    summary_state,
 )
 from .models import (
     LEAGUES,
+    BookQuote,
     CoverageGap,
     Forecast,
     Game,
@@ -79,6 +82,7 @@ class LaneRun:
     forecasts: int = 0
     candidate_pool: int = 0
     eligible_legs: int = 0
+    refreshed_finals: int = 0
     tickets: int = 0
     ticket_markets: List[str] = field(default_factory=list)
     cutoff_utc: Optional[str] = None
@@ -158,6 +162,112 @@ def _reports(
             cap_vs_base_rate=league.has_draw,
         )
     return reports
+
+
+#: A game whose tip passed more than this long ago should already have a final.
+#: The 06:15Z grade cron only discovers "today", so without a lookback a game
+#: that finished after rollover stays ``scheduled`` in SQLite and starves both
+#: calibration (``WHERE g.status='final'``) and settlement.
+REFRESH_AFTER_HOURS = 2.0
+REFRESH_LOOKBACK_HOURS = 7 * 24.0
+REFRESH_MAX_GAMES = 80
+
+
+def _scoring_quotes(
+    store: Store,
+    league: League,
+    scoreboard_quotes: Sequence[BookQuote],
+    scheduled: Sequence[Game],
+    gaps: List[CoverageGap],
+) -> List[BookQuote]:
+    """Every pre-tip quote the *scheduled* games have, not just this scan's array.
+
+    ``_forecasts_for_game`` can price a fixture from a summary ``pickcenter``
+    when the scoreboard odds array is empty, and it writes those quotes to the
+    store. Scoring has to read them back: passing only ``scoreboard.quotes``
+    left every pickcenter-only leg with no book, which fails closed as
+    ``no_pre_tip_named_book_quote`` and silently empties the lane.
+    """
+    by_id = {game.game_id: game for game in scheduled}
+    quotes: List[BookQuote] = []
+    seen: set[Tuple[Any, ...]] = set()
+    flagged: set[str] = set()
+
+    def _add(quote: BookQuote, game: Game) -> None:
+        key = (quote.game_id, quote.market, quote.line, quote.book, quote.observed_utc)
+        if key in seen:
+            return
+        if not quote.pre_match or parse_utc(quote.observed_utc) >= parse_utc(
+            game.scheduled_utc
+        ):
+            if quote.game_id not in flagged:
+                flagged.add(quote.game_id)
+                gaps.append(
+                    CoverageGap(
+                        league.key,
+                        "quote.post_tip",
+                        "quote observed at/after tip for a still-scheduled game; not used",
+                        quote.game_id,
+                    )
+                )
+            return
+        seen.add(key)
+        quotes.append(quote)
+
+    for quote in scoreboard_quotes:
+        game = by_id.get(quote.game_id)
+        if game is not None:
+            _add(quote, game)
+    for game in scheduled:
+        for quote in store.quotes_for_game(game.game_id):
+            _add(quote, game)
+    return quotes
+
+
+def _refresh_recent_finals(
+    store: Store,
+    client: EspnClient,
+    league: League,
+    as_of_utc: str,
+    gaps: List[CoverageGap],
+) -> int:
+    """Re-check recently tipped, still-unscheduled games and store their finals.
+
+    Discovery only asks ESPN for the ET days that can hold *this* SAST day, so a
+    game that tipped yesterday evening and finished after rollover is never
+    revisited. Grading, settlement and calibration all read ``status='final'``,
+    so that game would sit as ``scheduled`` forever.
+    """
+    as_of = parse_utc(as_of_utc)
+    newest = as_of - timedelta(hours=REFRESH_AFTER_HOURS)
+    oldest = as_of - timedelta(hours=REFRESH_LOOKBACK_HOURS)
+    stale = [
+        game
+        for game in store.games_for_league(league.key)
+        if game.status is not Status.FINAL
+        and oldest <= parse_utc(game.scheduled_utc) <= newest
+    ]
+    stale.sort(key=lambda game: game.scheduled_utc, reverse=True)
+    refreshed = 0
+    for game in stale[:REFRESH_MAX_GAMES]:
+        try:
+            payload = client.summary(league, game.game_id)
+        except (EspnFetchError, EspnParseError, ValueError) as exc:
+            gaps.append(CoverageGap(league.key, "summary.refresh", str(exc), game.game_id))
+            continue
+        state = summary_state(payload)
+        if state != "post":
+            # Still in progress (or the event moved): the next run re-checks it.
+            continue
+        try:
+            final_game, summary_gaps = parse_summary(payload, game, league)
+        except (EspnIdentityError, EspnParseError, ValueError) as exc:
+            gaps.append(CoverageGap(league.key, "summary.refresh", str(exc), game.game_id))
+            continue
+        gaps.extend(summary_gaps)
+        store.upsert_game(final_game)
+        refreshed += 1
+    return refreshed
 
 
 def _forecasts_for_game(
@@ -256,13 +366,25 @@ def run_lane(
     permission: LanePermission = lane_permission(probe_report, league)
     run.ticket_markets = sorted(permission.ticket_markets)
 
+    def finish() -> LaneRun:
+        """Settle every frozen day, then persist this run's coverage.
+
+        Grading must not depend on whether today happened to have a slate or a
+        cutoff: the 06:15Z cron exists to settle yesterday, and ``no_slate`` /
+        ``pre_cutoff_scan`` used to return before ``settle_lane`` ever ran.
+        """
+        games_by_id = {game.game_id: game for game in store.games_for_league(league.key)}
+        settle_lane(localdata, league, games_by_id)
+        _write_coverage(localdata, league, day, run)
+        return run
+
     try:
         scoreboard = discover(client, league, day, as_of)
     except (EspnFetchError, EspnParseError, ValueError) as exc:
         run.status = "ingest_failed"
         run.reason = str(exc)
         gaps.append(CoverageGap(league.key, "scoreboard", str(exc)))
-        return run
+        return finish()
 
     gaps.extend(scoreboard.gaps)
     for game in scoreboard.games:
@@ -282,6 +404,9 @@ def run_lane(
             continue
         gaps.extend(summary_gaps)
         store.upsert_game(final_game)
+
+    # Yesterday's late finals, refreshed before anything reads ``status='final'``.
+    run.refreshed_finals = _refresh_recent_finals(store, client, league, as_of, gaps)
 
     results = _results(store, league, as_of)
     scheduled = [
@@ -324,7 +449,7 @@ def run_lane(
     prior_roi = roi_band(settled_pick_history(localdata, league), as_of_day=day)
     scored = score_forecasts(
         ticket_forecasts,
-        list(scoreboard.quotes),
+        _scoring_quotes(store, league, scoreboard.quotes, scheduled, gaps),
         league=league,
         reports=reports,
         prior_roi=prior_roi,
@@ -355,11 +480,11 @@ def run_lane(
     if cutoff is None:
         run.status = "no_slate"
         run.reason = "no scheduled fixtures on the requested day"
-        return run
+        return finish()
     if parse_utc(as_of) < parse_utc(cutoff):
         run.status = "pre_cutoff_scan"
         run.reason = f"decision cutoff {cutoff} not reached; scan only"
-        return run
+        return finish()
 
     selection_policy = {
         "requested_legs": legs,
@@ -415,10 +540,7 @@ def run_lane(
             else f"research_only: {permission.reason}"
         )
 
-    games_by_id = {game.game_id: game for game in store.games_for_league(league.key)}
-    settle_lane(localdata, league, games_by_id)
-    _write_coverage(localdata, league, day, run)
-    return run
+    return finish()
 
 
 def _write_coverage(localdata: Path, league: League, day: str, run: LaneRun) -> None:

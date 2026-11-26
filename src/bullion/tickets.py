@@ -40,6 +40,7 @@ MAX_LEG_ODDS = 3.00
 PRICE_WEIGHT = 0.15
 MIN_ROI_SAMPLES = 5
 RECEIPT_RE = re.compile(r"^auto_tickets_(\d{4}-\d{2}-\d{2})_decision\.json$")
+NO_BET_RE = re.compile(r"^auto_tickets_(\d{4}-\d{2}-\d{2})_no_bet\.json$")
 
 
 # ---------------------------------------------------------------------------
@@ -610,23 +611,33 @@ def freeze_receipt(
     no_bet_path = lane_dir / f"auto_tickets_{day}_no_bet.json"
     if no_bet_path.exists():
         return None
+    decision_id = hashlib.sha256(
+        f"{league.lane}|{day}|{captured_utc}".encode()
+    ).hexdigest()[:20]
     if not accas and not singles:
+        # The pool travels with the no-bet lock: it is the only evidence of what
+        # the model saw on a day it declined to bet, and settling it is what
+        # lets ``prior_roi`` accrue instead of deadlocking below five picks.
         _write_once(
             no_bet_path,
             {
                 "schema_version": NO_BET_SCHEMA,
                 "status": "frozen_no_bet",
                 "league": league.receipt_league,
+                "date": day,
                 "target_date": day,
+                "decision_id": decision_id,
+                "captured_at": captured_utc,
                 "frozen_at": captured_utc,
+                "paper_only": True,
                 "reason": "no_qualifying_pre_tip_ticket_at_decision_cutoff",
                 "ticket_decision": decision_state or {},
+                "candidate_pool": candidate_pool,
+                "selection_policy": selection_policy or {},
+                "positions": [],
             },
         )
         return None
-    decision_id = hashlib.sha256(
-        f"{league.lane}|{day}|{captured_utc}".encode()
-    ).hexdigest()[:20]
     ticket_rows: Dict[str, List[Dict[str, Any]]] = {"acca": [], "single": []}
     for index, ticket in enumerate(
         [*accas, *(singles or [])], start=1
@@ -767,31 +778,45 @@ def _settle_position(position: Dict[str, Any]) -> None:
         position["profit_units"] = round(stake * (effective_odds - 1.0), 6)
 
 
+def _grade_pool(
+    receipt: Dict[str, Any], games_by_id: Dict[str, Any]
+) -> Dict[str, str]:
+    """Grade a frozen candidate pool: ``forecast_id -> win|loss|push``."""
+    pool_outcomes: Dict[str, str] = {}
+    for row in receipt.get("candidate_pool") or []:
+        if not isinstance(row, dict):
+            continue
+        game = games_by_id.get(str(row.get("game_id")))
+        outcome = grade_row(row, game) if game is not None else None
+        if outcome in {"win", "loss", "push"}:
+            pool_outcomes[str(row.get("forecast_id"))] = outcome
+    return pool_outcomes
+
+
 def settle_lane(
     localdata: Path, league: League, games_by_id: Dict[str, Any]
 ) -> Optional[Dict[str, Any]]:
-    """Regrade every receipt in the lane and rewrite the performance report."""
+    """Regrade every frozen receipt (ticket *and* no-bet) in the lane."""
     lane_dir = localdata / league.lane
     if not lane_dir.exists():
         return None
     history: List[Dict[str, Any]] = []
     for path in sorted(lane_dir.iterdir()):
-        match = RECEIPT_RE.match(path.name)
-        if not match:
+        receipt_match = RECEIPT_RE.match(path.name)
+        no_bet_match = NO_BET_RE.match(path.name)
+        if not (receipt_match or no_bet_match):
             continue
         receipt = json.loads(path.read_text(encoding="utf-8"))
-        if receipt.get("schema_version") != TICKET_SCHEMA:
+        schema = receipt.get("schema_version")
+        if no_bet_match and schema != NO_BET_SCHEMA:
             continue
-        pool_outcomes: Dict[str, str] = {}
-        for row in receipt.get("candidate_pool") or []:
-            if not isinstance(row, dict):
-                continue
-            game = games_by_id.get(str(row.get("game_id")))
-            outcome = grade_row(row, game) if game is not None else None
-            if outcome in {"win", "loss", "push"}:
-                pool_outcomes[str(row.get("forecast_id"))] = outcome
-        positions = []
-        for position in _positions(receipt):
+        if receipt_match and schema != TICKET_SCHEMA:
+            continue
+        pool_outcomes = _grade_pool(receipt, games_by_id)
+        positions: List[Dict[str, Any]] = []
+        # A no-bet lock has no positions by definition, so its graded pool moves
+        # ticket P&L by exactly nothing while still accruing ROI evidence.
+        for position in _positions(receipt) if schema == TICKET_SCHEMA else []:
             for leg in position.get("legs") or []:
                 game = games_by_id.get(str(leg.get("game_id")))
                 outcome = grade_row(leg, game) if game is not None else None
@@ -799,12 +824,18 @@ def settle_lane(
                 leg["grade_status"] = outcome or "pending"
             _settle_position(position)
             positions.append(position)
+        day = (
+            receipt.get("date")
+            or receipt.get("target_date")
+            or (receipt_match or no_bet_match).group(1)
+        )
         history.append(
             {
-                "date": receipt["date"],
+                "date": day,
                 "league": receipt.get("league"),
-                "decision_id": receipt.get("decision_id"),
+                "decision_id": receipt.get("decision_id") or "",
                 "frozen_at": receipt.get("frozen_at"),
+                "status": "frozen_no_bet" if schema == NO_BET_SCHEMA else "frozen",
                 "positions": positions,
                 "candidate_pool_outcomes": pool_outcomes,
             }
@@ -843,32 +874,83 @@ def settle_lane(
     return report
 
 
+def _pool_band(policy: Dict[str, Any]) -> Tuple[float, float]:
+    """The ticket odds band the day's pool was frozen under."""
+
+    def _price(key: str, fallback: float) -> float:
+        value = policy.get(key)
+        if isinstance(value, (int, float)) and not isinstance(value, bool) and value > 1.0:
+            return float(value)
+        return fallback
+
+    return _price("min_leg_odds", MIN_LEG_ODDS), _price("max_leg_odds", MAX_LEG_ODDS)
+
+
 def settled_pick_history(localdata: Path, league: League) -> List[Tuple[str, float, str]]:
-    """(result_day, price, outcome) for every settled candidate-pool row."""
+    """(result_day, price, outcome) for settled *model-favoured* pool picks.
+
+    ``candidate_pool`` deliberately contains both sides of every market, so
+    feeding the whole pool to :func:`roi_band` measures the bookmaker's vig
+    (about -4.5%) and would trip ``prior_roi_not_positive`` forever. Only the
+    side the model made +EV, priced inside the frozen ticket band, counts — and
+    at most one row per ``(game, market)`` so opposing sides cannot cancel out.
+
+    No-bet locks contribute their graded pool too: otherwise a small slate that
+    settles fewer than ``MIN_ROI_SAMPLES`` picks blocks the next day, which
+    freezes another no-bet, which settles nothing, forever.
+    """
     lane_dir = localdata / league.lane
     perf_path = lane_dir / "auto_tickets_performance.json"
     if not perf_path.exists():
         return []
     report = json.loads(perf_path.read_text(encoding="utf-8"))
     receipts: Dict[str, Dict[str, Any]] = {}
-    for path in lane_dir.glob("auto_tickets_*_decision.json"):
-        match = RECEIPT_RE.match(path.name)
-        if match:
-            receipts[path.name] = json.loads(path.read_text(encoding="utf-8"))
+    for pattern in ("auto_tickets_*_decision.json", "auto_tickets_*_no_bet.json"):
+        for path in lane_dir.glob(pattern):
+            match = RECEIPT_RE.match(path.name) or NO_BET_RE.match(path.name)
+            if not match:
+                continue
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            if payload.get("schema_version") in {TICKET_SCHEMA, NO_BET_SCHEMA}:
+                receipts[match.group(1)] = payload
     rows: List[Tuple[str, float, str]] = []
     for day in report.get("history") or []:
-        receipt = receipts.get(f"auto_tickets_{day.get('date')}_decision.json")
+        date = str(day.get("date") or "")
+        receipt = receipts.get(date)
         if receipt is None:
             continue
-        prices = {
-            str(row.get("forecast_id")): row_price(row)
-            for row in receipt.get("candidate_pool") or []
-            if isinstance(row, dict)
+        low, high = _pool_band(dict(receipt.get("selection_policy") or {}))
+        outcomes = {
+            str(key): str(value)
+            for key, value in (day.get("candidate_pool_outcomes") or {}).items()
         }
-        for forecast_id, outcome in (day.get("candidate_pool_outcomes") or {}).items():
-            price = prices.get(str(forecast_id))
-            if price is not None:
-                rows.append((str(day.get("date")), price, str(outcome)))
+        favoured: Dict[Tuple[str, str], Tuple[float, float, str]] = {}
+        for row in receipt.get("candidate_pool") or []:
+            if not isinstance(row, dict):
+                continue
+            forecast_id = str(row.get("forecast_id"))
+            outcome = outcomes.get(forecast_id)
+            if outcome not in {"win", "loss", "push"}:
+                continue
+            price = row_price(row)
+            if price is None or not (low <= price <= high):
+                continue
+            probability = row.get("calibrated_probability")
+            if not isinstance(probability, (int, float)) or isinstance(probability, bool):
+                probability = row.get("raw_probability")
+            if not isinstance(probability, (int, float)) or isinstance(probability, bool):
+                continue
+            push = row.get("push_probability")
+            push_probability = float(push) if isinstance(push, (int, float)) else 0.0
+            value = expected_value(float(probability), push_probability, price)
+            if value <= 0.0:
+                continue
+            key = (str(row.get("game_id")), str(row.get("market")))
+            best = favoured.get(key)
+            if best is None or value > best[0]:
+                favoured[key] = (value, price, outcome)
+        for value, price, outcome in favoured.values():
+            rows.append((date, price, outcome))
     return rows
 
 

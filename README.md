@@ -237,6 +237,19 @@ integer lines carry a real `push_probability`.
 * Receipts and `auto_tickets_<day>_no_bet.json` locks are write-once. Later scans
   grade into `auto_tickets_performance.json` and refresh `cards/*.txt`; they never
   rotate a frozen selection or price.
+* A no-bet lock carries the `candidate_pool` and `selection_policy` it declined,
+  and settlement grades that pool (`positions: []`, so ticket P&L is untouched).
+  Replay treats such a day as a legitimate 0-ticket day and `--parity` still has
+  to agree that no ticket was due — during the calibration warm-up this is the
+  only pre-tip evidence archive that accumulates in Git.
+* `prior_roi` scores only the **model's own +EV side**, priced inside the frozen
+  ticket band, at most one row per `(game, market)`: the pool holds both sides of
+  every market, so averaging all of it would measure the bookmaker's vig
+  (~-4.5%) and block every lane forever.
+* Settlement never depends on today having a slate: every lane run refreshes
+  recently tipped games from the summary (discovery only asks for the current
+  SAST day's ET dates) and then settles, so the 06:15Z overnight cron grades
+  yesterday instead of returning early on `no_slate`.
 * Live paper tickets are flat 1.00u. Aggressive sizing (`--stake-mode daily_pct`,
   `kelly`, `skim`, `--daily-pct 0.25`) exists only in the replay harness and is
   flagged `[LOW SAMPLE: n < 30]` until 30 clean settled bet-days accumulate.
