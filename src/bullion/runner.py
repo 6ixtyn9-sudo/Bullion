@@ -34,6 +34,7 @@ from .espn import (
     EspnParseError,
     LanePermission,
     lane_permission,
+    parse_pickcenter,
     parse_predictor,
     parse_summary,
 )
@@ -170,6 +171,20 @@ def _forecasts_for_game(
     gaps: List[CoverageGap],
 ) -> List[Forecast]:
     quotes = [quote for quote in store.quotes_for_game(game.game_id) if quote.pre_match]
+    if not quotes:
+        # LIVE_VERIFIED 2026-11-26: scoreboard odds arrays can be empty while the
+        # summary carries a populated ``pickcenter``. Fetch it once per game
+        # rather than declaring the fixture unpriceable on scoreboard evidence.
+        try:
+            payload = client.summary(league, game.game_id)
+        except (EspnFetchError, EspnParseError, ValueError) as exc:
+            gaps.append(CoverageGap(league.key, "pickcenter.summary", str(exc), game.game_id))
+        else:
+            parsed_pickcenter = parse_pickcenter(payload, game, observed_utc)
+            gaps.extend(parsed_pickcenter.gaps)
+            if parsed_pickcenter.quotes:
+                store.record_quotes(parsed_pickcenter.quotes, league.key)
+                quotes = [quote for quote in parsed_pickcenter.quotes if quote.pre_match]
     if not quotes:
         gaps.append(
             CoverageGap(league.key, "pickcenter", "no pre-tip quote for forecast", game.game_id)
@@ -361,6 +376,8 @@ def run_lane(
         "brier_cap": policy.brier_cap(league),
         "ticket_markets": sorted(permission_markets),
         "lane_permission": permission.reason,
+        "probe_captured_utc": permission.captured_utc,
+        "probe_market_evidence": permission.market_evidence,
         "surface_resolution": surface_resolution,
         "probe_report_used": probe_report is not None,
         "paper_only": True,
@@ -373,6 +390,7 @@ def run_lane(
         "candidate_count": len(pool_rows),
         "eligible_count": len(eligible),
         "permission": permission.reason,
+        "probe_captured_utc": permission.captured_utc,
     }
     receipt = freeze_receipt(
         localdata,

@@ -736,22 +736,45 @@ def _dual_sided(
 
 
 def et_days_for_sast_day(day: str) -> List[str]:
-    """US Eastern ``dates=`` values that can contain a SAST day's slate.
+    """US Eastern ``dates=`` values that a SAST calendar day's slate can occupy.
 
-    SAST is UTC+2; US Eastern is UTC-5/-4. A SAST morning European kickoff and
-    a SAST-morning US night game therefore sit on two different ET days, so
-    both are requested.
+    SAST is UTC+2, US Eastern is UTC-5/-4, so a SAST day D spans
+    ``D-1T22:00Z .. DT21:59Z`` — i.e. ET days **D-1 and D**. An earlier version
+    anchored on SAST midnight and then subtracted a day, which requested ET
+    days D-2/D-1: the 2026-11-26 live probe captured only completed games for
+    exactly that reason, and no pre-match odds existed to measure.
+
+    LIVE_VERIFIED 2026-11-26: the corrected mapping asks for the ET days whose
+    events can carry a SAST-day timestamp; the probe now records the ET dates
+    it requested so this can be re-checked without guessing.
     """
-    from datetime import datetime, timedelta
+    from datetime import date, datetime, timedelta
     from zoneinfo import ZoneInfo
 
     et = ZoneInfo("America/New_York")
-    start = datetime.strptime(day, "%Y-%m-%d").replace(hour=0, tzinfo=ZoneInfo("Africa/Johannesburg"))
-    days = []
-    for offset in (-1, 0):
-        local = (start + timedelta(days=offset)).astimezone(et)
-        days.append(local.strftime("%Y%m%d"))
+    sast = ZoneInfo("Africa/Johannesburg")
+    start = datetime.strptime(day, "%Y-%m-%d").replace(tzinfo=sast)
+    end = start + timedelta(days=1) - timedelta(seconds=1)
+    first: date = start.astimezone(et).date()
+    last: date = end.astimezone(et).date()
+    days: List[str] = []
+    cursor = first
+    while cursor <= last:
+        days.append(cursor.strftime("%Y%m%d"))
+        cursor += timedelta(days=1)
     return sorted(set(days))
+
+
+def event_id_from_ref(ref: Any) -> Optional[str]:
+    """Event id from a core-API event ``$ref``.
+
+    LIVE_VERIFIED 2026-11-26: real season-index refs carry a query suffix, e.g.
+    ``.../events/401856879?lang=en&region=us``. Splitting on ``/`` and asking
+    ``isdigit()`` therefore returned nothing and the backfill would have
+    silently stored zero historical games.
+    """
+    match = re.search(r"/events/(\d+)", str(ref or ""))
+    return match.group(1) if match else None
 
 
 def discover(client: EspnClient, league: League, day: str, observed_utc: str) -> Scoreboard:
@@ -771,12 +794,157 @@ def discover(client: EspnClient, league: League, day: str, observed_utc: str) ->
     return combined
 
 
+
+# ---------------------------------------------------------------------------
+# Summary pickcenter parsing
+# ---------------------------------------------------------------------------
+
+#: Containers inside a summary payload that can hold named-book offers. Ranked:
+#: ``pickcenter`` is the book-quote list; ``odds`` is the alternate container
+#: observed in the same live summaries.
+PICKCENTER_CONTAINERS = ("pickcenter", "odds")
+
+
+@dataclass
+class PickcenterParse:
+    quotes: List[BookQuote] = field(default_factory=list)
+    gaps: List[CoverageGap] = field(default_factory=list)
+    observed_entry_keys: List[str] = field(default_factory=list)
+
+
+def summary_state(payload: Dict[str, Any]) -> str:
+    """Status state of a summary's first competition (``pre``/``in``/``post``)."""
+    competitions = nested(payload, "header", "competitions") or []
+    if not competitions:
+        return ""
+    return _state(competitions[0])
+
+
+def _provider_name(offer: Dict[str, Any]) -> str:
+    provider = offer.get("provider")
+    if isinstance(provider, dict):
+        return str(
+            provider.get("displayName")
+            or provider.get("name")
+            or provider.get("id")
+            or ""
+        ).strip()
+    if isinstance(provider, str):
+        return provider.strip()
+    return str(offer.get("details") or offer.get("providerName") or "").strip()
+
+
+def parse_pickcenter(
+    payload: Dict[str, Any], game: Game, observed_utc: str
+) -> PickcenterParse:
+    """Parse named-book quotes from a summary payload, failing closed.
+
+    LIVE_VERIFIED 2026-11-26: every sampled summary (NHL, NFL, CFB, UCL) carried
+    a ``pickcenter`` container, and the soccer summaries also carried an
+    ``odds`` container plus a ``hasOdds`` flag — while the *scoreboard* odds
+    arrays for the probed events were empty. So summary ``pickcenter`` is a real
+    quote source and not an optional nicety.
+
+    The *internal nesting* of a pickcenter entry is not yet captured, so this
+    reads only extraction paths already proven on scoreboard offers
+    (``moneyline|pointSpread|total`` -> side -> ``open|close`` -> ``odds``) plus
+    the flat ``homeTeamOdds.moneyLine`` variant documented in the reference
+    adapter. Anything else yields ``pickcenter.shape_unrecognised`` with the
+    observed key list: evidence for the next probe, never a guess.
+    """
+    result = PickcenterParse()
+    state = summary_state(payload)
+    entries: List[Any] = []
+    container_key = ""
+    for key in PICKCENTER_CONTAINERS:
+        candidate = payload.get(key)
+        if isinstance(candidate, list) and candidate:
+            entries = candidate
+            container_key = key
+            break
+    if not entries:
+        result.gaps.append(
+            CoverageGap(game.league, "pickcenter.absent", "no pickcenter/odds entries", game.game_id)
+        )
+        return result
+    pre_match = state == "pre" and parse_utc(observed_utc) < parse_utc(game.scheduled_utc)
+    seen_keys: set[str] = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        keys = sorted(str(key) for key in entry)[:24]
+        seen_keys.update(keys)
+        book = _provider_name(entry)
+        if not book:
+            result.gaps.append(
+                CoverageGap(
+                    game.league,
+                    f"{container_key}.provider",
+                    "offer without a book identity",
+                    game.game_id,
+                )
+            )
+            continue
+        common = {
+            "game_id": game.game_id,
+            "book": book,
+            "observed_utc": to_utc_z(observed_utc),
+            "provider": "espn",
+            "pre_match": pre_match,
+        }
+        home_price, away_price, draw_price = _moneyline_prices(entry)
+        prices = {
+            key: price
+            for key, price in (
+                ("home", home_price),
+                ("away", away_price),
+                ("draw", draw_price),
+            )
+            if price is not None
+        }
+        if {"home", "away"} <= set(prices):
+            result.quotes.append(BookQuote(**common, market="moneyline", side_prices=prices))
+        spread_prices = _side_prices(entry, "pointSpread")
+        home_line = line_number(nested(entry, "pointSpread", "home", "close", "line"))
+        if home_line is None:
+            home_line = line_number(nested(entry, "pointSpread", "home", "open", "line"))
+        if home_line is None:
+            home_line = line_number(entry.get("spread"))
+        if home_line is not None and {"home", "away"} <= set(spread_prices):
+            result.quotes.append(
+                BookQuote(**common, market="spread", line=home_line, side_prices=spread_prices)
+            )
+        total_prices = _side_prices(entry, "total")
+        total_line = line_number(nested(entry, "total", "over", "close", "line"))
+        if total_line is None:
+            total_line = line_number(nested(entry, "total", "under", "close", "line"))
+        if total_line is None:
+            total_line = line_number(entry.get("overUnder"))
+        if total_line is not None and {"over", "under"} <= set(total_prices):
+            result.quotes.append(
+                BookQuote(**common, market="total", line=total_line, side_prices=total_prices)
+            )
+    result.observed_entry_keys = sorted(seen_keys)
+    if not result.quotes:
+        result.gaps.append(
+            CoverageGap(
+                game.league,
+                f"{container_key}.shape_unrecognised",
+                "no recognised price path in " + ", ".join(sorted(seen_keys)[:16]),
+                game.game_id,
+            )
+        )
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Probe report contract (the only evidence that live field coverage exists)
 # ---------------------------------------------------------------------------
 
 PROBE_SCHEMA = "bullion.espn_probe"
 PROBE_MIN_COVERAGE = 0.5
+#: Minimum pre-match events behind a coverage number before it may gate tickets.
+PROBE_MIN_SAMPLE = 3
 
 
 @dataclass(frozen=True)
@@ -786,9 +954,27 @@ class LanePermission:
     ticket_markets: frozenset
     research_only: bool
     reason: str
+    captured_utc: str = ""
+    market_evidence: Dict[str, Any] = field(default_factory=dict)
 
     def allows(self, market: str) -> bool:
         return market in self.ticket_markets
+
+
+def _coverage_status(entry: Dict[str, Any]) -> Tuple[Optional[float], str]:
+    """(coverage, status) for one market, defaulting to insufficient evidence."""
+    if not isinstance(entry, dict):
+        return None, "missing_market_entry"
+    status = str(entry.get("status") or "")
+    coverage = entry.get("event_coverage")
+    sample = entry.get("sample_size")
+    if status != "ok":
+        return None, status or "unreported_status"
+    if not isinstance(coverage, (int, float)) or isinstance(coverage, bool):
+        return None, "missing_coverage"
+    if not isinstance(sample, int) or sample < PROBE_MIN_SAMPLE:
+        return None, "insufficient_sample"
+    return float(coverage), "ok"
 
 
 def lane_permission(report: Optional[Dict[str, Any]], league: League) -> LanePermission:
@@ -796,8 +982,14 @@ def lane_permission(report: Optional[Dict[str, Any]], league: League) -> LanePer
 
     A lane with no captured probe is not "probably fine" -- it is unverified,
     so the mission's rule applies: no tickets. Below 50% pre-kickoff named-book
-    coverage on a market keeps that market (and a lane with none) in
-    ``research_only``: forecast and grade, never ticket.
+    coverage on a market keeps that market out of tickets; a lane with no market
+    above the bar stays in ``research_only``: forecast and grade, never ticket.
+
+    ``status``/``sample_size`` must come with the coverage number. The
+    2026-11-26 probe reported ``0.0`` coverage over **zero** pre-match events
+    (it had queried the wrong ET days), which is an absent measurement, not a
+    measured zero; treating that as "0% covered" would have been a silent
+    mislabel, and treating it as "fine" would have been a hallucination.
     """
     if not report:
         return LanePermission(frozenset(), True, "espn_probe_evidence_missing")
@@ -808,61 +1000,33 @@ def lane_permission(report: Optional[Dict[str, Any]], league: League) -> LanePer
     entry = (report.get("leagues") or {}).get(league.key)
     if not isinstance(entry, dict):
         return LanePermission(frozenset(), True, "espn_probe_league_missing")
+    captured = str(report.get("captured_utc") or "")
     coverage = (entry.get("coverage") or {}).get("named_book_pre_tip") or {}
     markets: set[str] = set()
-    moneyline = (coverage.get("moneyline") or {}).get("event_coverage") or 0.0
-    if moneyline >= PROBE_MIN_COVERAGE:
-        markets.add("moneyline")
-    total = (coverage.get("total") or {}).get("event_coverage") or 0.0
-    if total >= PROBE_MIN_COVERAGE:
-        markets.add("total")
-    spread = (coverage.get("spread") or {}).get("event_coverage") or 0.0
-    if spread >= PROBE_MIN_COVERAGE:
-        markets.add("spread")
-    if league.sport is Sport.SOCCER:
-        draw = (coverage.get("moneyline_draw") or {}).get("event_coverage") or 0.0
-        if draw < PROBE_MIN_COVERAGE:
-            markets.discard("moneyline")
+    evidence: Dict[str, Any] = {}
+    for market in ("moneyline", "total", "spread", "moneyline_draw"):
+        value, status = _coverage_status(coverage.get(market) or {})
+        evidence[market] = {
+            "event_coverage": value,
+            "status": status,
+            "sample_size": (coverage.get(market) or {}).get("sample_size"),
+        }
+        if value is not None and value >= PROBE_MIN_COVERAGE:
+            markets.add(market)
+    if league.sport is Sport.SOCCER and "moneyline_draw" not in markets:
+        markets.discard("moneyline")
+    markets.discard("moneyline_draw")
     if not markets:
-        return LanePermission(frozenset(), True, "named_book_coverage_below_50pct")
-    return LanePermission(frozenset(markets), False, "probe_covered")
-
-
-def game_from_summary(payload: Dict[str, Any], league: League) -> Game:
-    """Build a Game from a summary header (used by historical backfill).
-
-    Requires a ``post`` competition: a result row is never built from a live or
-    partial payload.
-    """
-    competitions = nested(payload, "header", "competitions") or []
-    if not competitions:
-        raise EspnParseError("summary carries no competition")
-    competition = competitions[0]
-    if _state(competition) != "post":
-        raise EspnIdentityError(
-            f"summary state={_state(competition)!r}; refusing to build a fixture"
+        statuses = {item["status"] for item in evidence.values()}
+        if "ok" in statuses:
+            reason = "named_book_coverage_below_50pct"
+        elif evidence["moneyline"]["status"] == "no_pre_match_events":
+            reason = "espn_probe_no_pre_match_events"
+        else:
+            reason = "espn_probe_coverage_insufficient_sample"
+        return LanePermission(
+            frozenset(), True, reason, captured_utc=captured, market_evidence=evidence
         )
-    home, away = sides(competition)
-    home_id = team_ref_id(home.get("team") or {})
-    away_id = team_ref_id(away.get("team") or {})
-    if not home_id or not away_id:
-        raise EspnIdentityError("summary competitor team reference cannot be resolved")
-    scheduled = competition.get("date") or nested(payload, "header", "competitions")
-    if not scheduled:
-        raise EspnParseError("summary carries no date")
-    event_id = str(payload.get("header", {}).get("id") or nested(competition, "id") or "")
-    if not event_id:
-        raise EspnParseError("summary carries no event id")
-    return Game(
-        game_id=event_id,
-        league=league.key,
-        season=str(nested(payload, "header", "season", "year") or ""),
-        home_team_id=home_id,
-        away_team_id=away_id,
-        home_name=str(nested(home, "team", "displayName") or "").strip(),
-        away_name=str(nested(away, "team", "displayName") or "").strip(),
-        scheduled_utc=to_utc_z(scheduled),
-        status=Status.FINAL,
-        neutral_site=bool(competition.get("neutralSite")),
-        venue=str(nested(competition, "venue", "fullName") or ""),
+    return LanePermission(
+        frozenset(markets), False, "probe_covered", captured_utc=captured, market_evidence=evidence
     )

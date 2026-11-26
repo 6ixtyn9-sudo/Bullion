@@ -7,7 +7,10 @@ import pytest
 from bullion.espn import (
     EspnIdentityError,
     EspnParseError,
+    et_days_for_sast_day,
+    event_id_from_ref,
     lane_permission,
+    parse_pickcenter,
     parse_predictor,
     parse_scoreboard,
     parse_summary,
@@ -190,24 +193,149 @@ def test_overtime_periods_become_overtime_evidence():
     assert final_game.actual.regulation_scores() == (3.0, 3.0)
 
 
+def _live_report(moneyline=0.8, total=0.8, sample=8, status="ok", draw=None):
+    markets = {
+        "moneyline": {"event_coverage": moneyline, "sample_size": sample, "status": status},
+        "total": {"event_coverage": total, "sample_size": sample, "status": status},
+    }
+    if draw is not None:
+        markets["moneyline_draw"] = {
+            "event_coverage": draw,
+            "sample_size": sample,
+            "status": status,
+        }
+    return {
+        "schema_version": "bullion.espn_probe",
+        "mode": "live",
+        "captured_utc": "2026-11-27T00:00:00Z",
+        "leagues": {"nhl": {"coverage": {"named_book_pre_tip": markets}}},
+    }
+
+
 def test_lane_permission_is_fail_closed_without_live_probe():
     assert lane_permission(None, NHL).research_only
     fake = {"schema_version": "bullion.espn_probe", "mode": "synthetic", "leagues": {}}
     assert lane_permission(fake, NHL).research_only
-    live = {
-        "schema_version": "bullion.espn_probe",
-        "mode": "live",
-        "leagues": {
-            "nhl": {
-                "coverage": {
-                    "named_book_pre_tip": {
-                        "moneyline": {"event_coverage": 0.8},
-                        "total": {"event_coverage": 0.2},
-                    }
-                }
-            }
-        },
-    }
-    permission = lane_permission(live, NHL)
+    missing_lane = {"schema_version": "bullion.espn_probe", "mode": "live", "leagues": {}}
+    assert lane_permission(missing_lane, NHL).reason == "espn_probe_league_missing"
+
+
+def test_lane_permission_needs_a_sample_behind_every_coverage_number():
+    thin = _live_report(moneyline=1.0, total=1.0, sample=2)
+    permission = lane_permission(thin, NHL)
+    assert permission.research_only
+    assert permission.reason == "espn_probe_coverage_insufficient_sample"
+
+    unmeasured = _live_report(moneyline=0.0, total=0.0, sample=0, status="no_pre_match_events")
+    permission = lane_permission(unmeasured, NHL)
+    assert permission.research_only
+    assert permission.reason == "espn_probe_no_pre_match_events"
+
+    measured_zero = _live_report(moneyline=0.0, total=0.0, sample=8)
+    permission = lane_permission(measured_zero, NHL)
+    assert permission.research_only
+    assert permission.reason == "named_book_coverage_below_50pct"
+
+    covered = _live_report(moneyline=0.8, total=0.2, sample=8)
+    permission = lane_permission(covered, NHL)
     assert permission.allows("moneyline")
     assert not permission.allows("total"), "under 50% coverage stays research-only"
+    assert permission.captured_utc == "2026-11-27T00:00:00Z"
+
+
+def _soccer_report(draw_coverage):
+    report = _live_report(moneyline=0.9, total=0.9, draw=draw_coverage)
+    report["leagues"]["eng.1"] = report["leagues"].pop("nhl")
+    return report
+
+
+def test_soccer_lane_requires_a_draw_price_before_1x2_tickets():
+    soccer = LEAGUES["eng.1"]
+    assert not lane_permission(_soccer_report(0.1), soccer).allows("moneyline")
+    assert lane_permission(_soccer_report(0.9), soccer).allows("moneyline")
+    assert lane_permission(_soccer_report(0.9), soccer).allows("total")
+
+
+def test_sast_day_maps_to_the_two_eastern_days_it_can_occupy():
+    assert et_days_for_sast_day("2026-11-26") == ["20261125", "20261126"]
+    assert et_days_for_sast_day("2026-07-04") == ["20260703", "20260704"]
+    # A 22:30 SAST game is 12:30 ET the same SAST day; a 02:00 SAST game is the
+    # previous ET evening. Both live inside the two requested ET days.
+    assert et_days_for_sast_day("2026-12-31") == ["20261230", "20261231"]
+
+
+def test_core_event_refs_strip_their_query_suffix():
+    ref = (
+        "http://sports.core.api.espn.com/v2/sports/football/leagues/"
+        "college-football/events/401856879?lang=en&region=us"
+    )
+    assert event_id_from_ref(ref) == "401856879"
+    assert event_id_from_ref("http://x/events/740780?lang=en") == "740780"
+    assert event_id_from_ref("http://x/teams/10") is None
+    assert event_id_from_ref(None) is None
+
+
+def _pickcenter_payload(entries, state="pre"):
+    return {
+        "header": {"competitions": [{"status": {"type": {"state": state}}}]},
+        "pickcenter": entries,
+        "odds": [],
+    }
+
+
+def test_pickcenter_nested_shape_is_parsed_as_named_book_quotes():
+    """SYNTHETIC_FIXTURE — nesting copied from the proven scoreboard offer paths."""
+    game = parse_scoreboard(_scoreboard_payload(), NHL, OBSERVED).games[0]
+    payload = _pickcenter_payload(
+        [
+            {
+                "provider": {"displayName": "DraftKings"},
+                "moneyline": {"home": close(-120), "away": close(110)},
+                "pointSpread": {"home": close(-110, "-1.5"), "away": close(-110, "+1.5")},
+                "total": {"over": close(-110, "o6.5"), "under": close(-110, "u6.5")},
+            }
+        ]
+    )
+    parsed = parse_pickcenter(payload, game, OBSERVED)
+    assert {quote.market for quote in parsed.quotes} == {"moneyline", "spread", "total"}
+    assert all(quote.book == "DraftKings" for quote in parsed.quotes)
+    assert all(quote.pre_match for quote in parsed.quotes)
+    assert all(quote.provenance == "named_book" for quote in parsed.quotes)
+    assert parsed.gaps == []
+
+
+def test_pickcenter_flat_variant_and_unknown_shape_fail_closed():
+    game = parse_scoreboard(_scoreboard_payload(), NHL, OBSERVED).games[0]
+    flat = _pickcenter_payload(
+        [
+            {
+                "provider": {"name": "ESPN BET"},
+                "homeTeamOdds": {"moneyLine": -135},
+                "awayTeamOdds": {"moneyLine": 115},
+                "spread": -1.5,
+                "overUnder": 6.5,
+            }
+        ]
+    )
+    parsed = parse_pickcenter(flat, game, OBSERVED)
+    assert [quote.market for quote in parsed.quotes] == ["moneyline"]
+    assert parsed.quotes[0].side_prices["home"] == pytest.approx(1.7407407407407407)
+
+    unknown = _pickcenter_payload([{"provider": {"displayName": "DraftKings"}, "weirdKey": 1}])
+    parsed = parse_pickcenter(unknown, game, OBSERVED)
+    assert parsed.quotes == []
+    assert any(gap.field == "pickcenter.shape_unrecognised" for gap in parsed.gaps)
+    assert "weirdKey" in parsed.gaps[0].reason
+
+    absent = parse_pickcenter({"header": {"competitions": []}}, game, OBSERVED)
+    assert any(gap.field == "pickcenter.absent" for gap in absent.gaps)
+
+
+def test_pickcenter_quotes_flip_to_post_tip_when_the_game_has_started():
+    game = parse_scoreboard(_scoreboard_payload(), NHL, OBSERVED).games[0]
+    payload = _pickcenter_payload(
+        [{"provider": {"displayName": "DraftKings"}, "moneyline": {"home": close(-120), "away": close(110)}}],
+        state="in",
+    )
+    parsed = parse_pickcenter(payload, game, OBSERVED)
+    assert parsed.quotes and not parsed.quotes[0].pre_match

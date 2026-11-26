@@ -53,6 +53,48 @@ def _scoreboard() -> dict:
     return {"events": events}
 
 
+def _bare_scoreboard() -> dict:
+    """Scoreboard with the odds array present but empty (the live 2026-11-26 case)."""
+    board = _scoreboard()
+    for item in board["events"]:
+        item["competitions"][0]["odds"] = []
+    return board
+
+
+def _pre_summary(event_id: str) -> dict:
+    return {
+        "header": {
+            "competitions": [
+                {
+                    "status": {"type": {"state": "pre"}},
+                    "competitors": [
+                        {
+                            "homeAway": "home",
+                            "id": "h1",
+                            "team": {"id": "h1", "displayName": "Home Club"},
+                        },
+                        {
+                            "homeAway": "away",
+                            "id": "a1",
+                            "team": {"id": "a1", "displayName": "Away Club"},
+                        },
+                    ],
+                }
+            ]
+        },
+        "pickcenter": [
+            {
+                "provider": {"displayName": "DraftKings"},
+                "moneyline": {"home": close(-110), "away": close(-110)},
+                "total": {
+                    "over": close(-110, "o6.5"),
+                    "under": close(-110, "u6.5"),
+                },
+            }
+        ],
+    }
+
+
 class FakeEspn:
     def __init__(self) -> None:
         self.calls: list[str] = []
@@ -62,6 +104,21 @@ class FakeEspn:
         if "/summary?event=" in url:
             return summary(event_id="final1", home="h1", away="a1", home_score="4", away_score="1")
         return _scoreboard()
+
+
+class PickcenterOnlyEspn(FakeEspn):
+    """No scoreboard odds; quotes only exist in the summary pickcenter."""
+
+    def __call__(self, url: str):
+        self.calls.append(url)
+        if "/summary?event=" in url:
+            event_id = url.split("event=")[1].split("&")[0]
+            if event_id == "final1":
+                return summary(
+                    event_id="final1", home="h1", away="a1", home_score="4", away_score="1"
+                )
+            return _pre_summary(event_id)
+        return _bare_scoreboard()
 
 
 def _seed_history(store: Store) -> None:
@@ -99,13 +156,26 @@ def _probe_report(coverage: float = 0.8) -> dict:
     return {
         "schema_version": "bullion.espn_probe",
         "mode": "live",
+        "captured_utc": "2026-11-28T06:00:00Z",
         "leagues": {
             "nhl": {
                 "coverage": {
                     "named_book_pre_tip": {
-                        "moneyline": {"event_coverage": coverage},
-                        "total": {"event_coverage": coverage},
-                        "spread": {"event_coverage": coverage},
+                        "moneyline": {
+                            "event_coverage": coverage,
+                            "sample_size": 8,
+                            "status": "ok",
+                        },
+                        "total": {
+                            "event_coverage": coverage,
+                            "sample_size": 8,
+                            "status": "ok",
+                        },
+                        "spread": {
+                            "event_coverage": coverage,
+                            "sample_size": 8,
+                            "status": "ok",
+                        },
                     }
                 }
             }
@@ -211,3 +281,53 @@ def test_frozen_receipt_is_not_rotated_by_a_later_scan(tmp_path):
     assert second.status == first.status
     if before is not None:
         assert path.read_bytes() == before, "a frozen receipt must be write-once"
+
+
+def test_summary_pickcenter_prices_a_game_when_scoreboard_odds_are_empty(tmp_path):
+    client = PickcenterOnlyEspn()
+    with Store(tmp_path / "db.sqlite") as store:
+        _seed_history(store)
+        run = run_lane(
+            league=LEAGUES["nhl"],
+            day=DAY,
+            store=store,
+            localdata=tmp_path,
+            client=EspnClient(fetch=client),
+            as_of_utc="2026-11-28T15:00:00Z",
+            probe_report=_probe_report(),
+        )
+        quotes = store.quotes_for_game("e0")
+    assert run.status in {"frozen_ticket", "frozen_no_bet"}
+    assert any("/summary?event=e0" in url for url in client.calls)
+    assert quotes, "summary pickcenter quotes must be stored for pricing"
+    assert {quote.book for quote in quotes} == {"DraftKings"}
+    assert all(quote.provenance == "named_book" for quote in quotes)
+    coverage = json.loads((tmp_path / "_coverage" / f"nhl_{DAY}.json").read_text())
+    gaps_for_e0 = [
+        gap for gap in coverage["run"]["gaps"] if gap["game_id"] == "e0"
+    ]
+    # Discovery still records that the *scoreboard* array was empty; what must
+    # not appear is the "unpriceable" gap, because the summary priced the game.
+    assert all(gap["reason"] != "no pre-tip quote for forecast" for gap in gaps_for_e0)
+
+
+def test_probe_report_without_sample_size_cannot_unlock_tickets(tmp_path):
+    legacy = _probe_report()
+    for entry in legacy["leagues"]["nhl"]["coverage"]["named_book_pre_tip"].values():
+        entry.pop("sample_size")
+        entry.pop("status")
+    with Store(tmp_path / "db.sqlite") as store:
+        _seed_history(store)
+        run = run_lane(
+            league=LEAGUES["nhl"],
+            day=DAY,
+            store=store,
+            localdata=tmp_path,
+            client=EspnClient(fetch=FakeEspn()),
+            as_of_utc="2026-11-28T15:00:00Z",
+            probe_report=legacy,
+        )
+    assert run.status == "frozen_no_bet"
+    assert run.ticket_markets == []
+    assert "espn_probe_coverage_insufficient_sample" in run.reason
+    assert not (tmp_path / "nhl" / f"auto_tickets_{DAY}_decision.json").exists()

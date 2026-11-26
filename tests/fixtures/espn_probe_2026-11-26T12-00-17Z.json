@@ -1,0 +1,653 @@
+{
+  "backfill": {
+    "cfb": {
+      "count": 950,
+      "first_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/college-football/events/401856879?lang=en&region=us",
+      "keys": [
+        "count",
+        "items",
+        "pageCount",
+        "pageIndex",
+        "pageSize"
+      ],
+      "page_count": 1,
+      "ref_id_from_ref": "401856879"
+    },
+    "eng.1": {
+      "count": 374,
+      "first_ref": "http://sports.core.api.espn.com/v2/sports/soccer/leagues/eng.1/events/740780?lang=en&region=us",
+      "keys": [
+        "count",
+        "items",
+        "pageCount",
+        "pageIndex",
+        "pageSize"
+      ],
+      "page_count": 1,
+      "ref_id_from_ref": "740780"
+    },
+    "esp.1": {
+      "count": 381,
+      "first_ref": "http://sports.core.api.espn.com/v2/sports/soccer/leagues/esp.1/events/748316?lang=en&region=us",
+      "keys": [
+        "count",
+        "items",
+        "pageCount",
+        "pageIndex",
+        "pageSize"
+      ],
+      "page_count": 1,
+      "ref_id_from_ref": "748316"
+    },
+    "fra.1": {
+      "count": 288,
+      "first_ref": "http://sports.core.api.espn.com/v2/sports/soccer/leagues/fra.1/events/746564?lang=en&region=us",
+      "keys": [
+        "count",
+        "items",
+        "pageCount",
+        "pageIndex",
+        "pageSize"
+      ],
+      "page_count": 1,
+      "ref_id_from_ref": "746564"
+    },
+    "ger.1": {
+      "count": 297,
+      "first_ref": "http://sports.core.api.espn.com/v2/sports/soccer/leagues/ger.1/events/746859?lang=en&region=us",
+      "keys": [
+        "count",
+        "items",
+        "pageCount",
+        "pageIndex",
+        "pageSize"
+      ],
+      "page_count": 1,
+      "ref_id_from_ref": "746859"
+    },
+    "ita.1": {
+      "count": 374,
+      "first_ref": "http://sports.core.api.espn.com/v2/sports/soccer/leagues/ita.1/events/736955?lang=en&region=us",
+      "keys": [
+        "count",
+        "items",
+        "pageCount",
+        "pageIndex",
+        "pageSize"
+      ],
+      "page_count": 1,
+      "ref_id_from_ref": "736955"
+    },
+    "nfl": {
+      "count": 320,
+      "first_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401873081?lang=en&region=us",
+      "keys": [
+        "count",
+        "items",
+        "pageCount",
+        "pageIndex",
+        "pageSize"
+      ],
+      "page_count": 1,
+      "ref_id_from_ref": "401873081"
+    },
+    "nhl": {
+      "count": 1478,
+      "first_ref": "http://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl/events/401802983?lang=en&region=us",
+      "keys": [
+        "count",
+        "items",
+        "pageCount",
+        "pageIndex",
+        "pageSize"
+      ],
+      "page_count": 2,
+      "ref_id_from_ref": "401802983"
+    },
+    "uefa.champions": {
+      "count": 189,
+      "first_ref": "http://sports.core.api.espn.com/v2/sports/soccer/leagues/uefa.champions/events/757761?lang=en&region=us",
+      "keys": [
+        "count",
+        "items",
+        "pageCount",
+        "pageIndex",
+        "pageSize"
+      ],
+      "page_count": 1,
+      "ref_id_from_ref": "757761"
+    }
+  },
+  "captured_utc": "2026-11-26T12:00:17Z",
+  "fixture_label": "LIVE_VERIFIED",
+  "fixture_note": "Sanitised extract of a real probe-espn GitHub Actions run. Contains counts, flags, ids and key paths only; no fabricated values. Probed window was the wrong ET days (see et_dates_requested), so pre_events=0 and coverage is unmeasured -- this fixture exists to prove that, not to claim odds shapes.",
+  "known_gaps": [
+    "none of the probed events were pre-match, so named-book pre-tip coverage was not measured",
+    "scoreboard events[].competitions[].odds existed but was empty on every probed event",
+    "summary pickcenter internal nesting was not captured (old probe truncated paths alphabetically)",
+    "no /predictor attempt was made (no pre-match events), so NFL/CFB FPI keys remain unverified",
+    "soccer three-way draw price path remains unverified",
+    "NHL puckline +/-1.5 nesting remains unverified"
+  ],
+  "leagues": {
+    "cfb": {
+      "books": [],
+      "coverage": {
+        "moneyline": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "moneyline_draw": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "spread": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "total": {
+          "event_coverage": 0.0,
+          "events": 0
+        }
+      },
+      "espn_path": "football/college-football",
+      "events": 2,
+      "events_with_odds_key": 0,
+      "odds_offers": 0,
+      "parse": {
+        "games": 2,
+        "gap_fields": [
+          "pickcenter"
+        ],
+        "quotes": 0
+      },
+      "pre_events": 0,
+      "predictor_attempts": 0,
+      "scoreboard_key_paths_with_odds": [],
+      "sport": "football",
+      "summary": [
+        {
+          "game_id": "401866470",
+          "has_injuries": false,
+          "has_pickcenter": true,
+          "has_predictor": false,
+          "top_level_keys": [
+            "againstTheSpread",
+            "article",
+            "boxscore",
+            "broadcasts",
+            "drives",
+            "format",
+            "gameInfo",
+            "header",
+            "leaders",
+            "meta",
+            "news",
+            "odds",
+            "pickcenter",
+            "scoringPlays",
+            "standings",
+            "videos",
+            "wallclockAvailable",
+            "winprobability"
+          ]
+        },
+        {
+          "game_id": "401866471",
+          "has_injuries": false,
+          "has_pickcenter": true,
+          "has_predictor": false,
+          "top_level_keys": [
+            "againstTheSpread",
+            "article",
+            "boxscore",
+            "broadcasts",
+            "drives",
+            "format",
+            "gameInfo",
+            "header",
+            "leaders",
+            "meta",
+            "news",
+            "odds",
+            "pickcenter",
+            "scoringPlays",
+            "standings",
+            "videos",
+            "wallclockAvailable",
+            "winprobability"
+          ]
+        }
+      ]
+    },
+    "eng.1": {
+      "books": [],
+      "coverage": {
+        "moneyline": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "moneyline_draw": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "spread": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "total": {
+          "event_coverage": 0.0,
+          "events": 0
+        }
+      },
+      "espn_path": "soccer/eng.1",
+      "events": 0,
+      "events_with_odds_key": 0,
+      "odds_offers": 0,
+      "parse": {
+        "games": 0,
+        "gap_fields": [],
+        "quotes": 0
+      },
+      "pre_events": 0,
+      "predictor_attempts": 0,
+      "scoreboard_key_paths_with_odds": [],
+      "sport": "soccer",
+      "summary": []
+    },
+    "esp.1": {
+      "books": [],
+      "coverage": {
+        "moneyline": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "moneyline_draw": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "spread": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "total": {
+          "event_coverage": 0.0,
+          "events": 0
+        }
+      },
+      "espn_path": "soccer/esp.1",
+      "events": 0,
+      "events_with_odds_key": 0,
+      "odds_offers": 0,
+      "parse": {
+        "games": 0,
+        "gap_fields": [],
+        "quotes": 0
+      },
+      "pre_events": 0,
+      "predictor_attempts": 0,
+      "scoreboard_key_paths_with_odds": [],
+      "sport": "soccer",
+      "summary": []
+    },
+    "fra.1": {
+      "books": [],
+      "coverage": {
+        "moneyline": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "moneyline_draw": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "spread": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "total": {
+          "event_coverage": 0.0,
+          "events": 0
+        }
+      },
+      "espn_path": "soccer/fra.1",
+      "events": 0,
+      "events_with_odds_key": 0,
+      "odds_offers": 0,
+      "parse": {
+        "games": 0,
+        "gap_fields": [],
+        "quotes": 0
+      },
+      "pre_events": 0,
+      "predictor_attempts": 0,
+      "scoreboard_key_paths_with_odds": [],
+      "sport": "soccer",
+      "summary": []
+    },
+    "ger.1": {
+      "books": [],
+      "coverage": {
+        "moneyline": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "moneyline_draw": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "spread": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "total": {
+          "event_coverage": 0.0,
+          "events": 0
+        }
+      },
+      "espn_path": "soccer/ger.1",
+      "events": 0,
+      "events_with_odds_key": 0,
+      "odds_offers": 0,
+      "parse": {
+        "games": 0,
+        "gap_fields": [],
+        "quotes": 0
+      },
+      "pre_events": 0,
+      "predictor_attempts": 0,
+      "scoreboard_key_paths_with_odds": [],
+      "sport": "soccer",
+      "summary": []
+    },
+    "ita.1": {
+      "books": [],
+      "coverage": {
+        "moneyline": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "moneyline_draw": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "spread": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "total": {
+          "event_coverage": 0.0,
+          "events": 0
+        }
+      },
+      "espn_path": "soccer/ita.1",
+      "events": 0,
+      "events_with_odds_key": 0,
+      "odds_offers": 0,
+      "parse": {
+        "games": 0,
+        "gap_fields": [],
+        "quotes": 0
+      },
+      "pre_events": 0,
+      "predictor_attempts": 0,
+      "scoreboard_key_paths_with_odds": [],
+      "sport": "soccer",
+      "summary": []
+    },
+    "nfl": {
+      "books": [],
+      "coverage": {
+        "moneyline": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "moneyline_draw": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "spread": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "total": {
+          "event_coverage": 0.0,
+          "events": 0
+        }
+      },
+      "espn_path": "football/nfl",
+      "events": 1,
+      "events_with_odds_key": 0,
+      "odds_offers": 0,
+      "parse": {
+        "games": 1,
+        "gap_fields": [
+          "pickcenter"
+        ],
+        "quotes": 0
+      },
+      "pre_events": 0,
+      "predictor_attempts": 0,
+      "scoreboard_key_paths_with_odds": [],
+      "sport": "football",
+      "summary": [
+        {
+          "game_id": "401873079",
+          "has_injuries": true,
+          "has_pickcenter": true,
+          "has_predictor": false,
+          "top_level_keys": [
+            "againstTheSpread",
+            "article",
+            "boxscore",
+            "broadcasts",
+            "drives",
+            "format",
+            "gameInfo",
+            "header",
+            "injuries",
+            "leaders",
+            "meta",
+            "news",
+            "odds",
+            "pickcenter",
+            "scoringPlays",
+            "standings",
+            "videos",
+            "wallclockAvailable",
+            "winprobability"
+          ]
+        }
+      ]
+    },
+    "nhl": {
+      "books": [],
+      "coverage": {
+        "moneyline": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "moneyline_draw": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "spread": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "total": {
+          "event_coverage": 0.0,
+          "events": 0
+        }
+      },
+      "espn_path": "hockey/nhl",
+      "events": 15,
+      "events_with_odds_key": 0,
+      "odds_offers": 0,
+      "parse": {
+        "games": 15,
+        "gap_fields": [
+          "pickcenter"
+        ],
+        "quotes": 0
+      },
+      "pre_events": 0,
+      "predictor_attempts": 0,
+      "scoreboard_key_paths_with_odds": [],
+      "sport": "hockey",
+      "summary": [
+        {
+          "game_id": "401892780",
+          "has_injuries": true,
+          "has_pickcenter": true,
+          "has_predictor": false,
+          "top_level_keys": [
+            "againstTheSpread",
+            "article",
+            "boxscore",
+            "broadcasts",
+            "format",
+            "gameInfo",
+            "header",
+            "injuries",
+            "leaders",
+            "meta",
+            "news",
+            "odds",
+            "onIce",
+            "pickcenter",
+            "plays",
+            "seasonseries",
+            "standings",
+            "videos",
+            "wallclockAvailable"
+          ]
+        },
+        {
+          "game_id": "401892781",
+          "has_injuries": true,
+          "has_pickcenter": true,
+          "has_predictor": false,
+          "top_level_keys": [
+            "againstTheSpread",
+            "article",
+            "boxscore",
+            "broadcasts",
+            "format",
+            "gameInfo",
+            "header",
+            "injuries",
+            "leaders",
+            "meta",
+            "news",
+            "odds",
+            "onIce",
+            "pickcenter",
+            "plays",
+            "seasonseries",
+            "standings",
+            "videos",
+            "wallclockAvailable"
+          ]
+        }
+      ]
+    },
+    "uefa.champions": {
+      "books": [],
+      "coverage": {
+        "moneyline": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "moneyline_draw": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "spread": {
+          "event_coverage": 0.0,
+          "events": 0
+        },
+        "total": {
+          "event_coverage": 0.0,
+          "events": 0
+        }
+      },
+      "espn_path": "soccer/uefa.champions",
+      "events": 18,
+      "events_with_odds_key": 0,
+      "odds_offers": 0,
+      "parse": {
+        "games": 18,
+        "gap_fields": [
+          "pickcenter"
+        ],
+        "quotes": 0
+      },
+      "pre_events": 0,
+      "predictor_attempts": 0,
+      "scoreboard_key_paths_with_odds": [
+        "events[].competitions[].odds"
+      ],
+      "sport": "soccer",
+      "summary": [
+        {
+          "game_id": "401915380",
+          "has_injuries": false,
+          "has_pickcenter": true,
+          "has_predictor": false,
+          "top_level_keys": [
+            "boxscore",
+            "broadcasts",
+            "commentary",
+            "format",
+            "gameInfo",
+            "hasOdds",
+            "header",
+            "keyEvents",
+            "lastFiveGames",
+            "leaders",
+            "meta",
+            "news",
+            "odds",
+            "pickcenter",
+            "rosters",
+            "standings",
+            "videos",
+            "wallclockAvailable"
+          ]
+        },
+        {
+          "game_id": "401915300",
+          "has_injuries": false,
+          "has_pickcenter": true,
+          "has_predictor": false,
+          "top_level_keys": [
+            "article",
+            "boxscore",
+            "broadcasts",
+            "commentary",
+            "format",
+            "gameInfo",
+            "hasOdds",
+            "header",
+            "keyEvents",
+            "lastFiveGames",
+            "leaders",
+            "meta",
+            "news",
+            "odds",
+            "pickcenter",
+            "rosters",
+            "standings",
+            "videos",
+            "wallclockAvailable"
+          ]
+        }
+      ]
+    }
+  },
+  "mode": "live",
+  "sast_day": "2026-11-26",
+  "schema_version": "bullion.espn_probe",
+  "source_path": "localdata/_probes/espn_probe_latest.json"
+}
