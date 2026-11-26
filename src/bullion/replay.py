@@ -236,6 +236,16 @@ def _signature(
     return signatures
 
 
+def _decimal_token(value: Any) -> str:
+    """Stable price token: frozen and rebuilt prices must match exactly."""
+    if value is None:
+        return ""
+    try:
+        return f"{round(float(value), 6):.6f}"
+    except (TypeError, ValueError):
+        return str(value)
+
+
 def _receipt_signature(receipt: Dict[str, Any]) -> List[Tuple[str, ...]]:
     signatures: List[Tuple[str, ...]] = []
     for collection in ("accas", "singles"):
@@ -245,8 +255,10 @@ def _receipt_signature(receipt: Dict[str, Any]) -> List[Tuple[str, ...]]:
             signatures.append(
                 (
                     str(position.get("ticket_id") or ""),
+                    _decimal_token(position.get("combined_decimal_odds")),
                     tuple(
-                        str(leg.get("forecast_id") or leg.get("pick_id") or "")
+                        f"{leg.get('forecast_id') or leg.get('pick_id') or ''}@"
+                        f"{_decimal_token(leg.get('decimal_odds'))}"
                         for leg in position.get("legs") or []
                     ),
                 )
@@ -264,7 +276,11 @@ def check_parity(days: Sequence[DayEvidence]) -> Dict[str, Any]:
         actual = [
             (
                 str(ticket.get("acca_id")),
-                tuple(str(leg.get("forecast_id")) for leg in ticket.get("legs") or []),
+                _decimal_token(ticket.get("combined_decimal_odds")),
+                tuple(
+                    f"{leg.get('forecast_id')}@{_decimal_token(leg.get('decimal_odds'))}"
+                    for leg in ticket.get("legs") or []
+                ),
             )
             for ticket in rebuilt
         ]
@@ -278,7 +294,11 @@ def check_parity(days: Sequence[DayEvidence]) -> Dict[str, Any]:
         "checked": checked,
         "matched": matched,
         "mismatched": len(mismatches),
-        "parity": checked > 0 and matched == checked,
+        # Vacuous truth: with no frozen receipt there is nothing that can
+        # disagree, so parity holds. ``vacuous`` says so out loud, because
+        # "checked: 0, parity: true" must never read as "verified on real days".
+        "parity": not mismatches,
+        "vacuous": checked == 0,
         "mismatches": mismatches,
     }
 

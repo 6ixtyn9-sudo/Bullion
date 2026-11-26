@@ -288,6 +288,37 @@ def test_losing_leg_loses_the_acca(tmp_path):
     assert report["profit_units"] == pytest.approx(-1.0)
 
 
+def test_parity_is_vacuously_true_with_no_frozen_receipt():
+    parity = check_parity([])
+    assert parity["parity"] is True
+    assert parity["vacuous"] is True
+    assert parity["checked"] == 0
+
+
+def test_parity_fails_and_the_harness_exits_non_zero_on_a_tampered_receipt(tmp_path):
+    import importlib.util
+
+    league, rows = _pool(tmp_path, n=4)
+    _freeze(tmp_path, rows, league=league)
+    receipt_path = next(tmp_path.glob("*/auto_tickets_*_decision.json"))
+    receipt = json.loads(receipt_path.read_text())
+    receipt["accas"][0]["combined_decimal_odds"] = 99.0  # frozen price tampered with
+    receipt_path.write_text(json.dumps(receipt))
+
+    days = load_evidence(tmp_path)
+    parity = check_parity(days)
+    assert parity["parity"] is False
+    assert parity["mismatched"] == 1
+    assert parity["vacuous"] is False
+
+    spec = importlib.util.spec_from_file_location(
+        "bullion_replay_harness", Path(__file__).resolve().parents[1] / "scripts" / "replay_harness.py"
+    )
+    harness = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(harness)
+    assert harness.main(["--parity", "--localdata", str(tmp_path), "--json"]) == 1
+
+
 def test_replay_parity_and_settled_replay(tmp_path):
     league, rows = _pool(tmp_path, n=4)
     _freeze(tmp_path, rows, league=league)

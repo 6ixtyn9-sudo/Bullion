@@ -27,6 +27,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from bullion.espn import (  # noqa: E402
     EspnClient,
     EspnFetchError,
+    event_id_from_ref,
     game_from_summary,
     parse_summary,
     season_events_url,
@@ -53,14 +54,13 @@ def season_event_ids(client: EspnClient, league, season: int) -> List[str]:
     for page in range(1, REINDEX_PAGES + 1):
         payload = client.get(season_events_url(league, season, page))
         for item in payload.get("items") or []:
-            ref = str(item.get("$ref") or "")
-            parts = [part for part in ref.split("/") if part]
-            if "events" in parts:
-                index = parts.index("events")
-                if index + 1 < len(parts):
-                    event_id = parts[index + 1]
-                    if event_id.isdigit() and event_id not in ids:
-                        ids.append(event_id)
+            # LIVE_VERIFIED 2026-11-26: refs arrive as
+            # ``.../events/401856879?lang=en&region=us`` — the query suffix must
+            # be stripped, otherwise every ref fails ``isdigit()`` and the
+            # backfill silently stores nothing.
+            event_id = event_id_from_ref(item.get("$ref"))
+            if event_id and event_id not in ids:
+                ids.append(event_id)
         page_count = int(payload.get("pageCount") or 1)
         if page >= page_count:
             break
@@ -102,7 +102,7 @@ def run(
                     continue
                 try:
                     payload = client.summary(league, event_id)
-                    game = game_from_summary(payload, league)
+                    game = game_from_summary(payload, league, event_id)
                     final_game, _gaps = parse_summary(payload, game, league)
                     store.upsert_game(final_game)
                     stored += 1

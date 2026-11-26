@@ -38,25 +38,90 @@ before 30 settled observations exist per segment.
 
 ## Anti-hallucination contract
 
-This sandbox cannot reach ESPN. Nothing in this repo is a captured live ESPN
-response, and no parser is labelled live-verified:
+This sandbox cannot reach ESPN. Live claims rest only on
+`localdata/_probes/espn_probe_latest.json`, produced by `scripts/probe_espn.py`
+on GitHub Actions:
 
-* Every committed payload-like fixture is `SYNTHETIC_FIXTURE` and the test suite
-  blocks sockets (`tests/conftest.py`).
-* URL shapes, `homeAway` side resolution, odds nesting, American→decimal
-  conversion, and the predictor `$ref` orientation rule are ported from the
-  proven basketball adapter in `Ma_Golide_Satellites` (LIVE_VERIFIED 2026-11-06
-  for NBA/WNBA/NCAA). Extrapolating a proven pattern is **not** verification.
-* Hockey `pointSpread` puckline nesting, soccer three-way `moneyline.draw` /
-  `drawOdds` paths, NFL/CFB `/predictor` statistics keys, and per-league
-  pre-kickoff named-book coverage are **unverified** until
-  `scripts/probe_espn.py` has run and its JSON has been inspected.
-* `scripts/daily.py` refuses to freeze a ticket for a lane unless a committed
-  live probe report proves ≥50% pre-kickoff named-book coverage for that market.
-  Absent probe → `research_only`: forecast and grade, never ticket.
+* The only live capture so far is **`LIVE_VERIFIED 2026-11-26T12:00:17Z`**
+  (`localdata/_probes/espn_probe_latest.json`, frozen extract in
+  `tests/fixtures/espn_probe_2026-11-26T12-00-17Z.json`). Everything else that
+  looks like a payload is `SYNTHETIC_FIXTURE`; the test suite blocks sockets
+  (`tests/conftest.py`).
+* What that capture actually proves is narrow (see below): the ten scoreboard
+  and core-index routes resolve, the summary carries `pickcenter`, and the
+  season event index is pageable — but it contains **zero pre-match events**, so
+  it proves no odds path and no predictor key.
+* Extrapolating the proven basketball adapter (`Ma_Golide_Satellites`,
+  LIVE_VERIFIED 2026-11-06 for NBA/WNBA/NCAA) is **not** verification. Hockey
+  `pointSpread` puckline nesting, soccer three-way `moneyline.draw` /
+  `drawOdds` paths, NFL/CFB `/predictor` statistics keys, hockey shot keys, and
+  per-league pre-kickoff named-book coverage are **unverified** until a probe
+  window contains upcoming fixtures.
+* `scripts/daily.py` refuses to freeze a ticket unless a committed live probe
+  report shows `status: ok`, a sample of ≥3 pre-match events, and ≥50%
+  pre-kickoff named-book coverage for that market. A coverage number without a
+  sample is not evidence: absent/thin probe → `research_only` (forecast and
+  grade, never ticket).
 * Missing/malformed fields fail closed: a machine-readable `coverage_gap`
   (written under `localdata/_coverage/` and `localdata/_runs/`) or a raised
   `EspnIdentityError`. No imputed `0.5`, no invented odds, no home/away swap.
+
+## Live probe evidence: 2026-11-26T12:00:17Z
+
+Nine lanes probed across the ET days the *old* window derived
+(`dates=20261124`, `dates=20261125`) for SAST day 2026-11-26.
+
+| lane | events | pre-match | offers | books | named-book pre-tip coverage | predictor |
+|---|---|---|---|---|---|---|
+| nhl | 15 | 0 | 0 | 0 | unmeasured (0 pre events) | not attempted |
+| nfl | 1 | 0 | 0 | 0 | unmeasured | not attempted |
+| cfb | 2 | 0 | 0 | 0 | unmeasured | not attempted |
+| eng.1 | 0 | 0 | 0 | 0 | unmeasured (no fixtures) | not attempted |
+| esp.1 | 0 | 0 | 0 | 0 | unmeasured (no fixtures) | not attempted |
+| ger.1 | 0 | 0 | 0 | 0 | unmeasured (no fixtures) | not attempted |
+| ita.1 | 0 | 0 | 0 | 0 | unmeasured (no fixtures) | not attempted |
+| fra.1 | 0 | 0 | 0 | 0 | unmeasured (no fixtures) | not attempted |
+| uefa.champions | 18 | 0 | 0 | 0 | unmeasured | not attempted |
+
+Verdict: **all nine lanes stay `research_only`.** Coverage was measured over
+zero pre-match events, which is an absent measurement, not a 0% result.
+
+Three real defects the capture exposed, now fixed and regression-tested:
+
+1. **Wrong ET window.** `et_days_for_sast_day` anchored on SAST midnight and
+   subtracted a day, asking ESPN for ET `D-2/D-1`; a SAST day occupies ET
+   `D-1/D` (SAST `D` = `D-1T22:00Z .. DT21:59Z`). Every probed event was
+   therefore already final, which is why no odds or predictor existed.
+   `tests/test_live_probe.py` pins the captured URLs against the corrected map.
+2. **Backfill refs were unparsed.** Real refs arrive as
+   `.../events/401856879?lang=en&region=us`; splitting on `/` and testing
+   `isdigit()` dropped the query suffix check entirely, so a backfill would
+   have stored zero games. `event_id_from_ref` now strips the suffix.
+3. **Summary odds were ignored.** Every sampled summary (NHL, NFL, CFB, UCL)
+   carried `pickcenter` (soccer also `odds` and `hasOdds`) while the scoreboard
+   `odds` array was empty, so the lane declared games unpriceable when a real
+   quote source existed. `parse_pickcenter` reads those containers through the
+   proven offer paths and fails closed with `pickcenter.shape_unrecognised`
+   (plus the observed key list) for anything else.
+
+Also captured: core season index counts (`nhl` 1478/2 pages, `cfb` 950,
+`eng.1` 374, `esp.1` 381, `ita.1` 374, `ger.1` 297, `fra.1` 288,
+`uefa.champions` 189, `nfl` 320) — the backfill route works.
+
+### Re-probe before enabling any lane
+
+The next probe must land on a window that actually contains upcoming fixtures,
+and it records the ET dates it asked for:
+
+```
+# Actions -> probe-espn -> Run workflow, or:
+python3 scripts/probe_espn.py --date 2026-12-01 --days-ahead 2 --season 2026
+```
+
+Read `coverage.named_book_pre_tip.<market>`: `status` must be `ok` (sample ≥3
+pre-match events) before any percentage means anything. `status:
+"no_pre_match_events"` means the window was wrong or empty — re-probe, do not
+interpret it as zero coverage.
 
 ## Layout
 
@@ -147,6 +212,17 @@ integer lines carry a real `push_probability`.
   Dixon-Coles rho behaviour, calibration leakage guards, gate rejection paths,
   receipt schema/immutability, settlement, 100% replay parity, paired A/B NO-OP
   refusal, cross-sport acca assembly, and zero-settled-day handling.
-* **Unverified until `probe_espn.yml` runs on GitHub Actions:** every live ESPN
-  field, path, and coverage percentage. Do not enable `bullion_daily.yml` before
-  the probe report has been inspected.
+* `scripts/replay_harness.py --parity` rebuilds each frozen receipt and diffs
+  ticket id, combined price, and every leg price, not just the selected legs; it
+  exits 1 on any mismatch, and reports `vacuous: true` when there is no receipt
+  to check (an empty vault is not a parity proof).
+* Summary `pickcenter` is now a quote source: when a scoreboard `odds` array is
+  empty, one summary fetch per fixture supplies the freeze, and the discovery
+  gap stays in the coverage file so the empty scoreboard array remains visible.
+* **Verified live (2026-11-26T12:00:17Z):** route resolution for all nine lanes,
+  the summary `pickcenter`/`odds`/`hasOdds` containers, `has_predictor: false` on
+  every sampled summary, core season-index counts, and `$ref` query suffixes.
+* **Still unverified:** every odds *path*, every predictor *key*, per-league
+  pre-kickoff coverage, hockey shot keys, and soccer draw pricing. All nine lanes
+  are `research_only`; `bullion_daily.yml` will forecast and grade but cannot
+  ticket until a pre-match probe window is captured and inspected.
