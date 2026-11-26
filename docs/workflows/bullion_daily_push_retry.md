@@ -1,17 +1,25 @@
 # `bullion_daily.yml`: make a failed localdata push fail the run
 
-**Status: not applied.** `.github/workflows/` is yours to edit, so this file is the
-copy-paste text for the last residual from Sweep 2 (P2-N2). Nothing under
-`.github/workflows/` in this repository was touched.
+**Status: applied.** A copy of the whole file was pasted over
+`.github/workflows/bullion_daily.yml` and committed as `a1aa353` ("Modify
+bullion_daily workflow for push retry behavior", 11 insertions, one file). The
+step now exits non-zero when all three pushes are rejected.
 
-**Whole-file drop-in:** `docs/workflows/bullion_daily.yml` is the complete
-workflow with only this change applied — paste it over
-`.github/workflows/bullion_daily.yml`. It differs from the live file by the four
-comment lines at the top and the four lines below, nothing else (`git diff
---no-index .github/workflows/bullion_daily.yml docs/workflows/bullion_daily.yml`
-shows exactly that).
+One tidy-up is outstanding. The paste included the five-line "drop-in copy"
+header, so the live workflow opens with a comment that describes itself as a
+copy:
 
-## What is wrong today
+```bash
+# delete the first five lines of .github/workflows/bullion_daily.yml
+sed -i '1,5d' .github/workflows/bullion_daily.yml
+python3 -c "import yaml; yaml.safe_load(open('.github/workflows/bullion_daily.yml'))" && echo parses
+```
+
+It is a comment, so the workflow behaves identically either way; it is only
+misleading to the next reader. `docs/workflows/bullion_daily.yml` is the mirror
+without it — after the cleanup the two files should be identical.
+
+## What was wrong
 
 The final step of the `daily` job, **Commit localdata artifacts (never the SQLite
 warehouse)**, retries the push three times and then simply stops:

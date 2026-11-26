@@ -1,8 +1,3 @@
-# DROP-IN COPY — paste this whole file over .github/workflows/bullion_daily.yml.
-# Identical to the live workflow except the push-retry exit at the bottom of the
-# "Commit localdata artifacts" step, so a run that never published is red, not
-# green. Nothing else changed; diff it against the live file to confirm.
-
 # Reliable external-trigger workflow for Bullion (mirrors Ma_Golide_Satellites).
 # GitHub Actions `schedule:` cron is deliberately disabled because GitHub delays
 # or silently drops scheduled ticks. Instead, an external scheduler posts a
