@@ -45,10 +45,12 @@ from bullion.espn import (  # noqa: E402
     line_number,
     nested,
     parse_pickcenter,
+    canonical_book,
     parse_predictor,
     parse_scoreboard,
     parse_summary,
     predictor_url,
+    quote_market_presence,
     scoreboard_url,
     season_events_url,
     summary_url,
@@ -189,6 +191,10 @@ def _probe_summary(
     record["pickcenter_parse"] = {
         "quotes": len(parsed_pickcenter.quotes),
         "markets": sorted({quote.market for quote in parsed_pickcenter.quotes}),
+        "markets_priced": sorted(quote_market_presence(parsed_pickcenter.quotes)),
+        "side_keys": {
+            quote.market: sorted(quote.side_prices) for quote in parsed_pickcenter.quotes
+        },
         "pre_match_quotes": sum(1 for quote in parsed_pickcenter.quotes if quote.pre_match),
         "gaps": [gap.field for gap in parsed_pickcenter.gaps],
         "observed_entry_keys": parsed_pickcenter.observed_entry_keys[:24],
@@ -267,6 +273,7 @@ def probe_league(
     histogram: Dict[str, int] = {}
     market_counts = {market: 0 for market in MARKETS}
     books: set[str] = set()
+    raw_books: set[str] = set()
     for item in events:
         competition = item["competition"]
         state = item["state"]
@@ -277,38 +284,51 @@ def probe_league(
         if offers:
             entry["events_with_offers"] += 1
         entry["odds_offers"] += len(offers)
-        present: set[str] = set()
         for offer in offers:
             shape = _offer_shape(offer)
             if shape["provider"]:
                 books.add(str(shape["provider"]))
+                raw_books.add(str(shape["provider"]))
             if len(entry["offer_samples"]) < 3:
                 entry["offer_samples"].append(shape)
             if not entry["scoreboard_offer_paths"]:
                 entry["scoreboard_offer_paths"] = _paths(offer, "offer")
-            if {"home", "away"} <= set(shape["moneyline_sides"]):
-                present.add("moneyline")
-            if any(shape["draw_paths"].values()):
-                present.add("moneyline_draw")
-            if shape["point_spread_home_line"] is not None or shape["spread"] is not None:
-                present.add("spread")
-            if shape["total_over_line"] is not None or shape["overUnder"] is not None:
-                present.add("total")
-        if state == "pre":
-            for market in present:
-                market_counts[market] += 1
     entry["state_histogram"] = histogram
-    entry["books"] = sorted(books)
+    entry["books"] = sorted({canonical_book(name) for name in books})
+    entry["book_normalisation"] = {
+        name: canonical_book(name) for name in sorted(raw_books) if canonical_book(name) != name
+    }
     entry["markets"] = market_counts
     pre_events = [item for item in events if item["state"] == "pre"]
     entry["pre_events"] = len(pre_events)
-    entry["coverage"] = _coverage_block(market_counts, len(pre_events), "scoreboard_pre_match_events")
-    entry["coverage"]["named_book_pre_tip_scoreboard"] = entry["coverage"]["named_book_pre_tip"]
 
     parsed = parse_scoreboard(
         {"events": [item["event"] for item in events]}, league, captured
     )
     games_by_id = {game.game_id: game for game in parsed.games}
+    # Coverage is judged by priced *sides*, not market labels: a soccer
+    # moneyline quote that carries ``draw`` is a three-way quote even though its
+    # market is still "moneyline".
+    presence_by_game: Dict[str, set] = {}
+    for quote in parsed.quotes:
+        presence_by_game.setdefault(quote.game_id, set()).update(
+            quote_market_presence([quote])
+        )
+    market_counts = {
+        market: sum(
+            1
+            for item in pre_events
+            if market in presence_by_game.get(str(item["event"].get("id")), set())
+        )
+        for market in MARKETS
+    }
+    entry["markets"] = market_counts
+    entry["coverage"] = _coverage_block(
+        market_counts, len(pre_events), "scoreboard_pre_match_events"
+    )
+    entry["coverage"]["named_book_pre_tip_scoreboard"] = dict(
+        entry["coverage"]["named_book_pre_tip"]
+    )
     entry["parse"] = {
         "games": len(parsed.games),
         "quotes": len(parsed.quotes),
@@ -340,7 +360,7 @@ def probe_league(
             continue
         if record["status"] == "pre":
             summary_sample += 1
-            markets_with_quotes = set(record["pickcenter_parse"]["markets"])
+            markets_with_quotes = set(record["pickcenter_parse"]["markets_priced"])
             if record["pickcenter_parse"]["pre_match_quotes"] <= 0:
                 markets_with_quotes = set()
             for market in markets_with_quotes:
@@ -356,6 +376,13 @@ def probe_league(
     # Predictor: upcoming fixtures first; if the window has none, one finals
     # sample is still worth capturing to learn the key names (never pre-tip
     # availability — the sample context is recorded).
+    if not league.predictor:
+        entry["predictor"]["skipped"] = True
+        entry["predictor"]["note"] = (
+            "no /predictor route for this lane (LIVE_VERIFIED 2026-11-26: HTTP 400 for "
+            "NHL and every soccer league); not requested"
+        )
+        return entry
     predictor_targets = [
         (games_by_id[item["event"]["id"]], "pre") for item in upcoming[:predictor_samples]
     ]
@@ -393,6 +420,21 @@ def probe_league(
                     for item in (nested(payload, side, "statistics") or [])
                     if isinstance(item, dict)
                 ][:24],
+                # Values for the keys that decide two-way/tie handling. The
+                # next probe can then check ``teamPredPtDiff`` reconciliation
+                # instead of trusting a key name.
+                "stat_values": {
+                    str(item.get("name")): item.get("value")
+                    for item in (nested(payload, side, "statistics") or [])
+                    if isinstance(item, dict)
+                    and item.get("name")
+                    in (
+                        "gameProjection",
+                        "teamChanceLoss",
+                        "teamChanceTie",
+                        "teamPredPtDiff",
+                    )
+                },
             }
             for side in ("homeTeam", "awayTeam")
         }
@@ -406,6 +448,9 @@ def probe_league(
             record.update(
                 {
                     "prob_home": round(evidence.prob_home, 6),
+                    "prob_tie": round(evidence.prob_tie, 6),
+                    "tie_rule": evidence.tie_rule,
+                    "predicted_margin": evidence.predicted_margin,
                     "expected_home": evidence.expected_home,
                     "expected_away": evidence.expected_away,
                     "stats_side": evidence.stats_side,

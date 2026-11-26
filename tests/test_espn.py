@@ -9,6 +9,7 @@ from bullion.espn import (
     EspnParseError,
     et_days_for_sast_day,
     event_id_from_ref,
+    game_from_summary,
     lane_permission,
     parse_pickcenter,
     parse_predictor,
@@ -339,3 +340,45 @@ def test_pickcenter_quotes_flip_to_post_tip_when_the_game_has_started():
     )
     parsed = parse_pickcenter(payload, game, OBSERVED)
     assert parsed.quotes and not parsed.quotes[0].pre_match
+
+
+def test_game_from_summary_builds_a_final_and_accepts_the_requested_event_id():
+    payload = {
+        "header": {
+            "season": {"year": 2026},
+            "competitions": [
+                {
+                    "id": "ignored",
+                    "date": "2026-11-25T00:00:00Z",
+                    "status": {"type": {"state": "post"}},
+                    "neutralSite": False,
+                    "venue": {"fullName": "Some Arena"},
+                    "competitors": [
+                        {
+                            "homeAway": "home",
+                            "id": "h1",
+                            "team": {"id": "h1", "displayName": "Home Club"},
+                        },
+                        {
+                            "homeAway": "away",
+                            "id": "a1",
+                            "team": {"id": "a1", "displayName": "Away Club"},
+                        },
+                    ],
+                }
+            ],
+        }
+    }
+    game = game_from_summary(payload, NHL, "401892780")
+    assert game.game_id == "401892780", "the requested id must win over an absent header id"
+    assert game.status is Status.FINAL
+    assert (game.home_team_id, game.away_team_id) == ("h1", "a1")
+    assert game.scheduled_utc == "2026-11-25T00:00:00Z"
+
+    with pytest.raises(EspnIdentityError):
+        game_from_summary(
+            {**payload, "header": {**payload["header"], "competitions": [
+                {**payload["header"]["competitions"][0], "status": {"type": {"state": "in"}}}
+            ]}},
+            NHL,
+        )

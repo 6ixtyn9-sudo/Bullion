@@ -346,9 +346,9 @@ def _quotes_from_event(
     )
     for offer in offers:
         provider = offer.get("provider") or {}
-        book = str(
+        book = canonical_book(
             provider.get("displayName") or provider.get("name") or provider.get("id") or ""
-        ).strip()
+        )
         if not book:
             gaps.append(
                 CoverageGap(game.league, "pickcenter.provider", "offer without book", game.game_id)
@@ -424,6 +424,38 @@ def _is_soccer(league_key: str) -> bool:
     return league_key in LEAGUES and LEAGUES[league_key].sport is Sport.SOCCER
 
 
+#: Canonical book names keyed by a punctuation/space-insensitive token.
+#: LIVE_VERIFIED 2026-11-26: the same book arrives as ``"Draft Kings"`` on
+#: NFL/CFB and ``"DraftKings"`` on soccer, and Bundesliga adds ``"Bet 365"``.
+#: Without this the same price source would look like two different books in
+#: coverage accounting, calibration segmentation, and receipts.
+BOOK_ALIASES = {
+    "draftkings": "DraftKings",
+    "draftkingssportsbook": "DraftKings",
+    "bet365": "Bet365",
+    "betmgm": "BetMGM",
+    "caesars": "Caesars",
+    "caesarsportsbook": "Caesars",
+    "fanduel": "FanDuel",
+    "espnbet": "ESPN BET",
+    "pointsbet": "PointsBet",
+    "betrivers": "BetRivers",
+    "williamhill": "William Hill",
+}
+
+
+def canonical_book(raw: Any) -> str:
+    """Canonical book name for an ESPN provider label; unknown names pass through.
+
+    The raw label is preserved elsewhere (the probe records every provider
+    string it saw), so normalisation here never destroys the audit trail.
+    """
+    text = str(raw or "").strip()
+    if not text:
+        return ""
+    return BOOK_ALIASES.get(re.sub(r"[^a-z0-9]", "", text.lower()), text)
+
+
 def _price_at(offer: Dict[str, Any], market: str, side: str) -> Optional[float]:
     for phase in ("close", "open"):
         price = decimal_price(nested(offer, market, side, phase, "odds"))
@@ -444,9 +476,10 @@ def _moneyline_prices(
     # Draw paths: proven for no sport yet. Candidate shapes are tried in a
     # fixed order and any single hit is used; absence stays absence.
     draw = _price_at(offer, "moneyline", "draw")
-    for key in ("drawOdds",):
-        if draw is None:
-            draw = decimal_price(offer.get(key))
+    if draw is None:
+        draw = decimal_price(nested(offer, "drawOdds", "moneyLine"))
+    if draw is None:
+        draw = decimal_price(offer.get("drawOdds"))
     if draw is None:
         draw = decimal_price(nested(offer, "moneyline", "drawOdds"))
     return home, away, draw
@@ -460,6 +493,32 @@ def _side_prices(offer: Dict[str, Any], market: str) -> Dict[str, float]:
         if price is not None:
             prices[side] = price
     return prices
+
+
+def quote_market_presence(quotes: Any) -> set:
+    """Markets a quote set actually prices, judged by priced *sides*.
+
+    A soccer moneyline quote can carry ``home``/``away``/``draw``; reading only
+    ``quote.market`` reports the draw as unmeasured even when every book quotes
+    it. LIVE_VERIFIED 2026-11-26: ``pickcenter[0].moneyline.draw.close.odds`` and
+    ``pickcenter[0].drawOdds.moneyLine`` were present on 100% of sampled EPL,
+    La Liga, Ligue 1 and Serie A fixtures while the probe reported 0% draw
+    coverage, because it counted market names instead of prices.
+    """
+    presence: set = set()
+    for quote in quotes or ():
+        sides = set(getattr(quote, "side_prices", {}) or {})
+        market = getattr(quote, "market", "")
+        if market == "moneyline":
+            if {"home", "away"} <= sides:
+                presence.add("moneyline")
+            if "draw" in sides:
+                presence.add("moneyline_draw")
+        elif market == "spread" and {"home", "away"} <= sides:
+            presence.add("spread")
+        elif market == "total" and {"over", "under"} <= sides:
+            presence.add("total")
+    return presence
 
 
 # ---------------------------------------------------------------------------
@@ -584,10 +643,23 @@ def _periods(
 
 @dataclass(frozen=True)
 class PredictorEvidence:
+    """Normalised FPI/BPI evidence for one fixture.
+
+    ``prob_home`` is conditioned on no tie whenever the payload reports a tie
+    probability, because a two-way market has no draw selection to absorb that
+    mass (LIVE_VERIFIED 2026-11-26: NFL ``pickcenter`` moneyline sides are
+    ``home``/``away`` only, whereas every soccer offer carries an explicit
+    ``draw`` side). ``prob_tie`` keeps the excluded mass visible so a receipt or
+    coverage file never pretends the market was strictly two-outcome.
+    """
+
     prob_home: float
     expected_home: Optional[float]
     expected_away: Optional[float]
     stats_side: str
+    prob_tie: float = 0.0
+    tie_rule: str = ""
+    predicted_margin: Optional[float] = None
 
 
 PROB_SUM_TOLERANCE = 0.01  # payload percentages
@@ -648,38 +720,75 @@ def parse_predictor(payload: Dict[str, Any], game: Game) -> PredictorEvidence:
             f"competitor (home {game.home_team_id}, away {game.away_team_id})"
         )
     stats = _stats_by_name(stats_side.get("statistics"))
-    prob_side, prob_opp = _probabilities(stats, game.game_id)
+    prob_side, prob_opp, prob_tie = _probabilities(stats, game.game_id)
     expected_side = stats.get("teamExpectedPts")
     expected_opp = stats.get("oppExpectedPts")
     _check_margin(stats, expected_side, expected_opp, game.game_id)
-    prob_home = prob_side if is_home else prob_opp
+    win_home, win_away = _two_way(
+        prob_side if is_home else prob_opp,
+        prob_opp if is_home else prob_side,
+        prob_tie,
+        game.game_id,
+    )
+    prob_home = win_home
     expected_home = (expected_side if is_home else expected_opp) if (
         expected_side is not None and expected_opp is not None
     ) else None
     expected_away = (expected_opp if is_home else expected_side) if (
         expected_side is not None and expected_opp is not None
     ) else None
+    margin_side = stats.get("teamPredPtDiff")
     return PredictorEvidence(
         prob_home=prob_home,
         expected_home=expected_home,
         expected_away=expected_away,
         stats_side="home" if is_home else "away",
+        prob_tie=prob_tie,
+        tie_rule="push_conditional" if prob_tie else "",
+        predicted_margin=None if margin_side is None else round(margin_side if is_home else -margin_side, 4),
     )
 
 
-def _probabilities(stats: Dict[str, float], event_id: str) -> Tuple[float, float]:
+def _probabilities(stats: Dict[str, float], event_id: str) -> Tuple[float, float, float]:
+    """(win, loss, tie) fractions from a predictor statistics block.
+
+    LIVE_VERIFIED 2026-11-26: NFL payloads carry ``teamChanceTie`` alongside
+    ``gameProjection``/``teamChanceLoss`` and sum to 100 only when the tie is
+    included (``99.6480`` without it). CFB carries ``teamPctHfa`` instead of a
+    tie, so a missing tie key is a genuine zero, not a malformed payload.
+    """
     projection = stats.get("gameProjection")
     chance_loss = stats.get("teamChanceLoss")
     if projection is None or chance_loss is None:
         raise EspnParseError(f"event {event_id}: predictor missing win probabilities")
-    for name, value in (("gameProjection", projection), ("teamChanceLoss", chance_loss)):
+    raw_tie = stats.get("teamChanceTie")
+    tie = 0.0 if raw_tie is None else float(raw_tie)
+    for name, value in (
+        ("gameProjection", projection),
+        ("teamChanceLoss", chance_loss),
+        ("teamChanceTie", tie),
+    ):
         if not 0.0 <= value <= 100.0:
             raise EspnParseError(f"event {event_id}: {name} {value} outside 0-100")
-    if abs(projection + chance_loss - 100.0) > PROB_SUM_TOLERANCE:
-        raise EspnParseError(
-            f"event {event_id}: predictor probabilities sum to {projection + chance_loss:.4f}"
-        )
-    return projection / 100.0, chance_loss / 100.0
+    total = projection + chance_loss + tie
+    if abs(total - 100.0) > PROB_SUM_TOLERANCE:
+        raise EspnParseError(f"event {event_id}: predictor probabilities sum to {total:.4f}")
+    return projection / 100.0, chance_loss / 100.0, tie / 100.0
+
+
+def _two_way(
+    win_side: float, win_opp: float, tie: float, event_id: str
+) -> Tuple[float, float]:
+    """Condition a three-outcome split onto the two priced sides.
+
+    Only used when the payload reports tie mass. Both returned values are
+    probabilities *given the game did not end level*, which is what a two-way
+    market pays on; the excluded mass is reported separately as ``prob_tie``.
+    """
+    if win_side <= 0.0 or win_opp <= 0.0:
+        raise EspnParseError(f"event {event_id}: predictor side probability is non-positive")
+    denominator = win_side + win_opp
+    return win_side / denominator, win_opp / denominator
 
 
 def _check_margin(
@@ -714,19 +823,37 @@ def _dual_sided(
         )
     home_stats = _stats_by_name(home_side.get("statistics"))
     away_stats = _stats_by_name(away_side.get("statistics"))
-    home_projection, home_loss = _probabilities(home_stats, game.game_id)
-    away_projection, away_loss = _probabilities(away_stats, game.game_id)
-    if abs(home_projection + away_projection - 1.0) > PROB_SUM_TOLERANCE:
+    home_win, home_loss, home_tie = _probabilities(home_stats, game.game_id)
+    away_win, away_loss, away_tie = _probabilities(away_stats, game.game_id)
+    if abs(home_win + away_win - 1.0) > PROB_SUM_TOLERANCE:
         raise EspnParseError(f"event {game.game_id}: home/away projections are not complementary")
-    if abs(home_loss - away_projection) > PROB_SUM_TOLERANCE:
+    if abs(home_loss - away_win) > PROB_SUM_TOLERANCE:
         raise EspnParseError(f"event {game.game_id}: reciprocal probabilities contradict")
+    if abs(home_tie - away_tie) > PROB_SUM_TOLERANCE:
+        raise EspnParseError(f"event {game.game_id}: tie probabilities contradict")
     expected_home = home_stats.get("teamExpectedPts")
     expected_away = home_stats.get("oppExpectedPts")
+    win_home, win_away = _two_way(home_win, away_win, home_tie, game.game_id)
+    # ``teamPredPtDiff`` is the provider's own projected margin per side. It is
+    # only exposed when the two sides reconcile (home ≈ -away); otherwise it is
+    # dropped rather than guessed.
+    predicted_margin = None
+    home_margin = home_stats.get("teamPredPtDiff")
+    away_margin = away_stats.get("teamPredPtDiff")
+    if (
+        home_margin is not None
+        and away_margin is not None
+        and abs(home_margin + away_margin) <= MARGIN_TOLERANCE
+    ):
+        predicted_margin = round(home_margin, 4)
     return PredictorEvidence(
-        prob_home=home_projection,
+        prob_home=win_home,
         expected_home=expected_home,
         expected_away=expected_away,
         stats_side="home",
+        prob_tie=home_tie,
+        tie_rule="push_conditional" if home_tie else "",
+        predicted_margin=predicted_margin,
     )
 
 
@@ -823,15 +950,17 @@ def summary_state(payload: Dict[str, Any]) -> str:
 def _provider_name(offer: Dict[str, Any]) -> str:
     provider = offer.get("provider")
     if isinstance(provider, dict):
-        return str(
+        raw = (
             provider.get("displayName")
             or provider.get("name")
             or provider.get("id")
             or ""
-        ).strip()
-    if isinstance(provider, str):
-        return provider.strip()
-    return str(offer.get("details") or offer.get("providerName") or "").strip()
+        )
+    elif isinstance(provider, str):
+        raw = provider
+    else:
+        raw = offer.get("details") or offer.get("providerName") or ""
+    return canonical_book(raw)
 
 
 def parse_pickcenter(
@@ -1029,4 +1158,50 @@ def lane_permission(report: Optional[Dict[str, Any]], league: League) -> LanePer
         )
     return LanePermission(
         frozenset(markets), False, "probe_covered", captured_utc=captured, market_evidence=evidence
+    )
+
+
+def game_from_summary(
+    payload: Dict[str, Any], league: League, event_id: Optional[str] = None
+) -> Game:
+    """Build a Game from a summary header (used by historical backfill).
+
+    Requires a ``post`` competition: a result row is never built from a live or
+    partial payload. ``event_id`` is the id that was requested, and wins over an
+    absent header id: a summary header's id shape is not proven for
+    hockey/football/soccer, but the caller always knows which id it fetched.
+    """
+    competitions = nested(payload, "header", "competitions") or []
+    if not competitions:
+        raise EspnParseError("summary carries no competition")
+    competition = competitions[0]
+    if _state(competition) != "post":
+        raise EspnIdentityError(
+            f"summary state={_state(competition)!r}; refusing to build a fixture"
+        )
+    home, away = sides(competition)
+    home_id = team_ref_id(home.get("team") or {})
+    away_id = team_ref_id(away.get("team") or {})
+    if not home_id or not away_id:
+        raise EspnIdentityError("summary competitor team reference cannot be resolved")
+    scheduled = competition.get("date") or nested(payload, "header", "date")
+    if not scheduled:
+        raise EspnParseError("summary carries no date")
+    event_id = str(
+        event_id or payload.get("header", {}).get("id") or nested(competition, "id") or ""
+    )
+    if not event_id:
+        raise EspnParseError("summary carries no event id")
+    return Game(
+        game_id=event_id,
+        league=league.key,
+        season=str(nested(payload, "header", "season", "year") or ""),
+        home_team_id=home_id,
+        away_team_id=away_id,
+        home_name=str(nested(home, "team", "displayName") or "").strip(),
+        away_name=str(nested(away, "team", "displayName") or "").strip(),
+        scheduled_utc=to_utc_z(scheduled),
+        status=Status.FINAL,
+        neutral_site=bool(competition.get("neutralSite")),
+        venue=str(nested(competition, "venue", "fullName") or ""),
     )
