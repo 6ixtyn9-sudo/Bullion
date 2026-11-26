@@ -4,6 +4,13 @@
 copy-paste text for the last residual from Sweep 2 (P2-N2). Nothing under
 `.github/workflows/` in this repository was touched.
 
+**Whole-file drop-in:** `docs/workflows/bullion_daily.yml` is the complete
+workflow with only this change applied — paste it over
+`.github/workflows/bullion_daily.yml`. It differs from the live file by the four
+comment lines at the top and the four lines below, nothing else (`git diff
+--no-index .github/workflows/bullion_daily.yml docs/workflows/bullion_daily.yml`
+shows exactly that).
+
 ## What is wrong today
 
 The final step of the `daily` job, **Commit localdata artifacts (never the SQLite
