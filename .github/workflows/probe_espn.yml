@@ -1,11 +1,20 @@
-# COPY THIS FILE TO .github/workflows/probe_espn.yml
+# Copy this whole file to .github/workflows/probe_espn.yml
 #
-# Arena's GitHub App token cannot push workflow files, so this file lives here
-# for you to paste into `.github/workflows/probe_espn.yml` on GitHub.
+# Arena's GitHub App token cannot push workflow files, so this copy lives in
+# docs/workflows/. Paste it into .github/workflows/probe_espn.yml on GitHub.
 #
-# Purpose: capture REAL live ESPN payload facts for NHL, NFL, CFB, and the Top-6
-# soccer lanes, then commit them so the parsers can be checked against evidence
-# instead of assumptions. Run this FIRST, inspect the JSON, then enable daily.
+# Purpose: capture REAL live ESPN payload facts for NHL, NFL, CFB and the Top-6
+# soccer lanes, then commit them so parsers are checked against evidence instead
+# of assumptions. Run this FIRST, inspect the JSON, then enable daily.
+#
+# What it records per lane: the ET dates requested, event state histogram,
+# scoreboard odds offers/books, summary `pickcenter` parses, coverage with an
+# explicit sample size and status, /predictor payload shape (captured even when
+# the parser rejects it), and the core season-index ref ids.
+#
+# Deliberately NOT here: any claim that a route resolving means a market is
+# priced. A window with no upcoming fixture reports status "no_pre_match_events"
+# and leaves every lane in research_only.
 
 name: probe-espn
 
@@ -13,28 +22,39 @@ on:
   workflow_dispatch:
     inputs:
       date:
-        description: "SAST day to probe (YYYY-MM-DD). Empty = today."
+        description: "First SAST day to probe (YYYY-MM-DD). Empty = today."
         required: false
         default: ""
+      days_ahead:
+        description: "How many extra SAST days to probe after that day."
+        required: false
+        default: "2"
       leagues:
-        description: "Lane keys comma list, 'soccer', or 'all'"
+        description: "Lane keys comma list, 'soccer', or 'all'."
         required: false
         default: "all"
+      season:
+        description: "Season year for the backfill index probe. Empty = current UTC year."
+        required: false
+        default: ""
 
 permissions:
   contents: write
 
+# Shared with bullion-daily: both jobs commit to main, so they must not overlap.
 concurrency:
-  group: bullion-probe
+  group: bullion-commits
   cancel-in-progress: false
 
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -49,15 +69,17 @@ jobs:
       - name: Run live ESPN probe
         env:
           PROBE_DATE: ${{ inputs.date }}
+          PROBE_DAYS: ${{ inputs.days_ahead }}
           PROBE_LEAGUES: ${{ inputs.leagues }}
+          PROBE_SEASON: ${{ inputs.season }}
         run: |
           mkdir -p localdata/_probes
-          ARGS=()
+          ARGS=(--days-ahead "${PROBE_DAYS:-2}" --leagues "${PROBE_LEAGUES:-all}")
+          ARGS+=(--summary-samples 8 --predictor-samples 3)
           if [ -n "${PROBE_DATE}" ]; then ARGS+=(--date "${PROBE_DATE}"); fi
-          if [ -n "${PROBE_LEAGUES}" ]; then ARGS+=(--leagues "${PROBE_LEAGUES}"); fi
+          if [ -n "${PROBE_SEASON}" ]; then ARGS+=(--season "${PROBE_SEASON}"); fi
           python3 scripts/probe_espn.py \
             --out localdata/_probes/espn_probe_latest.json \
-            --predictor-samples 3 \
             "${ARGS[@]}"
 
       - name: Show coverage summary
@@ -65,14 +87,32 @@ jobs:
           python3 - <<'PY'
           import json
           report = json.load(open("localdata/_probes/espn_probe_latest.json"))
-          print("captured_utc:", report["captured_utc"], "| sast_day:", report["sast_day"])
+          print("captured_utc:", report.get("captured_utc"))
+          print("sast_days:   ", report.get("sast_days") or report.get("sast_day"))
+          print()
           for key, entry in report["leagues"].items():
-              coverage = entry["coverage"]["named_book_pre_tip"]
-              print(
-                  f"{key:16s} events={entry['events']:4d} pre={entry['pre_events']:4d} "
-                  f"offers={entry['odds_offers']:4d} "
-                  + " ".join(f"{m}={coverage[m]['event_coverage']:.2f}" for m in coverage)
-              )
+              parts = []
+              for market, stats in entry["coverage"]["named_book_pre_tip"].items():
+                  pct = stats.get("event_coverage")
+                  shown = "n/a" if pct is None else format(pct, ".2f")
+                  parts.append(market + "=" + shown + " (" + str(stats.get("status")) + ")")
+              print(key.ljust(16),
+                    "events=" + str(entry["events"]),
+                    "pre=" + str(entry["pre_events"]),
+                    "offers=" + str(entry["odds_offers"]),
+                    "books=" + str(len(entry["books"])))
+              print(" " * 16, " ".join(parts))
+              fp = entry["summary"]["field_presence"]
+              if fp:
+                  print(" " * 16,
+                        "summaries pickcenter=" + str(sum(1 for row in fp if row["has_pickcenter"])),
+                        "predictor=" + str(sum(1 for row in fp if row["has_predictor"])),
+                        "| predictor attempts=" + str(entry["predictor"]["attempts"]))
+          print()
+          print("backfill:", {k: v.get("count") for k, v in report.get("backfill", {}).items()})
+          print()
+          print("A percentage only means something when status is 'ok' and pre >= 3.")
+          print("status 'no_pre_match_events' means: re-probe with a fixture window.")
           PY
 
       - name: Commit probe evidence
@@ -82,7 +122,14 @@ jobs:
           git add localdata/_probes/espn_probe_latest.json
           if git diff --cached --quiet; then
             echo "No probe changes to commit."
-          else
-            git commit -m "probe: live ESPN evidence $(date -u +%Y-%m-%dT%H:%MZ)"
-            git push
+            exit 0
           fi
+          git commit -m "probe: live ESPN evidence $(date -u +%Y-%m-%dT%H:%MZ)"
+          for attempt in 1 2 3; do
+            git pull --rebase origin main
+            if git push; then
+              break
+            fi
+            echo "push rejected; rebasing and retrying (attempt ${attempt})"
+            sleep 10
+          done
