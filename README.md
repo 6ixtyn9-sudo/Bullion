@@ -179,7 +179,7 @@ python3 scripts/probe_espn.py --out localdata/_probes/espn_probe_latest.json
 
 # 2) warm the ratings (finals only; newest season first, resumable)
 python3 scripts/backfill.py --league all --seasons 2024,2025,2026 --max-events 400
-python3 scripts/backfill.py --league all --workers 6 --max-seconds 900   # bounded cold run
+python3 scripts/backfill.py --league all --workers 6 --max-seconds 1800  # bounded cold run
 
 # 3) daily lane runs (freeze only at/after cutoff, only with a probe report)
 python3 scripts/daily.py --league all --date 2026-11-28
@@ -197,8 +197,12 @@ python3 scripts/replay_harness.py --variant legs=3 --against legs=2 --ab
 The backfill is budgeted and resumable: seasons are processed newest-first (so a
 budget stop never costs the current season), summary fetches run on a bounded
 pool while every SQLite write stays on the main thread, and `--max-seconds`
-(default 900) stops cleanly with exit code 0, leaving the manifest and stored
-finals behind for the next run to continue from. Transient CDN failures —
+(default 1800 = 30 min, deliberately under the workflow's `timeout-minutes`)
+stops cleanly with exit code 0, leaving the manifest and stored
+finals behind for the next run to continue from. The manifest records
+`elapsed_seconds`, `processed_per_second` and `projected_remaining_seconds`, so
+the next budget decision is based on the observed rate rather than a guess.
+Transient CDN failures —
 including chunked-transfer `IncompleteRead`, which is a `HTTPException` and not
 an `OSError` — are retried with gzip-encoded requests before becoming an
 `EspnFetchError`.
