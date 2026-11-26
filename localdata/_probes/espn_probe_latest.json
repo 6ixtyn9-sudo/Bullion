@@ -235,11 +235,14 @@
       "url": "https://sports.core.api.espn.com/v2/sports/soccer/leagues/uefa.champions/events?dates=2026&limit=1000&page=1"
     }
   },
-  "captured_utc": "2026-11-26T12:13:48Z",
+  "captured_utc": "2026-11-26T12:29:46Z",
   "leagues": {
     "cfb": {
+      "book_normalisation": {
+        "Draft Kings": "DraftKings"
+      },
       "books": [
-        "Draft Kings"
+        "DraftKings"
       ],
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
@@ -515,10 +518,17 @@
               "name",
               "shortName"
             ],
+            "predicted_margin": 13.086,
             "prob_home": 0.8228,
+            "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
+                "stat_values": {
+                  "gameProjection": 17.72,
+                  "teamChanceLoss": 82.28,
+                  "teamPredPtDiff": -13.086
+                },
                 "statistics": [
                   "gameProjection",
                   "matchupQuality",
@@ -532,6 +542,11 @@
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/college-football/seasons/2026/teams/2628?lang=en&region=us"
               },
               "homeTeam": {
+                "stat_values": {
+                  "gameProjection": 82.28,
+                  "teamChanceLoss": 17.72,
+                  "teamPredPtDiff": 13.086
+                },
                 "statistics": [
                   "gameProjection",
                   "matchupQuality",
@@ -545,7 +560,8 @@
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/college-football/seasons/2026/teams/2641?lang=en&region=us"
               }
             },
-            "stats_side": "home"
+            "stats_side": "home",
+            "tie_rule": ""
           },
           {
             "away_team_id": "158",
@@ -589,10 +605,17 @@
               "name",
               "shortName"
             ],
+            "predicted_margin": 2.939,
             "prob_home": 0.5854,
+            "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
+                "stat_values": {
+                  "gameProjection": 41.46,
+                  "teamChanceLoss": 58.540000000000006,
+                  "teamPredPtDiff": -2.939
+                },
                 "statistics": [
                   "gameProjection",
                   "matchupQuality",
@@ -606,6 +629,11 @@
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/college-football/seasons/2026/teams/158?lang=en&region=us"
               },
               "homeTeam": {
+                "stat_values": {
+                  "gameProjection": 58.540000000000006,
+                  "teamChanceLoss": 41.46,
+                  "teamPredPtDiff": 2.939
+                },
                 "statistics": [
                   "gameProjection",
                   "matchupQuality",
@@ -619,7 +647,8 @@
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/college-football/seasons/2026/teams/2294?lang=en&region=us"
               }
             },
-            "stats_side": "home"
+            "stats_side": "home",
+            "tie_rule": ""
           },
           {
             "away_team_id": "344",
@@ -663,10 +692,17 @@
               "name",
               "shortName"
             ],
+            "predicted_margin": 16.629,
             "prob_home": 0.8755,
+            "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
+                "stat_values": {
+                  "gameProjection": 12.45,
+                  "teamChanceLoss": 87.55,
+                  "teamPredPtDiff": -16.629
+                },
                 "statistics": [
                   "gameProjection",
                   "matchupQuality",
@@ -680,6 +716,11 @@
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/college-football/seasons/2026/teams/344?lang=en&region=us"
               },
               "homeTeam": {
+                "stat_values": {
+                  "gameProjection": 87.55,
+                  "teamChanceLoss": 12.45,
+                  "teamPredPtDiff": 16.629
+                },
                 "statistics": [
                   "gameProjection",
                   "matchupQuality",
@@ -693,7 +734,8 @@
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/college-football/seasons/2026/teams/145?lang=en&region=us"
               }
             },
-            "stats_side": "home"
+            "stats_side": "home",
+            "tie_rule": ""
           }
         ]
       },
@@ -954,6 +996,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -972,7 +1019,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -1235,6 +1296,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -1253,7 +1319,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -1515,6 +1595,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -1533,7 +1618,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -1794,6 +1893,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -1812,7 +1916,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -2073,6 +2191,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -2091,7 +2214,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -2352,6 +2489,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -2370,7 +2512,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -2631,6 +2787,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -2649,7 +2810,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -2904,6 +3079,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -2922,7 +3102,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -3075,6 +3269,7 @@
       }
     },
     "eng.1": {
+      "book_normalisation": {},
       "books": [
         "DraftKings"
       ],
@@ -3088,8 +3283,8 @@
             "status": "ok"
           },
           "moneyline_draw": {
-            "event_coverage": 0.0,
-            "events": 0,
+            "event_coverage": 1.0,
+            "events": 4,
             "sample_size": 4,
             "status": "ok"
           },
@@ -3297,32 +3492,11 @@
       },
       "pre_events": 4,
       "predictor": {
-        "attempts": 3,
-        "errors": [
-          {
-            "away_team_id": "363",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/eng.1/events/401879225/competitions/401879225/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401879225",
-            "home_team_id": "393",
-            "sample_context": "pre"
-          },
-          {
-            "away_team_id": "388",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/eng.1/events/401879227/competitions/401879227/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401879227",
-            "home_team_id": "357",
-            "sample_context": "pre"
-          },
-          {
-            "away_team_id": "337",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/eng.1/events/401879226/competitions/401879226/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401879226",
-            "home_team_id": "360",
-            "sample_context": "pre"
-          }
-        ],
-        "note": "",
-        "samples": []
+        "attempts": 0,
+        "errors": [],
+        "note": "no /predictor route for this lane (LIVE_VERIFIED 2026-11-26: HTTP 400 for NHL and every soccer league); not requested",
+        "samples": [],
+        "skipped": true
       },
       "sast_days_probed": [
         "2026-11-26",
@@ -3747,6 +3921,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -3766,7 +3946,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -4204,6 +4399,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -4223,7 +4424,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -4661,6 +4877,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -4680,7 +4902,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -5118,6 +5355,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -5137,7 +5380,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -5289,6 +5547,7 @@
       }
     },
     "esp.1": {
+      "book_normalisation": {},
       "books": [
         "DraftKings"
       ],
@@ -5302,8 +5561,8 @@
             "status": "ok"
           },
           "moneyline_draw": {
-            "event_coverage": 0.0,
-            "events": 0,
+            "event_coverage": 1.0,
+            "events": 5,
             "sample_size": 5,
             "status": "ok"
           },
@@ -5511,32 +5770,11 @@
       },
       "pre_events": 5,
       "predictor": {
-        "attempts": 3,
-        "errors": [
-          {
-            "away_team_id": "87",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/esp.1/events/401882791/competitions/401882791/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401882791",
-            "home_team_id": "1538",
-            "sample_context": "pre"
-          },
-          {
-            "away_team_id": "101",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/esp.1/events/401882796/competitions/401882796/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401882796",
-            "home_team_id": "244",
-            "sample_context": "pre"
-          },
-          {
-            "away_team_id": "93",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/esp.1/events/401882790/competitions/401882790/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401882790",
-            "home_team_id": "99",
-            "sample_context": "pre"
-          }
-        ],
-        "note": "",
-        "samples": []
+        "attempts": 0,
+        "errors": [],
+        "note": "no /predictor route for this lane (LIVE_VERIFIED 2026-11-26: HTTP 400 for NHL and every soccer league); not requested",
+        "samples": [],
+        "skipped": true
       },
       "sast_days_probed": [
         "2026-11-26",
@@ -5961,6 +6199,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -5980,7 +6224,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -6417,6 +6676,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -6436,7 +6701,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -6873,6 +7153,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -6892,7 +7178,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -7329,6 +7630,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -7348,7 +7655,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -7785,6 +8107,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -7804,7 +8132,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -7955,6 +8298,7 @@
       }
     },
     "fra.1": {
+      "book_normalisation": {},
       "books": [
         "DraftKings"
       ],
@@ -7968,8 +8312,8 @@
             "status": "ok"
           },
           "moneyline_draw": {
-            "event_coverage": 0.0,
-            "events": 0,
+            "event_coverage": 1.0,
+            "events": 6,
             "sample_size": 6,
             "status": "ok"
           },
@@ -8177,32 +8521,11 @@
       },
       "pre_events": 6,
       "predictor": {
-        "attempts": 3,
-        "errors": [
-          {
-            "away_team_id": "6851",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/fra.1/events/401876392/competitions/401876392/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401876392",
-            "home_team_id": "6997",
-            "sample_context": "pre"
-          },
-          {
-            "away_team_id": "175",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/fra.1/events/401876394/competitions/401876394/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401876394",
-            "home_team_id": "7868",
-            "sample_context": "pre"
-          },
-          {
-            "away_team_id": "180",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/fra.1/events/401876391/competitions/401876391/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401876391",
-            "home_team_id": "3236",
-            "sample_context": "pre"
-          }
-        ],
-        "note": "",
-        "samples": []
+        "attempts": 0,
+        "errors": [],
+        "note": "no /predictor route for this lane (LIVE_VERIFIED 2026-11-26: HTTP 400 for NHL and every soccer league); not requested",
+        "samples": [],
+        "skipped": true
       },
       "sast_days_probed": [
         "2026-11-26",
@@ -8627,6 +8950,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -8646,7 +8975,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -9083,6 +9427,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -9102,7 +9452,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -9539,6 +9904,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -9558,7 +9929,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -9995,6 +10381,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -10014,7 +10406,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -10451,6 +10858,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -10470,7 +10883,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -10907,6 +11335,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -10926,7 +11360,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -11077,8 +11526,11 @@
       }
     },
     "ger.1": {
+      "book_normalisation": {
+        "Bet 365": "Bet365"
+      },
       "books": [
-        "Bet 365",
+        "Bet365",
         "DraftKings"
       ],
       "coverage": {
@@ -11091,8 +11543,8 @@
             "status": "ok"
           },
           "moneyline_draw": {
-            "event_coverage": 0.0,
-            "events": 0,
+            "event_coverage": 0.8333,
+            "events": 5,
             "sample_size": 6,
             "status": "ok"
           },
@@ -11117,8 +11569,8 @@
             "status": "ok"
           },
           "moneyline_draw": {
-            "event_coverage": 1.0,
-            "events": 6,
+            "event_coverage": 0.8333,
+            "events": 5,
             "sample_size": 6,
             "status": "ok"
           },
@@ -11167,7 +11619,7 @@
       "label": "Bundesliga",
       "markets": {
         "moneyline": 5,
-        "moneyline_draw": 6,
+        "moneyline_draw": 5,
         "spread": 5,
         "total": 5
       },
@@ -11285,32 +11737,11 @@
       },
       "pre_events": 6,
       "predictor": {
-        "attempts": 3,
-        "errors": [
-          {
-            "away_team_id": "268",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/ger.1/events/401884720/competitions/401884720/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401884720",
-            "home_team_id": "137",
-            "sample_context": "pre"
-          },
-          {
-            "away_team_id": "10388",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/ger.1/events/401884721/competitions/401884721/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401884721",
-            "home_team_id": "122",
-            "sample_context": "pre"
-          },
-          {
-            "away_team_id": "132",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/ger.1/events/401884722/competitions/401884722/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401884722",
-            "home_team_id": "127",
-            "sample_context": "pre"
-          }
-        ],
-        "note": "",
-        "samples": []
+        "attempts": 0,
+        "errors": [],
+        "note": "no /predictor route for this lane (LIVE_VERIFIED 2026-11-26: HTTP 400 for NHL and every soccer league); not requested",
+        "samples": [],
+        "skipped": true
       },
       "sast_days_probed": [
         "2026-11-26",
@@ -11735,6 +12166,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -11754,7 +12191,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -12191,6 +12643,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -12210,7 +12668,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -12589,6 +13062,7 @@
                 "odds.shape_unrecognised"
               ],
               "markets": [],
+              "markets_priced": [],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "bettingOdds",
@@ -12598,7 +13072,8 @@
                 "provider"
               ],
               "pre_match_quotes": 0,
-              "quotes": 0
+              "quotes": 0,
+              "side_keys": {}
             },
             "pickcenter_paths": [],
             "scheduled_utc": "2026-11-28T14:30:00Z",
@@ -12912,6 +13387,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -12931,7 +13412,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -13368,6 +13864,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -13387,7 +13889,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -13824,6 +14341,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -13843,7 +14366,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -13994,6 +14532,7 @@
       }
     },
     "ita.1": {
+      "book_normalisation": {},
       "books": [
         "DraftKings"
       ],
@@ -14007,8 +14546,8 @@
             "status": "ok"
           },
           "moneyline_draw": {
-            "event_coverage": 0.0,
-            "events": 0,
+            "event_coverage": 1.0,
+            "events": 4,
             "sample_size": 4,
             "status": "ok"
           },
@@ -14216,32 +14755,11 @@
       },
       "pre_events": 4,
       "predictor": {
-        "attempts": 3,
-        "errors": [
-          {
-            "away_team_id": "107",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/ita.1/events/401875004/competitions/401875004/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401875004",
-            "home_team_id": "17530",
-            "sample_context": "pre"
-          },
-          {
-            "away_team_id": "115",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/ita.1/events/401875081/competitions/401875081/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401875081",
-            "home_team_id": "4057",
-            "sample_context": "pre"
-          },
-          {
-            "away_team_id": "112",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/ita.1/events/401874826/competitions/401874826/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401874826",
-            "home_team_id": "239",
-            "sample_context": "pre"
-          }
-        ],
-        "note": "",
-        "samples": []
+        "attempts": 0,
+        "errors": [],
+        "note": "no /predictor route for this lane (LIVE_VERIFIED 2026-11-26: HTTP 400 for NHL and every soccer league); not requested",
+        "samples": [],
+        "skipped": true
       },
       "sast_days_probed": [
         "2026-11-26",
@@ -14666,6 +15184,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -14685,7 +15209,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -15122,6 +15661,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -15141,7 +15686,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -15578,6 +16138,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -15597,7 +16163,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -16034,6 +16615,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -16053,7 +16640,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -16204,8 +16806,11 @@
       }
     },
     "nfl": {
+      "book_normalisation": {
+        "Draft Kings": "DraftKings"
+      },
       "books": [
-        "Draft Kings"
+        "DraftKings"
       ],
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
@@ -16443,231 +17048,15 @@
       "pre_events": 4,
       "predictor": {
         "attempts": 3,
-        "errors": [
-          {
-            "away_team_id": "3",
-            "error": "event 401873081: predictor probabilities sum to 99.6480",
-            "game_id": "401873081",
-            "home_team_id": "8",
-            "parse_error": "event 401873081: predictor probabilities sum to 99.6480",
-            "paths": [
-              "predictor.$ref",
-              "predictor.name",
-              "predictor.shortName",
-              "predictor.lastModified",
-              "predictor.homeTeam",
-              "predictor.homeTeam.team",
-              "predictor.homeTeam.team.$ref",
-              "predictor.homeTeam.statistics",
-              "predictor.homeTeam.statistics[].name",
-              "predictor.homeTeam.statistics[].displayName",
-              "predictor.homeTeam.statistics[].shortDisplayName",
-              "predictor.homeTeam.statistics[].description",
-              "predictor.homeTeam.statistics[].abbreviation",
-              "predictor.homeTeam.statistics[].value",
-              "predictor.homeTeam.statistics[].displayValue",
-              "predictor.awayTeam",
-              "predictor.awayTeam.team",
-              "predictor.awayTeam.team.$ref",
-              "predictor.awayTeam.statistics",
-              "predictor.awayTeam.statistics[].name",
-              "predictor.awayTeam.statistics[].displayName",
-              "predictor.awayTeam.statistics[].shortDisplayName",
-              "predictor.awayTeam.statistics[].description",
-              "predictor.awayTeam.statistics[].abbreviation",
-              "predictor.awayTeam.statistics[].value",
-              "predictor.awayTeam.statistics[].displayValue"
-            ],
-            "payload_keys": [
-              "$ref",
-              "awayTeam",
-              "homeTeam",
-              "lastModified",
-              "name",
-              "shortName"
-            ],
-            "sample_context": "pre",
-            "sides": {
-              "awayTeam": {
-                "statistics": [
-                  "gameProjection",
-                  "matchupQuality",
-                  "oppSeasonStrengthFbsRank",
-                  "oppSeasonStrengthRating",
-                  "teamChanceLoss",
-                  "teamChanceTie",
-                  "teamPredPtDiff"
-                ],
-                "team_id": null,
-                "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/teams/3?lang=en&region=us"
-              },
-              "homeTeam": {
-                "statistics": [
-                  "gameProjection",
-                  "matchupQuality",
-                  "oppSeasonStrengthFbsRank",
-                  "oppSeasonStrengthRating",
-                  "teamChanceLoss",
-                  "teamChanceTie",
-                  "teamPredPtDiff"
-                ],
-                "team_id": null,
-                "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/teams/8?lang=en&region=us"
-              }
-            }
-          },
-          {
-            "away_team_id": "21",
-            "error": "event 401873080: predictor probabilities sum to 99.8580",
-            "game_id": "401873080",
-            "home_team_id": "6",
-            "parse_error": "event 401873080: predictor probabilities sum to 99.8580",
-            "paths": [
-              "predictor.$ref",
-              "predictor.name",
-              "predictor.shortName",
-              "predictor.lastModified",
-              "predictor.homeTeam",
-              "predictor.homeTeam.team",
-              "predictor.homeTeam.team.$ref",
-              "predictor.homeTeam.statistics",
-              "predictor.homeTeam.statistics[].name",
-              "predictor.homeTeam.statistics[].displayName",
-              "predictor.homeTeam.statistics[].shortDisplayName",
-              "predictor.homeTeam.statistics[].description",
-              "predictor.homeTeam.statistics[].abbreviation",
-              "predictor.homeTeam.statistics[].value",
-              "predictor.homeTeam.statistics[].displayValue",
-              "predictor.awayTeam",
-              "predictor.awayTeam.team",
-              "predictor.awayTeam.team.$ref",
-              "predictor.awayTeam.statistics",
-              "predictor.awayTeam.statistics[].name",
-              "predictor.awayTeam.statistics[].displayName",
-              "predictor.awayTeam.statistics[].shortDisplayName",
-              "predictor.awayTeam.statistics[].description",
-              "predictor.awayTeam.statistics[].abbreviation",
-              "predictor.awayTeam.statistics[].value",
-              "predictor.awayTeam.statistics[].displayValue"
-            ],
-            "payload_keys": [
-              "$ref",
-              "awayTeam",
-              "homeTeam",
-              "lastModified",
-              "name",
-              "shortName"
-            ],
-            "sample_context": "pre",
-            "sides": {
-              "awayTeam": {
-                "statistics": [
-                  "gameProjection",
-                  "matchupQuality",
-                  "oppSeasonStrengthFbsRank",
-                  "oppSeasonStrengthRating",
-                  "teamChanceLoss",
-                  "teamChanceTie",
-                  "teamPredPtDiff"
-                ],
-                "team_id": null,
-                "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/teams/21?lang=en&region=us"
-              },
-              "homeTeam": {
-                "statistics": [
-                  "gameProjection",
-                  "matchupQuality",
-                  "oppSeasonStrengthFbsRank",
-                  "oppSeasonStrengthRating",
-                  "teamChanceLoss",
-                  "teamChanceTie",
-                  "teamPredPtDiff"
-                ],
-                "team_id": null,
-                "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/teams/6?lang=en&region=us"
-              }
-            }
-          },
-          {
-            "away_team_id": "12",
-            "error": "event 401873082: predictor probabilities sum to 99.6220",
-            "game_id": "401873082",
-            "home_team_id": "2",
-            "parse_error": "event 401873082: predictor probabilities sum to 99.6220",
-            "paths": [
-              "predictor.$ref",
-              "predictor.name",
-              "predictor.shortName",
-              "predictor.lastModified",
-              "predictor.homeTeam",
-              "predictor.homeTeam.team",
-              "predictor.homeTeam.team.$ref",
-              "predictor.homeTeam.statistics",
-              "predictor.homeTeam.statistics[].name",
-              "predictor.homeTeam.statistics[].displayName",
-              "predictor.homeTeam.statistics[].shortDisplayName",
-              "predictor.homeTeam.statistics[].description",
-              "predictor.homeTeam.statistics[].abbreviation",
-              "predictor.homeTeam.statistics[].value",
-              "predictor.homeTeam.statistics[].displayValue",
-              "predictor.awayTeam",
-              "predictor.awayTeam.team",
-              "predictor.awayTeam.team.$ref",
-              "predictor.awayTeam.statistics",
-              "predictor.awayTeam.statistics[].name",
-              "predictor.awayTeam.statistics[].displayName",
-              "predictor.awayTeam.statistics[].shortDisplayName",
-              "predictor.awayTeam.statistics[].description",
-              "predictor.awayTeam.statistics[].abbreviation",
-              "predictor.awayTeam.statistics[].value",
-              "predictor.awayTeam.statistics[].displayValue"
-            ],
-            "payload_keys": [
-              "$ref",
-              "awayTeam",
-              "homeTeam",
-              "lastModified",
-              "name",
-              "shortName"
-            ],
-            "sample_context": "pre",
-            "sides": {
-              "awayTeam": {
-                "statistics": [
-                  "gameProjection",
-                  "matchupQuality",
-                  "oppSeasonStrengthFbsRank",
-                  "oppSeasonStrengthRating",
-                  "teamChanceLoss",
-                  "teamChanceTie",
-                  "teamPredPtDiff"
-                ],
-                "team_id": null,
-                "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/teams/12?lang=en&region=us"
-              },
-              "homeTeam": {
-                "statistics": [
-                  "gameProjection",
-                  "matchupQuality",
-                  "oppSeasonStrengthFbsRank",
-                  "oppSeasonStrengthRating",
-                  "teamChanceLoss",
-                  "teamChanceTie",
-                  "teamPredPtDiff"
-                ],
-                "team_id": null,
-                "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/teams/2?lang=en&region=us"
-              }
-            }
-          }
-        ],
+        "errors": [],
         "note": "",
         "samples": [
           {
             "away_team_id": "3",
+            "expected_away": null,
+            "expected_home": null,
             "game_id": "401873081",
             "home_team_id": "8",
-            "parse_error": "event 401873081: predictor probabilities sum to 99.6480",
             "paths": [
               "predictor.$ref",
               "predictor.name",
@@ -16704,9 +17093,18 @@
               "name",
               "shortName"
             ],
+            "predicted_margin": 1.368,
+            "prob_home": 0.559208,
+            "prob_tie": 0.00353,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
+                "stat_values": {
+                  "gameProjection": 43.924,
+                  "teamChanceLoss": 55.724,
+                  "teamChanceTie": 0.35300000000000004,
+                  "teamPredPtDiff": -1.368
+                },
                 "statistics": [
                   "gameProjection",
                   "matchupQuality",
@@ -16720,6 +17118,12 @@
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/teams/3?lang=en&region=us"
               },
               "homeTeam": {
+                "stat_values": {
+                  "gameProjection": 55.724,
+                  "teamChanceLoss": 43.924,
+                  "teamChanceTie": 0.35300000000000004,
+                  "teamPredPtDiff": 1.368
+                },
                 "statistics": [
                   "gameProjection",
                   "matchupQuality",
@@ -16732,13 +17136,16 @@
                 "team_id": null,
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/teams/8?lang=en&region=us"
               }
-            }
+            },
+            "stats_side": "home",
+            "tie_rule": "push_conditional"
           },
           {
             "away_team_id": "21",
+            "expected_away": null,
+            "expected_home": null,
             "game_id": "401873080",
             "home_team_id": "6",
-            "parse_error": "event 401873080: predictor probabilities sum to 99.8580",
             "paths": [
               "predictor.$ref",
               "predictor.name",
@@ -16775,9 +17182,18 @@
               "name",
               "shortName"
             ],
+            "predicted_margin": 9.24,
+            "prob_home": 0.823289,
+            "prob_tie": 0.00142,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
+                "stat_values": {
+                  "gameProjection": 17.646,
+                  "teamChanceLoss": 82.21199999999999,
+                  "teamChanceTie": 0.14200000000000002,
+                  "teamPredPtDiff": -9.24
+                },
                 "statistics": [
                   "gameProjection",
                   "matchupQuality",
@@ -16791,6 +17207,12 @@
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/teams/21?lang=en&region=us"
               },
               "homeTeam": {
+                "stat_values": {
+                  "gameProjection": 82.21199999999999,
+                  "teamChanceLoss": 17.646,
+                  "teamChanceTie": 0.14200000000000002,
+                  "teamPredPtDiff": 9.24
+                },
                 "statistics": [
                   "gameProjection",
                   "matchupQuality",
@@ -16803,13 +17225,16 @@
                 "team_id": null,
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/teams/6?lang=en&region=us"
               }
-            }
+            },
+            "stats_side": "home",
+            "tie_rule": "push_conditional"
           },
           {
             "away_team_id": "12",
+            "expected_away": null,
+            "expected_home": null,
             "game_id": "401873082",
             "home_team_id": "2",
-            "parse_error": "event 401873082: predictor probabilities sum to 99.6220",
             "paths": [
               "predictor.$ref",
               "predictor.name",
@@ -16846,9 +17271,18 @@
               "name",
               "shortName"
             ],
+            "predicted_margin": 0.769,
+            "prob_home": 0.527604,
+            "prob_tie": 0.00378,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
+                "stat_values": {
+                  "gameProjection": 47.061,
+                  "teamChanceLoss": 52.561,
+                  "teamChanceTie": 0.378,
+                  "teamPredPtDiff": -0.769
+                },
                 "statistics": [
                   "gameProjection",
                   "matchupQuality",
@@ -16862,6 +17296,12 @@
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/teams/12?lang=en&region=us"
               },
               "homeTeam": {
+                "stat_values": {
+                  "gameProjection": 52.561,
+                  "teamChanceLoss": 47.061,
+                  "teamChanceTie": 0.378,
+                  "teamPredPtDiff": 0.769
+                },
                 "statistics": [
                   "gameProjection",
                   "matchupQuality",
@@ -16874,7 +17314,9 @@
                 "team_id": null,
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/teams/2?lang=en&region=us"
               }
-            }
+            },
+            "stats_side": "home",
+            "tie_rule": "push_conditional"
           }
         ]
       },
@@ -17180,6 +17622,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -17198,7 +17645,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -17506,6 +17967,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -17524,7 +17990,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -17832,6 +18312,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -17850,7 +18335,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -18158,6 +18657,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -18176,7 +18680,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 3,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -18435,6 +18953,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -18453,7 +18976,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 0,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -18587,6 +19124,7 @@
       }
     },
     "nhl": {
+      "book_normalisation": {},
       "books": [],
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
@@ -18809,32 +19347,11 @@
       },
       "pre_events": 28,
       "predictor": {
-        "attempts": 3,
-        "errors": [
-          {
-            "away_team_id": "21",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl/events/401892795/competitions/401892795/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401892795",
-            "home_team_id": "1",
-            "sample_context": "pre"
-          },
-          {
-            "away_team_id": "3",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl/events/401892796/competitions/401892796/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401892796",
-            "home_team_id": "11",
-            "sample_context": "pre"
-          },
-          {
-            "away_team_id": "129764",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl/events/401892797/competitions/401892797/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401892797",
-            "home_team_id": "27",
-            "sample_context": "pre"
-          }
-        ],
-        "note": "",
-        "samples": []
+        "attempts": 0,
+        "errors": [],
+        "note": "no /predictor route for this lane (LIVE_VERIFIED 2026-11-26: HTTP 400 for NHL and every soccer league); not requested",
+        "samples": [],
+        "skipped": true
       },
       "sast_days_probed": [
         "2026-11-26",
@@ -18962,9 +19479,11 @@
                 "pickcenter.absent"
               ],
               "markets": [],
+              "markets_priced": [],
               "observed_entry_keys": [],
               "pre_match_quotes": 0,
-              "quotes": 0
+              "quotes": 0,
+              "side_keys": {}
             },
             "pickcenter_paths": [],
             "scheduled_utc": "2026-11-27T18:00:00Z",
@@ -19094,9 +19613,11 @@
                 "pickcenter.absent"
               ],
               "markets": [],
+              "markets_priced": [],
               "observed_entry_keys": [],
               "pre_match_quotes": 0,
-              "quotes": 0
+              "quotes": 0,
+              "side_keys": {}
             },
             "pickcenter_paths": [],
             "scheduled_utc": "2026-11-27T18:00:00Z",
@@ -19226,9 +19747,11 @@
                 "pickcenter.absent"
               ],
               "markets": [],
+              "markets_priced": [],
               "observed_entry_keys": [],
               "pre_match_quotes": 0,
-              "quotes": 0
+              "quotes": 0,
+              "side_keys": {}
             },
             "pickcenter_paths": [],
             "scheduled_utc": "2026-11-27T18:00:00Z",
@@ -19358,9 +19881,11 @@
                 "pickcenter.absent"
               ],
               "markets": [],
+              "markets_priced": [],
               "observed_entry_keys": [],
               "pre_match_quotes": 0,
-              "quotes": 0
+              "quotes": 0,
+              "side_keys": {}
             },
             "pickcenter_paths": [],
             "scheduled_utc": "2026-11-27T19:00:00Z",
@@ -19490,9 +20015,11 @@
                 "pickcenter.absent"
               ],
               "markets": [],
+              "markets_priced": [],
               "observed_entry_keys": [],
               "pre_match_quotes": 0,
-              "quotes": 0
+              "quotes": 0,
+              "side_keys": {}
             },
             "pickcenter_paths": [],
             "scheduled_utc": "2026-11-27T20:00:00Z",
@@ -19622,9 +20149,11 @@
                 "pickcenter.absent"
               ],
               "markets": [],
+              "markets_priced": [],
               "observed_entry_keys": [],
               "pre_match_quotes": 0,
-              "quotes": 0
+              "quotes": 0,
+              "side_keys": {}
             },
             "pickcenter_paths": [],
             "scheduled_utc": "2026-11-27T20:00:00Z",
@@ -19754,9 +20283,11 @@
                 "pickcenter.absent"
               ],
               "markets": [],
+              "markets_priced": [],
               "observed_entry_keys": [],
               "pre_match_quotes": 0,
-              "quotes": 0
+              "quotes": 0,
+              "side_keys": {}
             },
             "pickcenter_paths": [],
             "scheduled_utc": "2026-11-27T20:00:00Z",
@@ -19886,9 +20417,11 @@
                 "pickcenter.absent"
               ],
               "markets": [],
+              "markets_priced": [],
               "observed_entry_keys": [],
               "pre_match_quotes": 0,
-              "quotes": 0
+              "quotes": 0,
+              "side_keys": {}
             },
             "pickcenter_paths": [],
             "scheduled_utc": "2026-11-27T20:00:00Z",
@@ -20057,6 +20590,11 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -20075,7 +20613,21 @@
                 "underOdds"
               ],
               "pre_match_quotes": 0,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -20209,6 +20761,7 @@
       }
     },
     "uefa.champions": {
+      "book_normalisation": {},
       "books": [],
       "coverage": {
         "denominator": "scoreboard_pre_match_events",
@@ -20364,18 +20917,11 @@
       },
       "pre_events": 0,
       "predictor": {
-        "attempts": 1,
-        "errors": [
-          {
-            "away_team_id": "510",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/soccer/leagues/uefa.champions/events/401915291/competitions/401915291/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401915291",
-            "home_team_id": "1068",
-            "sample_context": "post"
-          }
-        ],
-        "note": "no pre-match events in the probe window; predictor keys sampled on a completed fixture and do NOT establish pre-tip availability",
-        "samples": []
+        "attempts": 0,
+        "errors": [],
+        "note": "no /predictor route for this lane (LIVE_VERIFIED 2026-11-26: HTTP 400 for NHL and every soccer league); not requested",
+        "samples": [],
+        "skipped": true
       },
       "sast_days_probed": [
         "2026-11-26",
@@ -20646,6 +21192,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -20665,7 +21217,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 0,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -21049,6 +21616,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -21068,7 +21641,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 0,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -21452,6 +22040,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -21471,7 +22065,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 0,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -21854,6 +22463,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -21873,7 +22488,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 0,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -22258,6 +22888,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -22277,7 +22913,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 0,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -22662,6 +23313,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -22681,7 +23338,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 0,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -23065,6 +23737,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -23084,7 +23762,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 0,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
@@ -23470,6 +24163,12 @@
                 "spread",
                 "total"
               ],
+              "markets_priced": [
+                "moneyline",
+                "moneyline_draw",
+                "spread",
+                "total"
+              ],
               "observed_entry_keys": [
                 "awayTeamOdds",
                 "details",
@@ -23489,7 +24188,22 @@
                 "underOdds"
               ],
               "pre_match_quotes": 0,
-              "quotes": 3
+              "quotes": 3,
+              "side_keys": {
+                "moneyline": [
+                  "away",
+                  "draw",
+                  "home"
+                ],
+                "spread": [
+                  "away",
+                  "home"
+                ],
+                "total": [
+                  "over",
+                  "under"
+                ]
+              }
             },
             "pickcenter_paths": [
               "pickcenter[0].provider",
