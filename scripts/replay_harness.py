@@ -81,7 +81,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--since", default=None)
     parser.add_argument("--until", default=None)
     parser.add_argument("--mode", choices=["per-league", "cross-league"], default="per-league")
-    parser.add_argument("--parity", action="store_true", help="rebuild receipts and diff")
+    parser.add_argument(
+        "--parity",
+        action="store_true",
+        help="rebuild receipts and diff; exits 1 on any mismatch (0 when there is no receipt to check)",
+    )
     parser.add_argument("--legs", type=int, default=None)
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--min-leg-odds", type=float, default=None)
@@ -144,6 +148,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                 print(json.dumps(report[key], indent=2, sort_keys=True))
         if "replay" in report:
             print(report["replay"]["low_sample_flag"], "|", report["replay"]["note"])
+    if args.parity and report["parity"]["mismatched"]:
+        return 1
     return 0
 
 

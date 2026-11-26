@@ -212,6 +212,13 @@ integer lines carry a real `push_probability`.
   Dixon-Coles rho behaviour, calibration leakage guards, gate rejection paths,
   receipt schema/immutability, settlement, 100% replay parity, paired A/B NO-OP
   refusal, cross-sport acca assembly, and zero-settled-day handling.
+* `scripts/replay_harness.py --parity` rebuilds each frozen receipt and diffs
+  ticket id, combined price, and every leg price, not just the selected legs; it
+  exits 1 on any mismatch, and reports `vacuous: true` when there is no receipt
+  to check (an empty vault is not a parity proof).
+* Summary `pickcenter` is now a quote source: when a scoreboard `odds` array is
+  empty, one summary fetch per fixture supplies the freeze, and the discovery
+  gap stays in the coverage file so the empty scoreboard array remains visible.
 * **Verified live (2026-11-26T12:00:17Z):** route resolution for all nine lanes,
   the summary `pickcenter`/`odds`/`hasOdds` containers, `has_predictor: false` on
   every sampled summary, core season-index counts, and `$ref` query suffixes.
