@@ -235,9 +235,9 @@ def test_calibration_excludes_same_day_and_future_results():
     book = CalibrationBook()
     segment = ("nhl", "moneyline", "full_game", "nhl_poisson_v1")
     for index in range(40):
-        book.add(segment, 0.6, 1, "2026-11-01")
-    book.add(segment, 0.6, 0, "2026-11-28")  # same day as the scoring day
-    book.add(segment, 0.6, 0, "2026-12-05")  # future
+        book.add(segment, 0.6, 1, "2026-11-01", f"history{index}")
+    book.add(segment, 0.6, 0, "2026-11-28", "same-day")  # the scoring day itself
+    book.add(segment, 0.6, 0, "2026-12-05", "future")  # future
     report = book.report(segment, "2026-11-28")
     assert report.n == 40
     assert report.sufficient, report.reasons
@@ -247,8 +247,8 @@ def test_calibration_excludes_same_day_and_future_results():
 def test_calibration_requires_thirty_samples():
     book = CalibrationBook()
     segment = ("nhl", "total", "full_game", "nhl_poisson_v1")
-    for _ in range(29):
-        book.add(segment, 0.5, 1, "2026-11-01")
+    for index in range(29):
+        book.add(segment, 0.5, 1, "2026-11-01", f"history{index}")
     report = book.report(segment, "2026-11-28")
     assert not report.sufficient
     assert "insufficient_walk_forward_samples" in report.reasons
@@ -259,7 +259,7 @@ def test_calibration_brier_cap_rejects_a_bad_segment():
     book = CalibrationBook()
     segment = ("eng.1", "moneyline", "full_game", "dixon_coles_v1")
     for index in range(40):
-        book.add(segment, 0.9, 1 if index % 5 == 0 else 0, "2026-11-01")
+        book.add(segment, 0.9, 1 if index % 5 == 0 else 0, "2026-11-01", f"history{index}")
     report = book.report(segment, "2026-11-28", brier_cap=0.22, cap_vs_base_rate=True)
     assert not report.sufficient
     assert "brier_above_cap" in report.reasons or "not_better_than_base_rate" in report.reasons
@@ -271,6 +271,26 @@ def test_platt_shrinks_overconfidence_and_stays_monotone():
     shrunk = sigmoid(a * logit(0.9) + b)
     assert 0.3 < shrunk < 0.9
     assert sigmoid(a * logit(0.6) + b) < shrunk
+
+
+def test_calibration_fails_closed_when_a_sample_has_no_fixture_id():
+    """P2-N4: rows without a fixture cannot be weighted, so they cannot count.
+
+    Two-sided markets already emit several rows per fixture; weighting them per
+    game is the only thing stopping 15 fixtures from reporting as 30 samples. A
+    row with no ``game_id`` makes that weight unknowable, and guessing 1.0 would
+    restore exactly the inflation the per-game gate exists to prevent.
+    """
+    book = CalibrationBook()
+    segment = ("nhl", "moneyline", "full_game", "nhl_poisson_v1")
+    for index in range(40):
+        book.add(segment, 0.62, 1 if index < 25 else 0, "2026-11-01")
+    report = book.report(segment, "2026-11-28")
+    assert report.n == 40
+    assert report.n_games == 0, "an unattributable sample has no game count at all"
+    assert "observations_missing_game_id" in report.reasons
+    assert not report.sufficient
+    assert report.calibrate(0.62) == 0.62, "it must not calibrate anything either"
 
 
 def test_calibration_counts_unique_games_not_correlated_sides():

@@ -39,7 +39,7 @@ SOURCE = "nhl_poisson_v1"
 def _calibrated_report(n: int = 40, probability: float = 0.62, wins: int = 25):
     book = CalibrationBook()
     for index in range(n):
-        book.add(SEGMENT, probability, 1 if index < wins else 0, "2026-11-01")
+        book.add(SEGMENT, probability, 1 if index < wins else 0, "2026-11-01", f"hist{index}")
     return book.report(SEGMENT, DAY)
 
 
@@ -145,6 +145,100 @@ def _freeze(tmp_path: Path, rows, *, league, legs: int = 2, limit: int = 1):
         decision_state={"status": "frozen", "planned_cutoff_utc": "2026-11-28T14:00:00Z"},
     )
     return receipt, tickets
+
+
+def _three_market_board(games: int = 67, league_key: str = "nhl"):
+    """A real-sized board: ``games`` fixtures, each with three priced markets.
+
+    Priced the way a live board is priced — a short moneyline favourite, and
+    spread/total legs near even money. Pairs of favourites sit *below* the acca
+    floor, so they dominate any confidence-ranked walk and starve it.
+    """
+    league = LEAGUES[league_key]
+    surfaces = (
+        ("moneyline", "home", None, 1.50, 0.78, 32),
+        ("spread", "home", -1.5, 1.92, 0.55, 22),
+        ("total", "over", 5.5, 1.98, 0.53, 21),
+    )
+    reports = {}
+    for market, _selection, _line, _price, probability, wins in surfaces:
+        segment = (league_key, market, "full_game", SOURCE)
+        book = CalibrationBook()
+        for index in range(40):
+            book.add(
+                segment,
+                probability,
+                1 if index < wins else 0,
+                "2026-11-01",
+                f"{market}{index}",
+            )
+        reports[segment] = book.report(segment, DAY)
+
+    forecasts, quotes = [], []
+    for index in range(games):
+        game = _game(index, league=league_key)
+        for market, selection, line, price, probability, _wins in surfaces:
+            forecasts.append(
+                Forecast(
+                    game_id=game.game_id,
+                    league=league_key,
+                    scheduled_utc=game.scheduled_utc,
+                    home_name=game.home_name,
+                    away_name=game.away_name,
+                    market=market,
+                    selection=selection,
+                    line=line,
+                    raw_probability=probability,
+                    source=SOURCE,
+                )
+            )
+            other = "away" if market in {"moneyline", "spread"} else "under"
+            quotes.append(
+                BookQuote(
+                    game_id=game.game_id,
+                    book="DraftKings",
+                    market=market,
+                    observed_utc="2026-11-28T12:00:00Z",
+                    side_prices={selection: price, other: 2.05},
+                    line=line,
+                    pre_match=True,
+                )
+            )
+    scored = score_forecasts(
+        forecasts,
+        quotes,
+        league=league,
+        reports=reports,
+        prior_roi={"status": "positive", "n": 8, "roi": 0.05},
+    )
+    return league, [pick_row(forecast, DAY) for forecast in scored]
+
+
+def test_a_sixty_seven_fixture_board_still_returns_three_acca_lines():
+    """P0-N1: the acca walk starved to zero on every slate of 46+ fixtures.
+
+    The cheapest pairs on a big board are two short favourites, whose combined
+    price sits under the ``@3.00`` floor. A bounded best-first walk spent its
+    whole budget inside that useless region; with two legs the space is small
+    enough to enumerate, so the floor can no longer hide the in-band pairs.
+    """
+    league, rows = _three_market_board()
+    assert len(rows) == 201
+    eligible = eligible_rows(rows, policy=GatePolicy())
+    tickets = build_accas(
+        eligible,
+        legs=2,
+        limit=3,
+        min_combined_odds=3.00,
+        max_combined_odds=4.50,
+    )
+    assert len(tickets) == 3, "a 67-fixture slate must still fill the lane"
+    for ticket in tickets:
+        assert 3.00 <= ticket["combined_decimal_odds"] <= 4.50
+        fixtures = {leg["game_id"] for leg in ticket["legs"]}
+        assert len(fixtures) == 2, "two legs from one fixture are one bet"
+    used = [leg["game_id"] for ticket in tickets for leg in ticket["legs"]]
+    assert len(set(used)) == len(used), "frozen accas never share a fixture"
 
 
 def test_gate_rejects_uncalibrated_negative_ev_and_out_of_band_prices():
@@ -447,9 +541,9 @@ def _three_way_pool(
     segment = (league.key, "moneyline", "full_game", source)
     book = CalibrationBook()
     for index in range(40):
-        book.add(segment, 0.55, 1 if index < 22 else 0, "2026-11-01")
-        book.add(segment, 0.26, 1 if index < 10 else 0, "2026-11-01")
-        book.add(segment, 0.19, 1 if index < 8 else 0, "2026-11-01")
+        book.add(segment, 0.55, 1 if index < 22 else 0, "2026-11-01", f"hist{index}")
+        book.add(segment, 0.26, 1 if index < 10 else 0, "2026-11-01", f"hist{index}")
+        book.add(segment, 0.19, 1 if index < 8 else 0, "2026-11-01", f"hist{index}")
     reports = {segment: book.report(segment, DAY)}
 
     forecasts, quotes = [], []
@@ -596,6 +690,49 @@ def test_settled_pick_history_counts_only_the_model_side(tmp_path):
     picks = settled_pick_history(tmp_path, league)
     assert picks == [(DAY, pytest.approx(1.95), "win")], (
         "the -EV away side must never enter the ROI band"
+    )
+
+
+def test_a_postponed_fixture_is_counted_once_by_prior_roi(tmp_path):
+    """P2-N3: a refrozen postponement is the same wager, not a second pick.
+
+    The fixture is pushed to a later day, refunded at the first freeze and
+    frozen again on the new date at a new price. Two receipts, one fixture: the
+    ROI band must see one settled pick, at the price that was actually staked.
+    """
+    from bullion.tickets import settled_pick_history
+
+    league, rows = _pool(tmp_path, n=3)
+    policy = {"min_leg_odds": 1.20, "max_leg_odds": 3.00}
+    first = rows[0]
+    freeze_receipt(
+        tmp_path,
+        league=league,
+        day="2026-11-28",
+        captured_utc="2026-11-28T15:00:00Z",
+        candidate_pool=[first],
+        accas=[],
+        selection_policy=policy,
+    )
+    refrozen = json.loads(json.dumps(first))
+    refrozen.update({"date": "2026-11-29", "forecast_id": "fid-refrozen", "pick_id": "fid-refrozen"})
+    refrozen["book"].update(
+        {"observed_utc": "2026-11-29T12:00:00Z", "selected_decimal_price": 2.05}
+    )
+    freeze_receipt(
+        tmp_path,
+        league=league,
+        day="2026-11-29",
+        captured_utc="2026-11-29T15:00:00Z",
+        candidate_pool=[refrozen],
+        accas=[],
+        selection_policy=policy,
+    )
+    settle_lane(tmp_path, league, _final_games([first["game_id"]]))
+
+    picks = settled_pick_history(tmp_path, league)
+    assert picks == [("2026-11-28", pytest.approx(1.95), "win")], (
+        "one fixture contributes one pick, at the price of its first freeze"
     )
 
 

@@ -326,8 +326,12 @@ class Store:
         ``forecast_snapshots`` lives only in the gitignored SQLite cache, so one
         cache eviction reset every lane's walk-forward history to zero. The
         receipts in ``localdata/`` are the durable copy: they are write-once and
-        carry the exact ``forecast_id``, probability and day that were frozen.
-        ``INSERT OR IGNORE`` keeps this idempotent next to live recording.
+        carry the frozen probability and day. The id is *recomputed* by the
+        caller (:func:`bullion.models.forecast_id_for`) rather than copied,
+        because a receipt's id was frozen after a book was attached and the
+        warehouse records the forecast before; copying it inserted a second row
+        for an observation the cache already held. ``INSERT OR IGNORE`` keeps
+        this idempotent next to live recording.
         """
         restored = 0
         for row in rows:

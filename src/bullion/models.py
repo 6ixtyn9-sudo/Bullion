@@ -319,24 +319,54 @@ class Forecast:
 
     @property
     def forecast_id(self) -> str:
-        identity = "|".join(
-            [
-                self.league,
-                self.game_id,
-                self.market,
-                self.period,
-                self.selection,
-                "" if self.line is None else f"{self.line:g}",
-                self.source,
-                self.book.book if self.book else "no_book",
-                self.book.observed_utc if self.book else "",
-            ]
+        """Stable wager identity: the selection and the model, never the price.
+
+        The book used to be part of this hash, but the same forecast is recorded
+        *before* a book is attached and frozen *after*, so it produced two ids
+        for one observation — one in ``forecast_snapshots``, a different one in
+        the receipt's ``candidate_pool``. Restoring history from a receipt then
+        duplicated every row it meant to heal. Price is evidence, not identity:
+        it lives on the receipt row, where ``price_evidence`` already records
+        the book and the observation time.
+        """
+        return forecast_id_for(
+            league=self.league,
+            game_id=self.game_id,
+            market=self.market,
+            period=self.period,
+            selection=self.selection,
+            line=self.line,
+            source=self.source,
         )
-        return hashlib.sha256(identity.encode("utf-8")).hexdigest()[:20]
 
     @property
     def wager_key(self) -> tuple:
         return (self.league, self.game_id, self.market, self.period, self.selection, self.line)
+
+
+def forecast_id_for(
+    *,
+    league: str,
+    game_id: str,
+    market: str,
+    period: str,
+    selection: str,
+    line: Any,
+    source: str,
+) -> str:
+    """Hash a wager identity: ``(league, game, market, period, selection, line, source)``."""
+    identity = "|".join(
+        [
+            str(league),
+            str(game_id),
+            str(market),
+            str(period),
+            str(selection),
+            "" if line is None else f"{float(line):g}",
+            str(source),
+        ]
+    )
+    return hashlib.sha256(identity.encode("utf-8")).hexdigest()[:20]
 
 
 def utc_minus_hours(value: Any, hours: float) -> str:

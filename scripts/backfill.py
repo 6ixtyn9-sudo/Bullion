@@ -33,7 +33,7 @@ from bullion.espn import (  # noqa: E402
     parse_summary,
     season_events_url,
 )
-from bullion.models import LEAGUES, Sport, now_utc  # noqa: E402
+from bullion.models import LEAGUES, Sport, forecast_id_for, now_utc  # noqa: E402
 from bullion.store import Store  # noqa: E402
 
 REINDEX_PAGES = 25
@@ -225,9 +225,22 @@ def rehydrate_forecasts(store: Store, localdata: Path) -> Dict[str, int]:
                 except (TypeError, ValueError):
                     counters["skipped"] += 1
                     continue
+                # The receipt's id was frozen *after* a book was attached; the
+                # warehouse records the same forecast before attachment with an
+                # older id that included the book. Recompute the price-free
+                # identity so a restore is a true no-op on a warm database.
+                identity = forecast_id_for(
+                    league=str(row["league"]),
+                    game_id=str(row["game_id"]),
+                    market=str(row["market"]),
+                    period=str(row["period"]),
+                    selection=str(row["selection"]),
+                    line=row.get("line"),
+                    source=str(source),
+                )
                 rows.append(
                     {
-                        "forecast_id": str(row["forecast_id"]),
+                        "forecast_id": identity,
                         "game_id": str(row["game_id"]),
                         "league": str(row["league"]),
                         "market": str(row["market"]),
