@@ -395,62 +395,9 @@ def _quotes_from_event(
             "provider": "espn",
             "pre_match": pre_match,
         }
-        home_price, away_price, draw_price = _moneyline_prices(offer)
-        if draw_price is None and game.league and _is_soccer(game.league) and home_price:
-            gaps.append(
-                CoverageGap(
-                    game.league,
-                    "pickcenter.moneyline.draw",
-                    f"{book}: three-way moneyline quote without a draw price",
-                    game.game_id,
-                )
-            )
-        prices = {
-            key: price
-            for key, price in (
-                ("home", home_price),
-                ("away", away_price),
-                ("draw", draw_price),
-            )
-            if price is not None
-        }
-        if {"home", "away"} <= set(prices):
-            quotes.append(BookQuote(**common, market="moneyline", side_prices=prices))
-
-        spread_price = _side_prices(offer, "pointSpread")
-        home_line = line_number(nested(offer, "pointSpread", "home", "close", "line"))
-        if home_line is None:
-            home_line = line_number(nested(offer, "pointSpread", "home", "open", "line"))
-        if home_line is None:
-            away_line = line_number(nested(offer, "pointSpread", "away", "close", "line"))
-            if away_line is None:
-                away_line = line_number(nested(offer, "pointSpread", "away", "open", "line"))
-            home_line = -away_line if away_line is not None else None
-        if home_line is not None and {"home", "away"} <= set(spread_price):
-            quotes.append(
-                BookQuote(
-                    **common,
-                    market="spread",
-                    line=home_line,
-                    side_prices=spread_price,
-                )
-            )
-
-        total_prices = _side_prices(offer, "total")
-        total_line = line_number(nested(offer, "total", "over", "close", "line"))
-        if total_line is None:
-            total_line = line_number(nested(offer, "total", "under", "close", "line"))
-        if total_line is None:
-            total_line = line_number(offer.get("overUnder"))
-        if total_line is not None and {"over", "under"} <= set(total_prices):
-            quotes.append(
-                BookQuote(
-                    **common,
-                    market="total",
-                    line=total_line,
-                    side_prices=total_prices,
-                )
-            )
+        market_quotes, market_gaps = _book_market_quotes(offer, common, game.league)
+        quotes.extend(market_quotes)
+        gaps.extend(market_gaps)
     return quotes, gaps
 
 
@@ -490,26 +437,45 @@ def canonical_book(raw: Any) -> str:
     return BOOK_ALIASES.get(re.sub(r"[^a-z0-9]", "", text.lower()), text)
 
 
-def _price_at(offer: Dict[str, Any], market: str, side: str) -> Optional[float]:
+def _phased_prices(
+    offer: Dict[str, Any], market: str, sides: Tuple[str, ...]
+) -> Tuple[Dict[str, float], Optional[str]]:
+    """Side prices for one market, all taken from the **same** phase.
+
+    Reading each side independently (``close`` else ``open``, per side) let an
+    offer with only an away ``close`` and a home ``open`` produce a quote that
+    mixed two snapshots — a book that never existed. A phase is used only when
+    it prices every side the market needs; otherwise the market is not quoted.
+    """
     for phase in ("close", "open"):
-        price = decimal_price(nested(offer, market, side, phase, "odds"))
-        if price is not None:
-            return price
-    return None
+        prices: Dict[str, float] = {}
+        for side in sides:
+            price = decimal_price(nested(offer, market, side, phase, "odds"))
+            if price is None:
+                break
+            prices[side] = price
+        else:
+            return prices, phase
+    return {}, None
 
 
 def _moneyline_prices(
     offer: Dict[str, Any],
 ) -> Tuple[Optional[float], Optional[float], Optional[float]]:
-    home = _price_at(offer, "moneyline", "home")
-    away = _price_at(offer, "moneyline", "away")
-    if home is None:
+    prices, phase = _phased_prices(offer, "moneyline", ("home", "away"))
+    home = prices.get("home")
+    away = prices.get("away")
+    if home is None or away is None:
+        # Flat variant: one value per side, so there is no phase to mix.
         home = decimal_price(nested(offer, "homeTeamOdds", "moneyLine"))
-    if away is None:
         away = decimal_price(nested(offer, "awayTeamOdds", "moneyLine"))
+        phase = None
+    draw = None
+    if phase is not None:
+        draw = decimal_price(nested(offer, "moneyline", "draw", phase, "odds"))
     # Draw paths: proven for no sport yet. Candidate shapes are tried in a
-    # fixed order and any single hit is used; absence stays absence.
-    draw = _price_at(offer, "moneyline", "draw")
+    # fixed order and any single hit is used; absence stays absence. These are
+    # single values, so they cannot mix a line phase either.
     if draw is None:
         draw = decimal_price(nested(offer, "drawOdds", "moneyLine"))
     if draw is None:
@@ -519,14 +485,122 @@ def _moneyline_prices(
     return home, away, draw
 
 
-def _side_prices(offer: Dict[str, Any], market: str) -> Dict[str, float]:
-    prices: Dict[str, float] = {}
-    candidate_sides = ("home", "away") if market == "pointSpread" else ("over", "under")
-    for side in candidate_sides:
-        price = _price_at(offer, market, side)
-        if price is not None:
-            prices[side] = price
-    return prices
+def _phase_line(
+    offer: Dict[str, Any], market: str, sides: Tuple[str, ...], phase: Optional[str]
+) -> Optional[float]:
+    if phase is None:
+        return None
+    for side in sides:
+        line = line_number(nested(offer, market, side, phase, "line"))
+        if line is not None:
+            return line
+    return None
+
+
+def _spread_line(offer: Dict[str, Any], phase: Optional[str]) -> Optional[float]:
+    """Home-oriented handicap taken from the phase the prices came from."""
+    home = _phase_line(offer, "pointSpread", ("home",), phase)
+    if home is not None:
+        return home
+    away = _phase_line(offer, "pointSpread", ("away",), phase)
+    if away is not None:
+        return -away
+    return line_number(offer.get("spread"))
+
+
+def _total_line(offer: Dict[str, Any], phase: Optional[str]) -> Optional[float]:
+    line = _phase_line(offer, "total", ("over", "under"), phase)
+    if line is not None:
+        return line
+    return line_number(offer.get("overUnder"))
+
+
+def _is_split_line(line: Optional[float]) -> bool:
+    """True for .25/.75 Asian split lines: two half-stakes, not a binary bet.
+
+    A quarter line is half-pushed/half-won by construction, so grading it with
+    the binary :func:`resolve_outcome` is wrong by design. Pricing it as binary
+    is equally wrong. Skipping it with a gap is the only honest option until a
+    split-stake settlement rule exists.
+    """
+    if line is None:
+        return False
+    try:
+        value = float(line)
+    except (TypeError, ValueError):
+        return False
+    return round(value * 4) % 2 != 0
+
+
+def _book_market_quotes(
+    entry: Dict[str, Any],
+    common: Dict[str, Any],
+    league_key: str,
+) -> Tuple[List["BookQuote"], List["CoverageGap"]]:
+    """Every recognised market in one book entry, under the fail-closed rules.
+
+    Shared by the scoreboard ``odds`` path and the summary ``pickcenter`` path
+    so a rule cannot hold on one and silently not on the other.
+    """
+    quotes: List["BookQuote"] = []
+    gaps: List["CoverageGap"] = []
+    game_id = str(common.get("game_id") or "")
+    three_way = _is_soccer(league_key)
+
+    home_price, away_price, draw_price = _moneyline_prices(entry)
+    prices = {
+        key: price
+        for key, price in (("home", home_price), ("away", away_price), ("draw", draw_price))
+        if price is not None
+    }
+    if three_way and home_price is not None and draw_price is None:
+        gaps.append(
+            CoverageGap(
+                league_key,
+                "pickcenter.moneyline.draw",
+                f"{common.get('book')}: three-way moneyline quote without a draw price",
+                game_id,
+            )
+        )
+    # A soccer moneyline without its draw price is a 2-way (draw-no-bet) price.
+    # Grading it as 1X2 would settle level games as losses, so it is not quoted.
+    if {"home", "away"} <= set(prices) and not (three_way and "draw" not in prices):
+        quotes.append(BookQuote(**common, market="moneyline", side_prices=prices))
+
+    spread_prices, spread_phase = _phased_prices(entry, "pointSpread", ("home", "away"))
+    spread_line = _spread_line(entry, spread_phase)
+    if spread_line is not None and {"home", "away"} <= set(spread_prices):
+        if three_way and _is_split_line(spread_line):
+            gaps.append(
+                CoverageGap(
+                    league_key,
+                    "pickcenter.line.split",
+                    f"{common.get('book')}: quarter spread line {spread_line} is a split stake",
+                    game_id,
+                )
+            )
+        else:
+            quotes.append(
+                BookQuote(**common, market="spread", line=spread_line, side_prices=spread_prices)
+            )
+
+    total_prices, total_phase = _phased_prices(entry, "total", ("over", "under"))
+    total_line = _total_line(entry, total_phase)
+    if total_line is not None and {"over", "under"} <= set(total_prices):
+        if three_way and _is_split_line(total_line):
+            gaps.append(
+                CoverageGap(
+                    league_key,
+                    "pickcenter.line.split",
+                    f"{common.get('book')}: quarter total line {total_line} is a split stake",
+                    game_id,
+                )
+            )
+        else:
+            quotes.append(
+                BookQuote(**common, market="total", line=total_line, side_prices=total_prices)
+            )
+    return quotes, gaps
 
 
 def quote_market_presence(quotes: Any) -> set:
@@ -859,7 +933,7 @@ def _dual_sided(
     away_stats = _stats_by_name(away_side.get("statistics"))
     home_win, home_loss, home_tie = _probabilities(home_stats, game.game_id)
     away_win, away_loss, away_tie = _probabilities(away_stats, game.game_id)
-    if abs(home_win + away_win - 1.0) > PROB_SUM_TOLERANCE:
+    if abs(home_win + away_win + home_tie - 1.0) > PROB_SUM_TOLERANCE:
         raise EspnParseError(f"event {game.game_id}: home/away projections are not complementary")
     if abs(home_loss - away_win) > PROB_SUM_TOLERANCE:
         raise EspnParseError(f"event {game.game_id}: reciprocal probabilities contradict")
@@ -1055,38 +1129,9 @@ def parse_pickcenter(
             "provider": "espn",
             "pre_match": pre_match,
         }
-        home_price, away_price, draw_price = _moneyline_prices(entry)
-        prices = {
-            key: price
-            for key, price in (
-                ("home", home_price),
-                ("away", away_price),
-                ("draw", draw_price),
-            )
-            if price is not None
-        }
-        if {"home", "away"} <= set(prices):
-            result.quotes.append(BookQuote(**common, market="moneyline", side_prices=prices))
-        spread_prices = _side_prices(entry, "pointSpread")
-        home_line = line_number(nested(entry, "pointSpread", "home", "close", "line"))
-        if home_line is None:
-            home_line = line_number(nested(entry, "pointSpread", "home", "open", "line"))
-        if home_line is None:
-            home_line = line_number(entry.get("spread"))
-        if home_line is not None and {"home", "away"} <= set(spread_prices):
-            result.quotes.append(
-                BookQuote(**common, market="spread", line=home_line, side_prices=spread_prices)
-            )
-        total_prices = _side_prices(entry, "total")
-        total_line = line_number(nested(entry, "total", "over", "close", "line"))
-        if total_line is None:
-            total_line = line_number(nested(entry, "total", "under", "close", "line"))
-        if total_line is None:
-            total_line = line_number(entry.get("overUnder"))
-        if total_line is not None and {"over", "under"} <= set(total_prices):
-            result.quotes.append(
-                BookQuote(**common, market="total", line=total_line, side_prices=total_prices)
-            )
+        market_quotes, market_gaps = _book_market_quotes(entry, common, game.league)
+        result.quotes.extend(market_quotes)
+        result.gaps.extend(market_gaps)
     result.observed_entry_keys = sorted(seen_keys)
     if not result.quotes:
         result.gaps.append(

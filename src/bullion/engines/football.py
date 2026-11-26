@@ -99,9 +99,12 @@ def forecast(
         expected_home = predictor.expected_home
         expected_away = predictor.expected_away
         if expected_home is None or expected_away is None:
-            # Without an expected score the margin mean can still be recovered
-            # from the provider's own win probability; the total cannot.
-            expected_margin = None
+            # LIVE_VERIFIED 2026-11-26: ESPN FPI ships ``teamPredPtDiff`` — a
+            # projected margin — while ``teamExpectedPts``/``oppExpectedPts``
+            # are absent. Throwing that away left every FPI spread unpriced on
+            # the one number the provider actually publishes. The total stays
+            # unknown because no expected score exists to sum.
+            expected_margin = predictor.predicted_margin
             expected_total = None
         else:
             expected_margin = expected_home - expected_away
@@ -226,6 +229,27 @@ def forecast(
                 )
             )
     return forecasts
+
+
+def tiebreak_surface(brier_by_source: Dict[str, Optional[float]]) -> Optional[str]:
+    """Deterministic surface when the Brier gap is inside ``min_gap``.
+
+    ``resolve_surface`` refuses to call a coin flip a measurement, which is
+    right for reporting — but a ticket still has to come from ONE surface.
+    Prefer the lower moneyline Brier, break exact ties toward the empirical
+    surface, and fall back to whichever surface has evidence.
+    """
+    fpi = brier_by_source.get(FPI_SOURCE)
+    empirical = brier_by_source.get(EMPIRICAL_SOURCE)
+    if fpi is None and empirical is None:
+        return None
+    if fpi is None:
+        return EMPIRICAL_SOURCE
+    if empirical is None:
+        return FPI_SOURCE
+    if empirical <= fpi:
+        return EMPIRICAL_SOURCE
+    return FPI_SOURCE
 
 
 def resolve_surface(

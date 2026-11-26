@@ -424,13 +424,16 @@ def replay(
                 day_profit += stake * (float(result["effective_odds"]) - 1.0)
             settled_here += 1
             tickets_settled += 1
-        if settled_here and not pending_here:
+        # A pending leg on one ticket must not erase a settled win on another:
+        # the money is real at that point, and dropping it biased every replay
+        # toward whichever day happened to finish last.
+        if settled_here:
             settled_days += 1
             growth = math.log(max((bank + day_profit) / bank, 1e-9))
             daily_log_growth.append(growth)
             bank += day_profit
             profit_total += day_profit
-        elif pending_here:
+        if pending_here:
             pending_days += 1
     mean_growth = (
         sum(daily_log_growth) / len(daily_log_growth) if daily_log_growth else None

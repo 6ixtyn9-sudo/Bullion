@@ -30,7 +30,12 @@ from . import (
 
 SOURCE = "nhl_poisson_v1"
 OT_HOME_WIN_SHARE = 0.52  # 3-on-3 + shootout edge for the home side (prior)
-OT_GOAL_DISTRIBUTION: Dict[int, float] = {0: 0.72, 1: 0.20, 2: 0.06, 3: 0.02}
+#: Extra goals beyond regulation, for the games that reach OT/SO. NHL overtime is
+#: sudden death and a shootout winner is credited exactly one goal, so **every**
+#: regulation draw ends 1-0 in the extra period: the final total is always
+#: ``regulation_total + 1``. The previous prior put 72% of OT games at +0 goals,
+#: i.e. it settled drawn games as regulation draws that never happened.
+OT_GOAL_DISTRIBUTION: Dict[int, float] = {1: 1.0}
 
 
 def _final_distributions(

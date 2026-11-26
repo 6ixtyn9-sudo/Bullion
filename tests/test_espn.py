@@ -382,3 +382,115 @@ def test_game_from_summary_builds_a_final_and_accepts_the_requested_event_id():
             ]}},
             NHL,
         )
+
+
+def test_a_two_way_soccer_moneyline_is_not_quoted_as_one_x_two():
+    """A soccer ML without its draw price is draw-no-bet, not 1X2."""
+    soccer = LEAGUES["eng.1"]
+    parsed = parse_scoreboard(
+        {"events": [event(offers=[offer(moneyline={"home": close(120), "away": close(240)})])]},
+        soccer,
+        OBSERVED,
+    )
+    assert not [quote for quote in parsed.quotes if quote.market == "moneyline"], (
+        "grading a 2-way price as 1X2 would settle level games as losses"
+    )
+    assert any(gap.field == "pickcenter.moneyline.draw" for gap in parsed.gaps)
+
+    three_way = parse_scoreboard(
+        {
+            "events": [
+                event(
+                    offers=[
+                        offer(
+                            moneyline={
+                                "home": close(120),
+                                "away": close(240),
+                                "draw": close(230),
+                            }
+                        )
+                    ]
+                )
+            ]
+        },
+        soccer,
+        OBSERVED,
+    )
+    assert [quote for quote in three_way.quotes if quote.market == "moneyline"]
+
+
+def test_dual_sided_predictor_accepts_a_tie_above_one_percent():
+    """The complement check has to include the tie mass it is checking."""
+    game = parse_scoreboard(_scoreboard_payload(), NHL, OBSERVED).games[0]
+    payload = {
+        "homeTeam": {
+            "team": {"$ref": "http://x/teams/10"},
+            "statistics": [
+                {"name": "gameProjection", "value": 60.0},
+                {"name": "teamChanceLoss", "value": 38.5},
+                {"name": "teamChanceTie", "value": 1.5},
+            ],
+        },
+        "awayTeam": {
+            "team": {"$ref": "http://x/teams/20"},
+            "statistics": [
+                {"name": "gameProjection", "value": 38.5},
+                {"name": "teamChanceLoss", "value": 60.0},
+                {"name": "teamChanceTie", "value": 1.5},
+            ],
+        },
+    }
+    evidence = parse_predictor(payload, game)
+    assert evidence.prob_tie == pytest.approx(0.015)
+    assert evidence.prob_home + (1.0 - evidence.prob_home) == pytest.approx(1.0)
+    assert evidence.prob_home > 0.6  # conditioned on the game not ending level
+
+
+def test_a_quote_never_mixes_a_closed_price_with_an_open_one():
+    """Home ``close`` + away ``open`` is not a snapshot of any real book."""
+    mixed = {
+        "provider": {"displayName": "DraftKings"},
+        "moneyline": {
+            "home": {"close": {"odds": -140}},
+            "away": {"open": {"odds": 115}},
+        },
+    }
+    parsed = parse_scoreboard({"events": [event(offers=[mixed])]}, NHL, OBSERVED)
+    assert not [quote for quote in parsed.quotes if quote.market == "moneyline"], (
+        "a half-closed quote must not be emitted"
+    )
+
+    both_phases = {
+        "provider": {"displayName": "DraftKings"},
+        "moneyline": {
+            "home": {"close": {"odds": -140}, "open": {"odds": -200}},
+            "away": {"close": {"odds": 115}, "open": {"odds": 160}},
+        },
+    }
+    parsed = parse_scoreboard({"events": [event(offers=[both_phases])]}, NHL, OBSERVED)
+    ml = next(quote for quote in parsed.quotes if quote.market == "moneyline")
+    assert ml.side_prices["home"] == pytest.approx(1.7142857142857144)
+    assert ml.side_prices["away"] == pytest.approx(2.15), "both sides come from close"
+
+
+def test_soccer_quarter_lines_are_flagged_instead_of_priced_as_binary():
+    """A .25/.75 line is two half-stakes; binary grading would be wrong."""
+    soccer = LEAGUES["eng.1"]
+    quarter = offer(
+        moneyline={"home": close(120), "away": close(240), "draw": close(230)},
+        spread={"home": close(-110, "-0.25"), "away": close(-110, "+0.25")},
+        total={"over": close(-110, "o2.75"), "under": close(-110, "u2.75")},
+    )
+    parsed = parse_scoreboard({"events": [event(offers=[quarter])]}, soccer, OBSERVED)
+    markets = {quote.market for quote in parsed.quotes}
+    assert markets == {"moneyline"}
+    split_gaps = [gap for gap in parsed.gaps if gap.field == "pickcenter.line.split"]
+    assert len(split_gaps) == 2, "both the split spread and the split total are disclosed"
+
+    half = offer(
+        moneyline={"home": close(120), "away": close(240), "draw": close(230)},
+        spread={"home": close(-110, "-0.5"), "away": close(-110, "+0.5")},
+        total={"over": close(-110, "o2.5"), "under": close(-110, "u2.5")},
+    )
+    parsed = parse_scoreboard({"events": [event(offers=[half])]}, soccer, OBSERVED)
+    assert {quote.market for quote in parsed.quotes} == {"moneyline", "spread", "total"}

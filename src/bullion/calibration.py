@@ -8,6 +8,7 @@ on its own result. Nothing here estimates a market edge from in-sample data.
 from __future__ import annotations
 
 import math
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
@@ -31,21 +32,40 @@ def sigmoid(value: float) -> float:
     return z / (1.0 + z)
 
 
-def brier_score(pairs: Iterable[Tuple[float, int]]) -> Optional[float]:
-    """Mean squared error of probabilities against 0/1 outcomes."""
-    values = [(float(p), int(y)) for p, y in pairs]
-    if not values:
+def _weighted(values: Sequence[Tuple[float, int]], weights: Optional[Sequence[float]]) -> List[Tuple[float, int, float]]:
+    pairs = [(float(p), int(y)) for p, y in values]
+    if weights is None:
+        return [(p, y, 1.0) for p, y in pairs]
+    return [(p, y, float(w)) for (p, y), w in zip(pairs, weights)]
+
+
+def brier_score(
+    pairs: Iterable[Tuple[float, int]], weights: Optional[Sequence[float]] = None
+) -> Optional[float]:
+    """Weighted mean squared error of probabilities against 0/1 outcomes.
+
+    A segment's rows are correlated: one fixture emits one row per side, so an
+    unweighted mean would let a five-market game outvote a single-market one.
+    Callers pass ``1 / rows_for_game`` per row so every fixture carries weight
+    exactly 1.0.
+    """
+    values = _weighted(list(pairs), weights)
+    total = sum(w for _, _, w in values)
+    if not values or total <= 0.0:
         return None
-    return sum((p - y) ** 2 for p, y in values) / len(values)
+    return sum(w * (p - y) ** 2 for p, y, w in values) / total
 
 
-def base_rate_brier(pairs: Iterable[Tuple[float, int]]) -> Optional[float]:
+def base_rate_brier(
+    pairs: Iterable[Tuple[float, int]], weights: Optional[Sequence[float]] = None
+) -> Optional[float]:
     """Brier of always predicting the sample's own base rate (naive baseline)."""
-    values = [(float(p), int(y)) for p, y in pairs]
-    if not values:
+    values = _weighted(list(pairs), weights)
+    total = sum(w for _, _, w in values)
+    if not values or total <= 0.0:
         return None
-    rate = sum(y for _, y in values) / len(values)
-    return sum((rate - y) ** 2 for _, y in values) / len(values)
+    rate = sum(w * y for _, y, w in values) / total
+    return sum(w * (rate - y) ** 2 for _, y, w in values) / total
 
 
 def fit_platt(
@@ -54,26 +74,31 @@ def fit_platt(
     prior_strength: float = 10.0,
     iterations: int = 400,
     learning_rate: float = 0.08,
+    weights: Optional[Sequence[float]] = None,
 ) -> Tuple[float, float]:
     """Fit ``sigmoid(a * logit(p) + b)`` with an L2 pull toward identity.
 
     Deterministic gradient descent keeps this dependency-free and reproducible
     (no scipy/numpy). ``prior_strength`` shrinks small samples toward the raw
     model, which is the honest default when a segment has just cleared 30.
+    ``weights`` carry the per-fixture ``1 / rows_for_game`` correction, so the
+    prior is not diluted by games that happen to quote more markets.
     """
     if not pairs:
         return 1.0, 0.0
+    rows = _weighted(pairs, weights)
+    total_weight = sum(w for _, _, w in rows) or float(len(rows))
     a, b = 1.0, 0.0
     for _ in range(iterations):
         grad_a = prior_strength * (a - 1.0)
         grad_b = prior_strength * b
-        for probability, outcome in pairs:
+        for probability, outcome, weight in rows:
             x = logit(probability)
-            error = sigmoid(a * x + b) - outcome
+            error = weight * (sigmoid(a * x + b) - outcome)
             grad_a += error * x
             grad_b += error
-        a -= learning_rate * grad_a / (len(pairs) + prior_strength)
-        b -= learning_rate * grad_b / (len(pairs) + prior_strength)
+        a -= learning_rate * grad_a / (total_weight + prior_strength)
+        b -= learning_rate * grad_b / (total_weight + prior_strength)
         a = min(max(a, 0.05), 5.0)
         b = min(max(b, -3.0), 3.0)
     return a, b
@@ -85,6 +110,7 @@ class Observation:
     probability: float
     outcome: Optional[int]  # 1 win, 0 loss, None push/void
     result_day: str  # SAST day the result became known
+    game_id: str = ""  # fixture the row came from, for per-game weighting
 
 
 @dataclass
@@ -98,6 +124,7 @@ class CalibrationReport:
     sufficient: bool = False
     brier_cap: float = DEFAULT_BRIER_CAP_2WAY
     min_samples: int = DEFAULT_MIN_SAMPLES
+    n_games: int = 0
     reasons: List[str] = field(default_factory=list)
 
     @property
@@ -122,6 +149,7 @@ class CalibrationReport:
             },
             "status": "calibrated" if self.sufficient else "provisional",
             "n": self.n,
+            "n_games": self.n_games,
             "minimum_samples": self.min_samples,
             "sufficient_for_accas": self.sufficient,
             "brier_score": None if self.brier is None else round(self.brier, 6),
@@ -147,9 +175,12 @@ class CalibrationBook:
         probability: float,
         outcome: Optional[int],
         result_day: str,
+        game_id: str = "",
     ) -> None:
         self._rows.setdefault(tuple(segment), []).append(
-            Observation(tuple(segment), float(probability), outcome, str(result_day))
+            Observation(
+                tuple(segment), float(probability), outcome, str(result_day), str(game_id or "")
+            )
         )
 
     def add_many(self, observations: Iterable[Observation]) -> None:
@@ -159,6 +190,7 @@ class CalibrationBook:
                 observation.probability,
                 observation.outcome,
                 observation.result_day,
+                observation.game_id,
             )
 
     def settled(self, segment: Tuple[str, str, str, str], as_of_day: str) -> List[Observation]:
@@ -178,19 +210,26 @@ class CalibrationBook:
         brier_cap: Optional[float] = None,
         cap_vs_base_rate: bool = False,
     ) -> CalibrationReport:
-        rows = self.settled(segment, as_of_day)
-        pairs = [(row.probability, int(row.outcome)) for row in rows if row.outcome is not None]
+        rows = [row for row in self.settled(segment, as_of_day) if row.outcome is not None]
+        pairs = [(row.probability, int(row.outcome)) for row in rows]
+        # One fixture emits a row per side (and per market), so ``n`` inflates
+        # two to three times per game. Count unique fixtures for the gate and
+        # weight each row by 1/rows_for_game so a game contributes exactly 1.0.
+        per_game = Counter(row.game_id for row in rows if row.game_id)
+        n_games = len(per_game) if per_game else len(pairs)
+        weights = [1.0 / per_game[row.game_id] if row.game_id else 1.0 for row in rows]
         cap = DEFAULT_BRIER_CAP_2WAY if brier_cap is None else float(brier_cap)
         report = CalibrationReport(
             segment=tuple(segment),
             n=len(pairs),
-            brier=brier_score(pairs),
-            baseline_brier=base_rate_brier(pairs),
+            n_games=n_games,
+            brier=brier_score(pairs, weights),
+            baseline_brier=base_rate_brier(pairs, weights),
             brier_cap=cap,
             min_samples=min_samples,
         )
         reasons: List[str] = []
-        if len(pairs) < min_samples:
+        if n_games < min_samples:
             reasons.append("insufficient_walk_forward_samples")
         if report.brier is not None and report.brier > cap:
             reasons.append("brier_above_cap")
@@ -204,7 +243,7 @@ class CalibrationBook:
         report.reasons = reasons
         report.sufficient = not reasons
         if report.sufficient:
-            report.a, report.b = fit_platt(pairs)
+            report.a, report.b = fit_platt(pairs, weights=weights)
         return report
 
     def ledger(self) -> Dict[str, int]:

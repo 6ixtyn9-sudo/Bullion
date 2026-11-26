@@ -24,7 +24,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from bullion.espn import EspnClient  # noqa: E402
 from bullion.models import sast_day, now_utc  # noqa: E402
-from bullion.runner import run_lane, select_leagues  # noqa: E402
+from bullion.runner import LaneRun, run_lane, select_leagues  # noqa: E402
 from bullion.store import Store  # noqa: E402
 from bullion.tickets import GatePolicy  # noqa: E402
 
@@ -72,20 +72,31 @@ def main(argv: Optional[List[str]] = None) -> int:
     runs = []
     with Store(db_path) as store:
         for league in select_leagues(args.league):
-            run = run_lane(
-                league=league,
-                day=day,
-                store=store,
-                localdata=localdata,
-                client=EspnClient(),
-                as_of_utc=args.as_of,
-                probe_report=probe,
-                legs=args.legs,
-                limit=args.limit,
-                policy=policy,
-                min_combined_odds=None if args.no_combined_band else args.min_odds,
-                max_combined_odds=None if args.no_combined_band else args.max_odds,
-            )
+            # One lane's exception must not cost the other eight. A provider
+            # shape change in, say, UCL used to abort the whole run before the
+            # summary, the parity gate, and the localdata commit ever happened.
+            try:
+                run = run_lane(
+                    league=league,
+                    day=day,
+                    store=store,
+                    localdata=localdata,
+                    client=EspnClient(),
+                    as_of_utc=args.as_of,
+                    probe_report=probe,
+                    legs=args.legs,
+                    limit=args.limit,
+                    policy=policy,
+                    min_combined_odds=None if args.no_combined_band else args.min_odds,
+                    max_combined_odds=None if args.no_combined_band else args.max_odds,
+                )
+            except Exception as exc:  # noqa: BLE001 - isolation is the point
+                run = LaneRun(
+                    lane=league.key,
+                    day=day,
+                    status="lane_error",
+                    reason=f"{type(exc).__name__}: {exc}",
+                )
             runs.append(run)
             print(
                 f"[daily] {run.lane} {run.day}: {run.status} "
@@ -108,7 +119,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     if args.json:
         print(json.dumps(summary, indent=2, sort_keys=True))
-    failures = [run for run in runs if run.status == "ingest_failed"]
+    failures = [
+        run for run in runs if run.status in {"ingest_failed", "lane_error"}
+    ]
     return 1 if failures else 0
 
 
