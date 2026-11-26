@@ -570,7 +570,9 @@ def _book_market_quotes(
     spread_prices, spread_phase = _phased_prices(entry, "pointSpread", ("home", "away"))
     spread_line = _spread_line(entry, spread_phase)
     if spread_line is not None and {"home", "away"} <= set(spread_prices):
-        if three_way and _is_split_line(spread_line):
+        # Every league, not just soccer: a quarter line splits the stake no
+        # matter which sport quoted it, and a binary grader settles it wrong.
+        if _is_split_line(spread_line):
             gaps.append(
                 CoverageGap(
                     league_key,
@@ -587,7 +589,7 @@ def _book_market_quotes(
     total_prices, total_phase = _phased_prices(entry, "total", ("over", "under"))
     total_line = _total_line(entry, total_phase)
     if total_line is not None and {"over", "under"} <= set(total_prices):
-        if three_way and _is_split_line(total_line):
+        if _is_split_line(total_line):
             gaps.append(
                 CoverageGap(
                     league_key,

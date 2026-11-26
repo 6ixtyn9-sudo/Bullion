@@ -216,7 +216,12 @@ class CalibrationBook:
         # two to three times per game. Count unique fixtures for the gate and
         # weight each row by 1/rows_for_game so a game contributes exactly 1.0.
         per_game = Counter(row.game_id for row in rows if row.game_id)
-        n_games = len(per_game) if per_game else len(pairs)
+        missing_game_id = any(not row.game_id for row in rows)
+        # A row without its fixture cannot be weighted per game, and falling
+        # back to the raw row count would let 15 two-sided fixtures report as 30
+        # "samples" — the exact inflation the per-game gate exists to stop. Fail
+        # closed instead, loudly.
+        n_games = 0 if missing_game_id else len(per_game)
         weights = [1.0 / per_game[row.game_id] if row.game_id else 1.0 for row in rows]
         cap = DEFAULT_BRIER_CAP_2WAY if brier_cap is None else float(brier_cap)
         report = CalibrationReport(
@@ -229,6 +234,8 @@ class CalibrationBook:
             min_samples=min_samples,
         )
         reasons: List[str] = []
+        if missing_game_id:
+            reasons.append("observations_missing_game_id")
         if n_games < min_samples:
             reasons.append("insufficient_walk_forward_samples")
         if report.brier is not None and report.brier > cap:

@@ -473,6 +473,19 @@ def test_a_quote_never_mixes_a_closed_price_with_an_open_one():
     assert ml.side_prices["away"] == pytest.approx(2.15), "both sides come from close"
 
 
+def test_quarter_lines_are_flagged_in_every_league_not_only_soccer():
+    """P3-N5: a split stake is a split stake in hockey, football and tennis too."""
+    quarter = offer(
+        moneyline={"home": close(-140), "away": close(120)},
+        spread={"home": close(-110, "-0.25"), "away": close(-110, "+0.25")},
+        total={"over": close(-110, "o5.75"), "under": close(-110, "u5.75")},
+    )
+    parsed = parse_scoreboard({"events": [event(offers=[quarter])]}, NHL, OBSERVED)
+    assert {quote.market for quote in parsed.quotes} == {"moneyline"}
+    split_gaps = [gap for gap in parsed.gaps if gap.field == "pickcenter.line.split"]
+    assert len(split_gaps) == 2, "the hockey spread and total are both disclosed"
+
+
 def test_soccer_quarter_lines_are_flagged_instead_of_priced_as_binary():
     """A .25/.75 line is two half-stakes; binary grading would be wrong."""
     soccer = LEAGUES["eng.1"]

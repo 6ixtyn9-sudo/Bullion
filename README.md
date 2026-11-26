@@ -241,20 +241,49 @@ integer lines carry a real `push_probability`.
 * **Calibration counts fixtures, and weights them equally.** One game emits a
   row per side and per market, so the gate reads `n_games` (unique settled
   `game_id`s) and each row carries `1 / rows_for_game` inside the Brier score
-  and the Platt fit. Both numbers appear in every report (`n`, `n_games`).
+  and the Platt fit. Both numbers appear in every report (`n`, `n_games`). A
+  settled row with **no `game_id`** cannot be weighted at all: `n_games` drops
+  to 0, `observations_missing_game_id` is reported, and the segment fails
+  closed instead of being measured on an inflated row count.
 * **Brier capacity follows market cardinality.** 0.22 applies to a 3-way
   `moneyline` only; binary `spread`/`total` markets in every league use 0.25.
   Every segment is also required to beat its own base-rate Brier.
 * **Accas are built from distinct fixtures.** `eligible_rows()` keeps every
   eligible market per game (collapsing to one row per game discarded the
-  `@1.90-@2.10` legs that reach the `@3.00` acca floor), and `build_accas()`
-  refuses any combination with two legs from the same fixture.
+  `@1.90-@2.10` legs that reach the `@3.00` acca floor), collapses a duplicate
+  wager from a second model surface to its **more confident** row rather than
+  whichever arrived first, and `build_accas()` refuses any combination with two
+  legs from the same fixture.
+* **Two-leg accas are enumerated, not searched.** A best-first walk cannot be
+  both complete and bounded: on a 67-fixture board the below-band favourite
+  pairs ahead of the first in-band pair by more than the pop budget, which
+  returned zero accas on exactly the big slates the lane exists for. With two
+  legs the space is quadratic and cheap, so every pair is enumerated and
+  filtered; three or more legs keep the bounded walk with a budget that scales
+  with the candidate pool (`max(5000, 200 × candidates)`).
 * **`prior_roi` ignores pushes**, because a pushed stake returns exactly its own
   unit and is not evidence of edge.
-* **Soccer is fail-closed on shape.** A `moneyline` without its draw price is a
-  draw-no-bet price and is not quoted as 1X2. Quarter lines (`.25`/`.75`) are
-  split stakes that binary grading would settle wrongly, so they are recorded as
-  `pickcenter.line.split` gaps instead of being priced.
+* **Shape is fail-closed, in every league.** A soccer `moneyline` without its
+  draw price is a draw-no-bet price and is not quoted as 1X2. Quarter lines
+  (`.25`/`.75`) are split stakes that binary grading would settle wrongly, so
+  they are recorded as `pickcenter.line.split` gaps instead of being priced —
+  for a hockey puckline or football spread exactly as for a soccer handicap.
+* **A forecast's identity is the wager, never the price.** `forecast_id` hashes
+  `league|game|market|period|selection|line|source`. The book and observation
+  time used to be part of that hash, though one forecast is recorded before a
+  book is attached and frozen after, which produced two ids for one
+  observation — so restoring history from receipts duplicated every row it
+  meant to heal. Price lives on the receipt's `price_evidence`.
+* **Rehydration runs on every daily run, not only on a cold cache.** The
+  workflow's backfill step is skipped when `localdata/bullion.db` exists, so a
+  restored-but-stale warehouse would stay short of history forever;
+  `scripts/daily.py` now rehydrates at startup and reports the counters under
+  `rehydrated` in the run summary. It is idempotent: a warm warehouse restores
+  0 rows and its `n`/`n_games`/Brier do not move.
+* **A refrozen fixture is one pick, not two.** `settled_pick_history()` keys a
+  settled pick on `(game_id, market, period, selection, line)` and keeps the
+  earliest receipt, so a postponement that is refunded and frozen again on a
+  later day cannot inflate `prior_roi` or its sample.
 * **Prices never mix phases.** All sides of a market come from the same
   `close`/`open` phase; a half-closed offer is not quoted at all.
 * **NHL overtime adds exactly one goal.** Overtime is sudden death and a

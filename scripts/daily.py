@@ -21,12 +21,15 @@ from typing import Any, Dict, List, Optional
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "scripts"))
 
 from bullion.espn import EspnClient  # noqa: E402
 from bullion.models import sast_day, now_utc  # noqa: E402
 from bullion.runner import LaneRun, run_lane, select_leagues  # noqa: E402
 from bullion.store import Store  # noqa: E402
 from bullion.tickets import GatePolicy  # noqa: E402
+
+from backfill import rehydrate_forecasts  # noqa: E402  (same directory)
 
 
 def load_probe(path: Optional[str]) -> Optional[Dict[str, Any]]:
@@ -71,6 +74,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     policy = GatePolicy(min_leg_odds=args.min_leg_odds, max_leg_odds=args.max_leg_odds)
     runs = []
     with Store(db_path) as store:
+        # Repairs a partially lost cache before anything reads it: the workflow
+        # only runs the backfill when the warehouse is missing entirely, so a
+        # restored-but-stale warehouse would otherwise stay short of history
+        # forever. Idempotent (`INSERT OR IGNORE`) and cheap.
+        rehydrated = rehydrate_forecasts(store, localdata)
         for league in select_leagues(args.league):
             # One lane's exception must not cost the other eight. A provider
             # shape change in, say, UCL used to abort the whole run before the
@@ -111,6 +119,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "sast_day": day,
         "probe_report_used": probe is not None,
         "runs": [run.to_dict() for run in runs],
+        "rehydrated": rehydrated,
     }
     out_dir = localdata / "_runs"
     out_dir.mkdir(parents=True, exist_ok=True)

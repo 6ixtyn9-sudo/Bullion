@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 from bullion.espn import EspnFetchError, http_fetch
-from bullion.models import LEAGUES
+from bullion.models import LEAGUES, ActualResult, Forecast, Game, Status
 from bullion.store import Store
 
 from .factories import summary
@@ -457,6 +457,85 @@ def test_backfill_rebuilds_forecast_history_from_committed_receipts(backfill, tm
         # A second run is a no-op, and a pre-pool legacy lock restores nothing.
         assert backfill.rehydrate_forecasts(store, localdata)["restored"] == 0
         assert store.counts()["forecast_snapshots"] == 3
+
+
+def test_a_warm_cache_restores_history_without_duplicating_it(backfill, tmp_path):
+    """P1-N1/P2-N1: restoring a warehouse that already has the rows is a no-op.
+
+    The warehouse records a forecast *before* a book is attached; the receipt
+    freezes the same forecast afterwards with a different id and price. Trusting
+    the receipt's id inserted a second copy of every observation, so a run that
+    rehydrated on a warm cache silently doubled its own calibration sample.
+    """
+    from bullion.runner import _calibration_book
+
+    league = LEAGUES["nhl"]
+    segment = ("nhl", "moneyline", "full_game", "nhl_poisson_v1")
+    localdata = tmp_path / "localdata"
+    lane = localdata / "nhl"
+    lane.mkdir(parents=True)
+
+    games, forecasts, pool = [], [], []
+    for index in range(6):
+        game_id = f"7{index:02d}"
+        games.append(
+            Game(
+                game_id=game_id,
+                league="nhl",
+                season="2026",
+                home_team_id="10",
+                away_team_id="20",
+                home_name="Home Club",
+                away_name="Away Club",
+                scheduled_utc="2026-11-28T18:00:00Z",
+                status=Status.FINAL,
+                actual=ActualResult(home_score=4, away_score=1),
+            )
+        )
+        forecasts.append(
+            Forecast(
+                game_id=game_id,
+                league="nhl",
+                scheduled_utc="2026-11-28T18:00:00Z",
+                home_name="Home Club",
+                away_name="Away Club",
+                market="moneyline",
+                selection="home",
+                raw_probability=0.62,
+                source="nhl_poisson_v1",
+            )
+        )
+        pool.append(_frozen_pool_row(f"frozen-{game_id}", game_id))
+    (lane / "auto_tickets_2026-11-28_decision.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "magolide.paper_ticket_receipt",
+                "date": "2026-11-28",
+                "league": "NHL",
+                "frozen_at": "2026-11-28T15:00:00Z",
+                "candidate_pool": pool,
+            }
+        )
+    )
+
+    as_of = "2026-11-29T12:00:00Z"
+    with Store(tmp_path / "warm.sqlite") as store:
+        for game in games:
+            store.upsert_game(game)
+        assert store.record_forecasts(forecasts, observed_day="2026-11-28") == 6
+
+        def sample():
+            report = _calibration_book(store, league, as_of).report(segment, "2026-11-29")
+            return (report.n, report.n_games, report.brier)
+
+        before = sample()
+        assert before[0] == 6 and before[1] == 6
+
+        counters = backfill.rehydrate_forecasts(store, localdata)
+        assert counters["restored"] == 0, "a warm cache gains no rows it already holds"
+        assert counters["rows"] == 6, "all six frozen rows were recognised, none re-inserted"
+        assert store.counts()["forecast_snapshots"] == 6
+        assert sample() == before, "sample size, fixture count and Brier must not move"
 
 
 def test_rehydration_skips_rows_it_cannot_restore_verbatim(backfill, tmp_path):

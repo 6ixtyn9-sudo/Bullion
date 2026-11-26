@@ -399,6 +399,16 @@ def _wager_key(row: Dict[str, Any]) -> tuple:
     )
 
 
+def _line_marker(value: Any) -> str:
+    """A line's identity text. A malformed line must not abort the ROI read."""
+    if value is None or isinstance(value, bool):
+        return ""
+    try:
+        return f"{float(value):g}"
+    except (TypeError, ValueError):
+        return str(value)
+
+
 def _fixture_key(row: Dict[str, Any]) -> tuple:
     return (row.get("league"), row.get("game_id"))
 
@@ -425,7 +435,13 @@ def eligible_rows(
             continue
         if not 0.0 < probability <= 1.0:
             continue
-        by_wager.setdefault(_wager_key(row), row)
+        key = _wager_key(row)
+        current = by_wager.get(key)
+        # A duplicate wager (same fixture/market/selection/line) can only come
+        # from a second model surface. Keep the more confident row instead of
+        # whichever happened to arrive first.
+        if current is None or probability > _row_probability(current):
+            by_wager[key] = row
     return sorted(
         by_wager.values(),
         key=lambda row: (
@@ -488,61 +504,109 @@ def build_accas(
             -_rank_score(_row_probability(row), float(row_price(row) or 0.0), price_weight)
             for row in candidates
         ]
+        def _ticket(
+            selected: Sequence[Dict[str, Any]], cost: float, price: float, rank: int
+        ) -> Dict[str, Any]:
+            probability = math.exp(sum(math.log(_row_probability(row)) for row in selected))
+            leg_ids = [str(row.get("forecast_id")) for row in selected]
+            return {
+                "acca_id": hashlib.sha256("|".join(leg_ids).encode()).hexdigest()[:20],
+                "rank": rank,
+                "legs": [dict(row) for row in selected],
+                "leg_count": legs,
+                "estimated_joint_win_probability": round(probability, 8),
+                "combined_decimal_odds": round(price, 4),
+                "bookmaker_implied_probability": round(1.0 / price, 8),
+                "estimated_ev_per_unit": round(probability * price - 1.0, 8),
+                "ranking_metric": "probability_price_blend",
+                "ranking_price_weight": price_weight,
+                "ranking_score": round(-cost, 8),
+                "ranking_status": "paper_only_strict_gates_passed",
+                "provisional_sample_gate_bypassed": False,
+                "provisional_leg_count": 0,
+                "dependence": {
+                    "same_game_legs": "prohibited",
+                    "cross_game_model": "conditional_independence",
+                    "limitation": (
+                        "Shared league, weather, scheduling, or other latent "
+                        "dependence is not estimated; no same-game parlay is built."
+                    ),
+                },
+            }
+
+        def _usable(selected: Sequence[Dict[str, Any]], price: float) -> bool:
+            if not (distinct_fixtures_ok(selected)):
+                return False
+            if min_combined_odds is not None and price < min_combined_odds:
+                return False
+            if max_combined_odds is not None and price > max_combined_odds:
+                return False
+            return True
+
+        def distinct_fixtures_ok(selected: Sequence[Dict[str, Any]]) -> bool:
+            if not forbid_conflicting_game_sides:
+                return True
+            return len({_fixture_key(row) for row in selected}) == len(selected)
+
+        def _pair_tickets() -> List[Dict[str, Any]]:
+            """Every two-leg combination, ranked. Complete by construction.
+
+            A best-first heap cannot be both complete and bounded here: on a
+            67-game CFB board the below-band favourite pairs ahead of the first
+            in-band spread/total pair number 11,000+, so the old 5,000-pop
+            budget returned zero accas on exactly the slates the product was
+            built for. With two legs the state space is quadratic and cheap
+            (201 rows -> 20k pairs), so it is enumerated instead of searched.
+            """
+            ranked: List[Tuple[float, int, int, float]] = []
+            for first in range(len(candidates) - 1):
+                first_row = candidates[first]
+                for second in range(first + 1, len(candidates)):
+                    second_row = candidates[second]
+                    price = float(row_price(first_row) or 1.0) * float(
+                        row_price(second_row) or 1.0
+                    )
+                    if not _usable([first_row, second_row], price):
+                        continue
+                    ranked.append((costs[first] + costs[second], first, second, price))
+            ranked.sort(
+                key=lambda item: (
+                    item[0],
+                    str(candidates[item[1]].get("game_id")),
+                    str(candidates[item[1]].get("forecast_id")),
+                    str(candidates[item[2]].get("forecast_id")),
+                )
+            )
+            return [
+                _ticket([candidates[first], candidates[second]], cost, price, rank)
+                for rank, (cost, first, second, price) in enumerate(ranked[:limit], start=1)
+            ]
+
+        if legs == 2:
+            return _pair_tickets()
+
         initial = tuple(range(legs))
         heap: List[Tuple[float, Tuple[int, ...]]] = [
             (sum(costs[i] for i in initial), initial)
         ]
         visited = {initial}
         output: List[Dict[str, Any]] = []
-        has_band = min_combined_odds is not None or max_combined_odds is not None
+        # Three or more legs cannot be enumerated, so the walk stays bounded —
+        # but the budget has to scale with the pool, not with the pool the old
+        # one-row-per-game filter produced.
+        pop_budget = max(5000, 200 * len(candidates))
         popped = 0
         while heap and len(output) < limit:
-            if has_band and popped >= 5000:
+            if popped >= pop_budget:
                 break
             cost, state = heapq.heappop(heap)
             popped += 1
             selected = [candidates[index] for index in state]
-            distinct_fixtures = (
-                len({_fixture_key(row) for row in selected}) == len(selected)
-            )
             price = math.prod(float(row_price(row) or 1.0) for row in selected)
-            in_band = not (
-                (min_combined_odds is not None and price < min_combined_odds)
-                or (max_combined_odds is not None and price > max_combined_odds)
-            )
             # Two legs from one fixture are one bet, not a parlay: keep walking
             # the heap instead of emitting a correlated acca.
-            if in_band and (distinct_fixtures or not forbid_conflicting_game_sides):
-                probability = math.exp(
-                    sum(math.log(_row_probability(row)) for row in selected)
-                )
-                leg_ids = [str(row.get("forecast_id")) for row in selected]
-                output.append(
-                    {
-                        "acca_id": hashlib.sha256("|".join(leg_ids).encode()).hexdigest()[:20],
-                        "rank": len(output) + 1,
-                        "legs": [dict(row) for row in selected],
-                        "leg_count": legs,
-                        "estimated_joint_win_probability": round(probability, 8),
-                        "combined_decimal_odds": round(price, 4),
-                        "bookmaker_implied_probability": round(1.0 / price, 8),
-                        "estimated_ev_per_unit": round(probability * price - 1.0, 8),
-                        "ranking_metric": "probability_price_blend",
-                        "ranking_price_weight": price_weight,
-                        "ranking_score": round(-cost, 8),
-                        "ranking_status": "paper_only_strict_gates_passed",
-                        "provisional_sample_gate_bypassed": False,
-                        "provisional_leg_count": 0,
-                        "dependence": {
-                            "same_game_legs": "prohibited",
-                            "cross_game_model": "conditional_independence",
-                            "limitation": (
-                                "Shared league, weather, scheduling, or other latent "
-                                "dependence is not estimated; no same-game parlay is built."
-                            ),
-                        },
-                    }
-                )
+            if _usable(selected, price):
+                output.append(_ticket(selected, cost, price, len(output) + 1))
             for neighbor in _neighbors(state, len(candidates)):
                 if neighbor in visited:
                     continue
@@ -958,7 +1022,14 @@ def settled_pick_history(localdata: Path, league: League) -> List[Tuple[str, flo
             if payload.get("schema_version") in {TICKET_SCHEMA, NO_BET_SCHEMA}:
                 receipts[match.group(1)] = payload
     rows: List[Tuple[str, float, str]] = []
-    for day in report.get("history") or []:
+    # A postponed fixture can be frozen into two consecutive pools and settle
+    # against the same final; counting both would weight one intended bet twice.
+    seen: set[Tuple[Any, ...]] = set()
+    history = sorted(
+        (entry for entry in report.get("history") or [] if isinstance(entry, dict)),
+        key=lambda entry: str(entry.get("date") or ""),
+    )
+    for day in history:
         date = str(day.get("date") or "")
         receipt = receipts.get(date)
         if receipt is None:
@@ -968,7 +1039,7 @@ def settled_pick_history(localdata: Path, league: League) -> List[Tuple[str, flo
             str(key): str(value)
             for key, value in (day.get("candidate_pool_outcomes") or {}).items()
         }
-        favoured: Dict[Tuple[str, str], Tuple[float, float, str]] = {}
+        favoured: Dict[Tuple[Any, ...], Tuple[float, float, str, Tuple[Any, ...]]] = {}
         for row in receipt.get("candidate_pool") or []:
             if not isinstance(row, dict):
                 continue
@@ -989,11 +1060,24 @@ def settled_pick_history(localdata: Path, league: League) -> List[Tuple[str, flo
             value = expected_value(float(probability), push_probability, price)
             if value <= 0.0:
                 continue
+            marker = (
+                str(row.get("game_id")),
+                str(row.get("market")),
+                str(row.get("period")),
+                str(row.get("selection")),
+                _line_marker(row.get("line")),
+            )
             key = (str(row.get("game_id")), str(row.get("market")))
             best = favoured.get(key)
             if best is None or value > best[0]:
-                favoured[key] = (value, price, outcome)
-        for value, price, outcome in favoured.values():
+                favoured[key] = (value, price, outcome, marker)
+        for value, price, outcome, marker in favoured.values():
+            # Postponed fixtures get forecast and frozen again the next day and
+            # settle against the same final. Keep the earliest receipt only, so
+            # one intended bet cannot weight the ROI band twice.
+            if marker in seen:
+                continue
+            seen.add(marker)
             rows.append((date, price, outcome))
     return rows
 
