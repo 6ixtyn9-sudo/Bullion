@@ -303,6 +303,7 @@ def test_parity_fails_and_the_harness_exits_non_zero_on_a_tampered_receipt(tmp_p
     receipt_path = next(tmp_path.glob("*/auto_tickets_*_decision.json"))
     receipt = json.loads(receipt_path.read_text())
     receipt["accas"][0]["combined_decimal_odds"] = 99.0  # frozen price tampered with
+    receipt["accas"][0]["legs"][0]["price_evidence"]["selected_decimal_price"] = 2.50
     receipt_path.write_text(json.dumps(receipt))
 
     days = load_evidence(tmp_path)
@@ -426,3 +427,122 @@ def test_card_renders_sast_and_paper_only_language(tmp_path):
     assert "No profit, edge, or readiness claim" in card
     assert "named-book pre-tip only" in card
     assert "calibrated n>=30" in card
+
+
+def _three_way_pool(
+    n: int = 4,
+    *,
+    selection: str = "home",
+    probability: float = 0.55,
+    leg_price: float = 1.95,
+):
+    """A soccer lane priced by a real three-way quote (draw included).
+
+    The calibration segment is pooled over the three outcomes, which is what a
+    1X2 market actually is: a single-outcome draw segment at p~0.3 would score a
+    Brier that says nothing about the home/away prices being booked.
+    """
+    league = LEAGUES["eng.1"]
+    source = "dixon_coles_v1"
+    segment = (league.key, "moneyline", "full_game", source)
+    book = CalibrationBook()
+    for index in range(40):
+        book.add(segment, 0.55, 1 if index < 22 else 0, "2026-11-01")
+        book.add(segment, 0.26, 1 if index < 10 else 0, "2026-11-01")
+        book.add(segment, 0.19, 1 if index < 8 else 0, "2026-11-01")
+    reports = {segment: book.report(segment, DAY)}
+
+    forecasts, quotes = [], []
+    for index in range(n):
+        game = _game(index, league=league.key)
+        forecasts.append(
+            Forecast(
+                game_id=game.game_id,
+                league=league.key,
+                scheduled_utc=game.scheduled_utc,
+                home_name=game.home_name,
+                away_name=game.away_name,
+                market="moneyline",
+                selection=selection,
+                raw_probability=probability,
+                alternative_probabilities={"home": 0.55, "draw": 0.26, "away": 0.19},
+                source=source,
+            )
+        )
+        prices = {"home": leg_price, "draw": 3.40, "away": 4.20}
+        prices[selection] = leg_price
+        quotes.append(
+            BookQuote(
+                game_id=game.game_id,
+                book="DraftKings",
+                market="moneyline",
+                observed_utc="2026-11-28T09:30:00Z",
+                side_prices=prices,
+                pre_match=True,
+            )
+        )
+    scored = score_forecasts(
+        forecasts,
+        quotes,
+        league=league,
+        reports=reports,
+        prior_roi={"status": "positive", "n": 8, "roi": 0.05},
+    )
+    return league, [pick_row(forecast, DAY) for forecast in scored]
+
+
+def test_three_way_quote_prices_a_home_leg_and_freezes_within_the_band(tmp_path):
+    league, rows = _three_way_pool()
+    eligible = eligible_rows(rows, policy=GatePolicy())
+    assert eligible, "calibrated 0.55 at 1.95 is +EV behind a named-book quote"
+    assert all(row["book"]["side_prices"]["draw"] == pytest.approx(3.40) for row in eligible), (
+        "the quote carries the draw price, so the moneyline is a genuine three-way price"
+    )
+
+    tickets = build_accas(eligible, legs=2, limit=1, min_combined_odds=3.00, max_combined_odds=4.50)
+    assert len(tickets) == 1
+    ticket = tickets[0]
+    assert 3.00 <= ticket["combined_decimal_odds"] <= 4.50
+    assert all(leg["selection"] == "home" for leg in ticket["legs"])
+    assert all(
+        leg["book"]["selected_decimal_price"] == pytest.approx(1.95) for leg in ticket["legs"]
+    )
+
+    receipt, _ = _freeze(tmp_path, rows, league=league)
+    assert receipt["schema_version"] == "magolide.paper_ticket_receipt"
+    assert [leg["selection"] for leg in receipt["accas"][0]["legs"]] == ["home", "home"]
+    assert all(
+        leg["price_evidence"]["selected_decimal_price"] == pytest.approx(1.95)
+        for leg in receipt["accas"][0]["legs"]
+    )
+
+    finals = {}
+    for row in rows:
+        game = _game(0, league="eng.1")
+        game.game_id = row["game_id"]
+        game.actual = ActualResult(home_score=2, away_score=1)
+        game.status = Status.FINAL
+        finals[game.game_id] = game
+    report = settle_lane(tmp_path, league, finals)
+    assert report["settled_positions"] == 1
+    assert report["wins"] == 1
+
+
+def test_a_draw_leg_is_priced_but_the_leg_band_keeps_it_off_the_ticket(tmp_path):
+    """A draw is quotable and gradable; it is the [1.20, 3.00] band that excludes it."""
+    league, rows = _three_way_pool(selection="draw", probability=0.28, leg_price=3.40)
+    row = rows[0]
+    assert row["book"]["selected_decimal_price"] == pytest.approx(3.40)
+    assert row["book"]["side_prices"]["draw"] == pytest.approx(3.40)
+    assert row["eligibility"]["brier_cap"] == 0.22
+    eligible = eligible_rows(rows, policy=GatePolicy())
+    assert eligible == []
+    assert "price_outside_ticket_band" in row["eligibility"]["reasons"]
+
+
+def test_draw_selection_loses_when_the_game_is_not_level():
+    from bullion.tickets import resolve_outcome
+
+    assert resolve_outcome("moneyline", "draw", None, 2.0, 2.0) == "win"
+    assert resolve_outcome("moneyline", "draw", None, 2.0, 1.0) == "loss"
+    assert resolve_outcome("moneyline", "home", None, 2.0, 2.0) == "loss"

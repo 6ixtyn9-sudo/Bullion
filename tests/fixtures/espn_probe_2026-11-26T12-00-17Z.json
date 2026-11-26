@@ -118,9 +118,13 @@
       "ref_id_from_ref": "757761"
     }
   },
+  "captured_scoreboard_et_days": [
+    "20261124",
+    "20261125"
+  ],
   "captured_utc": "2026-11-26T12:00:17Z",
   "fixture_label": "LIVE_VERIFIED",
-  "fixture_note": "Sanitised extract of a real probe-espn GitHub Actions run. Contains counts, flags, ids and key paths only; no fabricated values. Probed window was the wrong ET days (see et_dates_requested), so pre_events=0 and coverage is unmeasured -- this fixture exists to prove that, not to claim odds shapes.",
+  "fixture_note": "Sanitised extract of a real probe-espn GitHub Actions run. Contains counts, flags, ids and key paths only; no fabricated values. Probed window was the wrong ET days (see et_dates_requested), so pre_events=0 and coverage is unmeasured -- this fixture exists to prove that, not to claim odds shapes. The ET dates this run actually requested are recorded as captured_scoreboard_et_days: they prove the one-day-early window bug.",
   "known_gaps": [
     "none of the probed events were pre-match, so named-book pre-tip coverage was not measured",
     "scoreboard events[].competitions[].odds existed but was empty on every probed event",

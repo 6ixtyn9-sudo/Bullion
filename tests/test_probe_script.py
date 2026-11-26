@@ -116,7 +116,7 @@ class FakeProbeClient:
                 return summary(
                     event_id="done1", home="h1", away="a1", home_score="3", away_score="2"
                 )
-            payload = summary(event_id=event_id, home="h1", away="a1")
+            payload = summary(event_id=event_id, home="h1", away="a1", state="pre")
             payload["pickcenter"] = [
                 {
                     "provider": {"displayName": "DraftKings"},
@@ -134,13 +134,13 @@ class FakeProbeClient:
 def test_probe_report_unlocks_a_lane_only_when_it_measured_pre_match_coverage(probe):
     client = FakeProbeClient()
     entry = probe.probe_league(
-        client, LEAGUES["nhl"], ["2026-12-02"], summary_samples=4, predictor_samples=2
+        client, LEAGUES["cfb"], ["2026-12-02"], summary_samples=4, predictor_samples=2
     )
     report = {
         "schema_version": probe.PROBE_SCHEMA,
         "mode": "live",
         "captured_utc": entry["summary"]["field_presence"] and "2026-12-02T12:00:00Z",
-        "leagues": {"nhl": entry},
+        "leagues": {"cfb": entry},
     }
     json.dumps(report)  # the probe output must always be serialisable
 
@@ -159,7 +159,7 @@ def test_probe_report_unlocks_a_lane_only_when_it_measured_pre_match_coverage(pr
     assert "teamChanceLoss" in sample["sides"]["homeTeam"]["statistics"]
     assert sample["paths"], "the probe must record the predictor key paths"
 
-    permission = lane_permission(report, LEAGUES["nhl"])
+    permission = lane_permission(report, LEAGUES["cfb"])
     assert not permission.research_only
     assert permission.allows("moneyline")
     assert permission.allows("total")
@@ -212,7 +212,7 @@ def test_probe_records_payload_shape_even_when_the_parser_rejects_it(probe):
             return super().get(url)
 
     entry = probe.probe_league(
-        OddPredictorClient(), LEAGUES["nhl"], ["2026-12-02"], summary_samples=1,
+        OddPredictorClient(), LEAGUES["cfb"], ["2026-12-02"], summary_samples=1,
         predictor_samples=1,
     )
     sample = entry["predictor"]["samples"][0]
@@ -226,3 +226,14 @@ def test_probe_window_defaults_to_the_sast_calendar_day():
     from bullion.espn import et_days_for_sast_day
 
     assert et_days_for_sast_day("2026-12-02") == ["20261201", "20261202"]
+
+
+def test_probe_does_not_request_a_predictor_for_lanes_that_have_none(probe):
+    """LIVE_VERIFIED 2026-11-26: NHL and every soccer lane return HTTP 400."""
+    for key in ("nhl", "eng.1"):
+        client = FakeProbeClient()
+        entry = probe.probe_league(client, LEAGUES[key], ["2026-12-02"], summary_samples=1)
+        assert entry["predictor"]["skipped"] is True
+        assert entry["predictor"]["attempts"] == 0
+        assert "HTTP 400" in entry["predictor"]["note"]
+        assert not any("/predictor" in url for url in client.urls), key

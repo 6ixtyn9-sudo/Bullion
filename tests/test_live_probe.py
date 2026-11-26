@@ -23,7 +23,7 @@ from bullion.espn import (
     event_id_from_ref,
     lane_permission,
 )
-from bullion.models import LEAGUES
+from bullion.models import LEAGUES, Sport
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/fixtures/espn_probe_2026-11-26T12-00-17Z.json"
@@ -63,20 +63,16 @@ def test_capture_is_labelled_live_and_dated(live):
     }
 
 
-def test_probed_window_was_one_day_early_which_is_now_fixed(latest):
-    """The captured run queried ET D-2/D-1 and saw only completed games."""
-    urls = latest["leagues"]["nhl"]["scoreboard_urls"]
-    captured_et_days = sorted(
-        {url.split("dates=")[1].split("&")[0] for url in urls if "dates=" in url}
-    )
-    assert captured_et_days == ["20261124", "20261125"], (
-        "the 2026-11-26 capture must show the one-day-early ET window"
+def test_probed_window_was_one_day_early_which_is_now_fixed(live):
+    """The first run queried ET D-2/D-1 and saw only completed games."""
+    assert live["captured_scoreboard_et_days"] == ["20261124", "20261125"], (
+        "the 2026-11-26T12:00:17Z run must show the one-day-early ET window"
     )
     assert et_days_for_sast_day("2026-11-26") == ["20261125", "20261126"], (
         "the corrected mapping must ask for ET D-1 and D"
     )
     assert all(
-        entry["pre_events"] == 0 for entry in latest["leagues"].values()
+        entry["pre_events"] == 0 for entry in live["leagues"].values()
     ), "no pre-match event was capturable in that window"
 
 
@@ -93,16 +89,49 @@ def test_every_lane_measured_zero_pre_match_events(live, lane):
         assert coverage["event_coverage"] == 0.0
 
 
-def test_no_lane_may_price_a_ticket_from_this_capture(live, latest):
+def test_no_lane_may_price_a_ticket_from_the_window_bug_capture(live):
+    """Coverage measured over zero pre-match events cannot unlock anything."""
     for lane in LEAGUES:
-        permission = lane_permission(latest, LEAGUES[lane])
+        permission = lane_permission(live, LEAGUES[lane])
         assert permission.research_only, lane
         assert permission.ticket_markets == frozenset(), lane
-        assert permission.captured_utc == CAPTURE_UTC
-    # The sanitised fixture lacks the per-market status/sample fields and must
-    # therefore also be refused: a number without a sample is not evidence.
-    for lane in LEAGUES:
-        assert lane_permission(live, LEAGUES[lane]).research_only
+
+
+def test_committed_probe_is_internally_consistent(latest):
+    """Whatever capture is committed, permissions must follow its own numbers."""
+    assert latest["mode"] == "live"
+    assert str(latest["captured_utc"]).endswith("Z")
+    for lane, entry in latest["leagues"].items():
+        coverage = entry["coverage"]["named_book_pre_tip"]
+        for market, block in coverage.items():
+            assert set(block) >= {"events", "event_coverage", "sample_size", "status"}, (
+                lane,
+                market,
+            )
+        allowed = {
+            market
+            for market, block in coverage.items()
+            if block["status"] == "ok"
+            and isinstance(block["event_coverage"], (int, float))
+            and block["event_coverage"] >= 0.5
+            and isinstance(block["sample_size"], int)
+            and block["sample_size"] >= 3
+        }
+        draw = coverage.get("moneyline_draw") or {}
+        draw_ok = (
+            draw.get("status") == "ok"
+            and isinstance(draw.get("event_coverage"), (int, float))
+            and draw["event_coverage"] >= 0.5
+        )
+        if LEAGUES[lane].sport is Sport.SOCCER and not draw_ok:
+            # A 1X2 ticket without a measured draw price is blind to a third of
+            # the market, so soccer moneyline needs draw coverage of its own.
+            allowed.discard("moneyline")
+        allowed.discard("moneyline_draw")
+        permission = lane_permission(latest, LEAGUES[lane])
+        assert set(permission.ticket_markets) == allowed, lane
+        assert permission.research_only is (not allowed), lane
+        assert permission.captured_utc == latest["captured_utc"]
 
 
 def test_live_summaries_carry_pickcenter_but_no_predictor(live):

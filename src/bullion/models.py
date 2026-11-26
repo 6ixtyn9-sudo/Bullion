@@ -114,6 +114,11 @@ class League:
     cutoff_hour_sast: int
     requires_named_book: bool = True
     research_only: bool = False
+    #: Whether ESPN exposes a ``/predictor`` (FPI) route for this lane.
+    #: LIVE_VERIFIED 2026-11-26: NFL and CFB return a payload; hockey and every
+    #: soccer league return ``HTTP 400 Bad Request``, so asking is a wasted
+    #: request and a fake coverage gap.
+    predictor: bool = False
 
     @property
     def lane(self) -> str:
@@ -136,8 +141,17 @@ LEAGUES: Dict[str, League] = {
     league.key: league
     for league in (
         League("nhl", "NHL", Sport.HOCKEY, "hockey/nhl", cutoff_hour_sast=16),
-        League("nfl", "NFL", Sport.FOOTBALL, "football/nfl", cutoff_hour_sast=16),
-        League("cfb", "CFB", Sport.FOOTBALL, "football/college-football", cutoff_hour_sast=16),
+        League(
+            "nfl", "NFL", Sport.FOOTBALL, "football/nfl", cutoff_hour_sast=16, predictor=True
+        ),
+        League(
+            "cfb",
+            "CFB",
+            Sport.FOOTBALL,
+            "football/college-football",
+            cutoff_hour_sast=16,
+            predictor=True,
+        ),
         League("eng.1", "Premier League", Sport.SOCCER, "soccer/eng.1", cutoff_hour_sast=12),
         League("esp.1", "LaLiga", Sport.SOCCER, "soccer/esp.1", cutoff_hour_sast=12),
         League("ger.1", "Bundesliga", Sport.SOCCER, "soccer/ger.1", cutoff_hour_sast=12),

@@ -246,6 +246,33 @@ def _decimal_token(value: Any) -> str:
         return str(value)
 
 
+def _leg_price_token(leg: Dict[str, Any]) -> str:
+    """Frozen leg price from wherever the shape keeps it.
+
+    Receipt legs carry ``price_evidence.selected_decimal_price`` and rebuilt
+    legs carry ``book.selected_decimal_price``. Reading only ``decimal_odds``
+    compared two empty strings and quietly skipped the price check.
+    """
+    for candidate in (
+        leg.get("decimal_odds"),
+        nested_get(leg, "price_evidence", "selected_decimal_price"),
+        nested_get(leg, "book", "selected_decimal_price"),
+        leg.get("selected_decimal_price"),
+    ):
+        if candidate is not None:
+            return _decimal_token(candidate)
+    return ""
+
+
+def nested_get(payload: Dict[str, Any], *path: str) -> Any:
+    node: Any = payload
+    for key in path:
+        if not isinstance(node, dict):
+            return None
+        node = node.get(key)
+    return node
+
+
 def _receipt_signature(receipt: Dict[str, Any]) -> List[Tuple[str, ...]]:
     signatures: List[Tuple[str, ...]] = []
     for collection in ("accas", "singles"):
@@ -258,7 +285,7 @@ def _receipt_signature(receipt: Dict[str, Any]) -> List[Tuple[str, ...]]:
                     _decimal_token(position.get("combined_decimal_odds")),
                     tuple(
                         f"{leg.get('forecast_id') or leg.get('pick_id') or ''}@"
-                        f"{_decimal_token(leg.get('decimal_odds'))}"
+                        f"{_leg_price_token(leg)}"
                         for leg in position.get("legs") or []
                     ),
                 )
@@ -278,7 +305,7 @@ def check_parity(days: Sequence[DayEvidence]) -> Dict[str, Any]:
                 str(ticket.get("acca_id")),
                 _decimal_token(ticket.get("combined_decimal_odds")),
                 tuple(
-                    f"{leg.get('forecast_id')}@{_decimal_token(leg.get('decimal_odds'))}"
+                    f"{leg.get('forecast_id')}@{_leg_price_token(leg)}"
                     for leg in ticket.get("legs") or []
                 ),
             )

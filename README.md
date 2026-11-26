@@ -66,62 +66,85 @@ on GitHub Actions:
   (written under `localdata/_coverage/` and `localdata/_runs/`) or a raised
   `EspnIdentityError`. No imputed `0.5`, no invented odds, no home/away swap.
 
-## Live probe evidence: 2026-11-26T12:00:17Z
+## Live probe evidence
 
-Nine lanes probed across the ET days the *old* window derived
-(`dates=20261124`, `dates=20261125`) for SAST day 2026-11-26.
+Two captures exist. The first was a window bug; the second is the one that
+matters.
 
-| lane | events | pre-match | offers | books | named-book pre-tip coverage | predictor |
-|---|---|---|---|---|---|---|
-| nhl | 15 | 0 | 0 | 0 | unmeasured (0 pre events) | not attempted |
-| nfl | 1 | 0 | 0 | 0 | unmeasured | not attempted |
-| cfb | 2 | 0 | 0 | 0 | unmeasured | not attempted |
-| eng.1 | 0 | 0 | 0 | 0 | unmeasured (no fixtures) | not attempted |
-| esp.1 | 0 | 0 | 0 | 0 | unmeasured (no fixtures) | not attempted |
-| ger.1 | 0 | 0 | 0 | 0 | unmeasured (no fixtures) | not attempted |
-| ita.1 | 0 | 0 | 0 | 0 | unmeasured (no fixtures) | not attempted |
-| fra.1 | 0 | 0 | 0 | 0 | unmeasured (no fixtures) | not attempted |
-| uefa.champions | 18 | 0 | 0 | 0 | unmeasured | not attempted |
+### `LIVE_VERIFIED 2026-11-26T12:13:48Z` — the priced window
 
-Verdict: **all nine lanes stay `research_only`.** Coverage was measured over
-zero pre-match events, which is an absent measurement, not a 0% result.
+Probed SAST days 2026-11-26/27/28 (ET 2026-11-25..27), summarised from
+`localdata/_probes/espn_probe_latest.json` and frozen as a fixture in
+`tests/fixtures/espn_live_2026-11-26T12-13-48Z.json`.
 
-Three real defects the capture exposed, now fixed and regression-tested:
+| lane | events (pre) | books | ML / spread / total coverage | draw coverage as captured | backfill |
+|---|---|---|---|---|---|
+| cfb | 67 (67) | Draft Kings | 100% / 100% / 100% (8/8 sampled) | n/a (2-way) | 950 |
+| nfl | 5 (4) | Draft Kings | 100% / 100% / 100% (4/4) | n/a (2-way) | 320 |
+| eng.1 | 4 (4) | DraftKings | 100% / 100% / 100% | 0% (label-counted — see below) | 374 |
+| esp.1 | 5 (5) | DraftKings | 100% / 100% / 100% | 0% (label-counted) | 381 |
+| fra.1 | 6 (6) | DraftKings | 100% / 100% / 100% | 0% (label-counted) | 288 |
+| ita.1 | 4 (4) | DraftKings | 100% / 100% / 100% | 0% (label-counted) | 374 |
+| ger.1 | 6 (6) | Bet 365, DraftKings | 83% / 83% / 83% (5/6) | 0% (label-counted) | 297 |
+| nhl | 42 (28) | — | 0% (no lines posted) | n/a | 1,478 |
+| uefa.champions | 9 (0) | — | unmeasured (between matchdays) | n/a | 189 |
 
-1. **Wrong ET window.** `et_days_for_sast_day` anchored on SAST midnight and
-   subtracted a day, asking ESPN for ET `D-2/D-1`; a SAST day occupies ET
-   `D-1/D` (SAST `D` = `D-1T22:00Z .. DT21:59Z`). Every probed event was
-   therefore already final, which is why no odds or predictor existed.
-   `tests/test_live_probe.py` pins the captured URLs against the corrected map.
-2. **Backfill refs were unparsed.** Real refs arrive as
-   `.../events/401856879?lang=en&region=us`; splitting on `/` and testing
-   `isdigit()` dropped the query suffix check entirely, so a backfill would
-   have stored zero games. `event_id_from_ref` now strips the suffix.
-3. **Summary odds were ignored.** Every sampled summary (NHL, NFL, CFB, UCL)
-   carried `pickcenter` (soccer also `odds` and `hasOdds`) while the scoreboard
-   `odds` array was empty, so the lane declared games unpriceable when a real
-   quote source existed. `parse_pickcenter` reads those containers through the
-   proven offer paths and fails closed with `pickcenter.shape_unrecognised`
-   (plus the observed key list) for anything else.
+Four defects the capture proved, now fixed and tested:
 
-Also captured: core season index counts (`nhl` 1478/2 pages, `cfb` 950,
-`eng.1` 374, `esp.1` 381, `ita.1` 374, `ger.1` 297, `fra.1` 288,
-`uefa.champions` 189, `nfl` 320) — the backfill route works.
+1. **Draw prices were being counted, not read.** Every sampled soccer
+   `pickcenter[0]` carried `moneyline.draw.close.odds`, `moneyline.draw.open.odds`
+   *and* `drawOdds.moneyLine`, but coverage said `moneyline_draw = 0.00` because
+   the probe counted market *labels* instead of priced *sides*. Coverage is now
+   computed with `quote_market_presence`, and the flat `drawOdds.moneyLine`
+   variant is an extraction fallback. UCL stays unmeasured (no pre-match
+   fixtures until matchday 6).
+2. **NFL FPI failed on tie mass only.** NFL payloads sum to 100 only when
+   `teamChanceTie` is included (`99.6480` without it). The parser now accepts the
+   tie, prices the two-way side conditioned on no tie (`prob_home`), and reports
+   `prob_tie` / `tie_rule: "push_conditional"` rather than hiding the mass. CFB
+   has no tie key and is unchanged (`3/3` samples parsed).
+3. **Book labels differ per sport.** `"Draft Kings"` (NFL/CFB) vs `"DraftKings"`
+   (soccer) vs `"Bet 365"` (Bundesliga) are one book; `canonical_book` normalises
+   them, and the probe keeps the raw labels for audit.
+4. **`/predictor` does not exist outside football.** NHL and every soccer lane
+   return `HTTP 400`; `League.predictor` now gates the request so the probe stops
+   inventing coverage gaps for a route ESPN does not serve.
 
-### Re-probe before enabling any lane
+Still unverified, and therefore still not claimed:
 
-The next probe must land on a window that actually contains upcoming fixtures,
-and it records the ET dates it asked for:
+* NHL prices — 0 offers on this window (US Thanksgiving); re-probe on the next
+  slate. The summary does expose `goalies`, `injuries` and `pickcenter`, and
+  `pickcenter` was present but empty (`0` entries) for all 8 sampled fixtures.
+* the ger.1 fixture whose `pickcenter` was empty and whose `odds[0]` used the
+  flat `homeTeamOdds.odds.value` shape — the probe records
+  `odds.shape_unrecognised` with the observed keys instead of guessing.
+* `teamExpectedPts`/`oppExpectedPts` were never live-confirmed, so FPI expected
+  scores and FPI totals stay `None`; the FPI margin falls back to inverting the
+  win probability. `teamPredPtDiff` is now captured and surfaced as
+  `predicted_margin` only when the two sides reconcile.
+* whether a book pushes or loses a two-way moneyline on a tie. The model prices
+  push-conditional because the live NFL quote carries only `home`/`away` sides,
+  and the assumption is recorded in `tie_rule` rather than buried in code.
+
+### `LIVE_VERIFIED 2026-11-26T12:00:17Z` — the window bug
+
+The first run asked ESPN for ET `D-2/D-1` instead of `D-1/D`, so every probed
+event was already final: 0 pre-match events, empty scoreboard odds, no predictor
+attempt. `et_days_for_sast_day` is fixed and pinned by
+`tests/test_live_probe.py`. Core season-index refs also carry a
+`?lang=en&region=us` suffix that defeated the old `isdigit()` event-id parse;
+`event_id_from_ref` strips it.
+
+### Re-probe before enabling a lane
 
 ```
 # Actions -> probe-espn -> Run workflow, or:
-python3 scripts/probe_espn.py --date 2026-12-01 --days-ahead 2 --season 2026
+python3 scripts/probe_espn.py --date 2026-11-27 --days-ahead 2 --season 2026
 ```
 
 Read `coverage.named_book_pre_tip.<market>`: `status` must be `ok` (sample ≥3
-pre-match events) before any percentage means anything. `status:
-"no_pre_match_events"` means the window was wrong or empty — re-probe, do not
-interpret it as zero coverage.
+pre-match events) before any percentage means anything, and `markets_priced`
+inside `summary.field_presence[]` shows which sides each quote actually carried.
 
 ## Layout
 
@@ -219,10 +242,13 @@ integer lines carry a real `push_probability`.
 * Summary `pickcenter` is now a quote source: when a scoreboard `odds` array is
   empty, one summary fetch per fixture supplies the freeze, and the discovery
   gap stays in the coverage file so the empty scoreboard array remains visible.
-* **Verified live (2026-11-26T12:00:17Z):** route resolution for all nine lanes,
-  the summary `pickcenter`/`odds`/`hasOdds` containers, `has_predictor: false` on
-  every sampled summary, core season-index counts, and `$ref` query suffixes.
-* **Still unverified:** every odds *path*, every predictor *key*, per-league
-  pre-kickoff coverage, hockey shot keys, and soccer draw pricing. All nine lanes
-  are `research_only`; `bullion_daily.yml` will forecast and grade but cannot
-  ticket until a pre-match probe window is captured and inspected.
+* **Verified live (2026-11-26T12:13:48Z):** pre-match named-book coverage for
+  CFB (100%), NFL (100%) and five soccer lanes (100%/100%/100%/100%/83%), the
+  soccer draw paths (`moneyline.draw.close|open.odds`, `drawOdds.moneyLine`), the
+  NFL `teamChanceTie` sum, CFB FPI parsing, and the absence of a `/predictor`
+  route for NHL and soccer (HTTP 400).
+* **Still unverified:** NHL prices (no lines posted on the captured day), UCL
+  pre-match coverage (between matchdays), hockey shot keys, FPI expected scores,
+  and whether a two-way moneyline pushes or loses on a tie. Lanes open tickets
+  only where the committed probe shows `status: ok` on ≥3 pre-match events and
+  ≥50% coverage: NHL and UCL remain `research_only`.
