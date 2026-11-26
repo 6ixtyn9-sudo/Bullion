@@ -1,0 +1,318 @@
+{
+  "generated_utc": "2026-11-26T12:43:55Z",
+  "probe_report_used": true,
+  "runs": [
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-26",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 14,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401892781",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892782",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892783",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892784",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892785",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892786",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892787",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892788",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892789",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892790",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892791",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892792",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892794",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892793",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "nhl",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "status": "no_slate",
+      "ticket_markets": [],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 20,
+      "cutoff_utc": "2026-11-26T14:00:00Z",
+      "day": "2026-11-26",
+      "eligible_legs": 0,
+      "forecasts": 20,
+      "games": 4,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401873079",
+          "league": "nfl",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "nfl",
+      "reason": "decision cutoff 2026-11-26T14:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-26",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 1,
+      "gaps": [],
+      "lane": "cfb",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "status": "no_slate",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-26",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 0,
+      "gaps": [],
+      "lane": "eng.1",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "status": "no_slate",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-26",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 0,
+      "gaps": [],
+      "lane": "esp.1",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "status": "no_slate",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-26",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 0,
+      "gaps": [],
+      "lane": "ger.1",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "status": "no_slate",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-26",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 0,
+      "gaps": [],
+      "lane": "ita.1",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "status": "no_slate",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-26",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 0,
+      "gaps": [],
+      "lane": "fra.1",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "status": "no_slate",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-26",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 9,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401915378",
+          "league": "uefa.champions",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915293",
+          "league": "uefa.champions",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915291",
+          "league": "uefa.champions",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915292",
+          "league": "uefa.champions",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915376",
+          "league": "uefa.champions",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915377",
+          "league": "uefa.champions",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915374",
+          "league": "uefa.champions",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915375",
+          "league": "uefa.champions",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915373",
+          "league": "uefa.champions",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "uefa.champions",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "status": "no_slate",
+      "ticket_markets": [],
+      "tickets": 0
+    }
+  ],
+  "sast_day": "2026-11-26",
+  "schema_version": "bullion.daily_run"
+}

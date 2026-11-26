@@ -1,0 +1,318 @@
+{
+  "counts": {
+    "book_snapshots": 0,
+    "forecast_snapshots": 0,
+    "games": 6489,
+    "predictor_snapshots": 0
+  },
+  "generated_utc": "2026-11-26T12:39:46Z",
+  "leagues": {
+    "cfb": {
+      "2024": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2025": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2026": {
+        "failed": 1,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "sample_errors": [
+          {
+            "error": "summary state='pre'; refusing to build a fixture",
+            "event_id": "401856879"
+          }
+        ],
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 249,
+        "unprocessed": 0
+      }
+    },
+    "eng.1": {
+      "2024": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2025": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2026": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      }
+    },
+    "esp.1": {
+      "2024": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2025": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2026": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      }
+    },
+    "fra.1": {
+      "2024": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2025": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2026": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      }
+    },
+    "ger.1": {
+      "2024": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2025": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2026": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      }
+    },
+    "ita.1": {
+      "2024": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2025": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2026": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      }
+    },
+    "nfl": {
+      "2024": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2025": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2026": {
+        "failed": 7,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "sample_errors": [
+          {
+            "error": "summary state='pre'; refusing to build a fixture",
+            "event_id": "401873080"
+          },
+          {
+            "error": "summary state='pre'; refusing to build a fixture",
+            "event_id": "401873081"
+          },
+          {
+            "error": "summary state='pre'; refusing to build a fixture",
+            "event_id": "401873082"
+          }
+        ],
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 243,
+        "unprocessed": 0
+      }
+    },
+    "nhl": {
+      "2024": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2025": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      },
+      "2026": {
+        "failed": 0,
+        "indexed": 250,
+        "pending_at_start": 250,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 250,
+        "unprocessed": 0
+      }
+    },
+    "uefa.champions": {
+      "2024": {
+        "failed": 0,
+        "indexed": 137,
+        "pending_at_start": 137,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 137,
+        "unprocessed": 0
+      },
+      "2025": {
+        "failed": 0,
+        "indexed": 189,
+        "pending_at_start": 189,
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 189,
+        "unprocessed": 0
+      },
+      "2026": {
+        "failed": 18,
+        "indexed": 189,
+        "pending_at_start": 189,
+        "sample_errors": [
+          {
+            "error": "summary state='pre'; refusing to build a fixture",
+            "event_id": "401915372"
+          },
+          {
+            "error": "summary state='pre'; refusing to build a fixture",
+            "event_id": "401915289"
+          },
+          {
+            "error": "summary state='pre'; refusing to build a fixture",
+            "event_id": "401915286"
+          }
+        ],
+        "skipped_existing": 0,
+        "stopped_early": false,
+        "stored": 171,
+        "unprocessed": 0
+      }
+    }
+  },
+  "max_events_per_season": 250,
+  "max_seconds": 900.0,
+  "note": "Finals only. No historical prices are used as ticket or calibration evidence; calibration must accrue from live pre-tip forecasts.",
+  "schema_version": "bullion.backfill_manifest",
+  "season_order": "newest_first",
+  "seasons": [
+    2026,
+    2025,
+    2024
+  ],
+  "stopped_early": false,
+  "workers": 6
+}
