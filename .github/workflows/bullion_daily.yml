@@ -1,7 +1,10 @@
 # DROP-IN COPY — paste this whole file over .github/workflows/bullion_daily.yml.
-# Identical to the live workflow except the push-retry exit at the bottom of the
-# "Commit localdata artifacts" step, so a run that never published is red, not
-# green. Nothing else changed; diff it against the live file to confirm.
+# Identical to the live workflow except:
+#   * "Show cards" globs the lane-root cards (auto_tickets_<day>.txt and
+#     auto_tickets_performance.txt) instead of the removed cards/ directory;
+#   * the push-retry exit at the bottom of "Commit localdata artifacts", so a run
+#     that never published is red, not green.
+# Nothing else changed; diff it against the live file to confirm.
 
 # Reliable external-trigger workflow for Bullion (mirrors Ma_Golide_Satellites).
 # GitHub Actions `schedule:` cron is deliberately disabled because GitHub delays
@@ -120,7 +123,7 @@ jobs:
       - name: Show cards
         run: |
           shopt -s nullglob
-          for card in localdata/*/cards/*.txt; do
+          for card in localdata/*/auto_tickets_????-??-??.txt localdata/*/auto_tickets_performance.txt; do
             echo "=== ${card} ==="
             cat "${card}"
           done
