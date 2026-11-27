@@ -1,0 +1,795 @@
+{
+  "candidate_pool": [
+    {
+      "alternative_probabilities": {
+        "away": 0.41969,
+        "draw": 0.257616,
+        "home": 0.322694
+      },
+      "away": "Paris FC",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401876392",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.45,
+        "side_prices": {
+          "away": 2.15,
+          "draw": 3.4,
+          "home": 3.45
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.322694,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.22,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "fra.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "price_outside_ticket_band",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": -0.2191,
+      "expected_total": 2.9443,
+      "forecast_id": "6891c588f8596832a87c",
+      "game_id": "401876392",
+      "grade_status": "pending",
+      "home": "Brest",
+      "league": "fra.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "6891c588f8596832a87c",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles_v1",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "selected_decimal_price": 3.45
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.322694,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T19:45:00Z",
+      "selection": "home",
+      "source": "dixon_coles_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.41969,
+        "draw": 0.257616,
+        "home": 0.322694
+      },
+      "away": "Paris FC",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401876392",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.4,
+        "side_prices": {
+          "away": 2.15,
+          "draw": 3.4,
+          "home": 3.45
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.257616,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.22,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "fra.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "price_outside_ticket_band",
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": -0.2191,
+      "expected_total": 2.9443,
+      "forecast_id": "9cf8239dbdea822f5bc9",
+      "game_id": "401876392",
+      "grade_status": "pending",
+      "home": "Brest",
+      "league": "fra.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "9cf8239dbdea822f5bc9",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles_v1",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "selected_decimal_price": 3.4
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.257616,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T19:45:00Z",
+      "selection": "draw",
+      "source": "dixon_coles_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.41969,
+        "draw": 0.257616,
+        "home": 0.322694
+      },
+      "away": "Paris FC",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401876392",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-27T06:15:23Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.2,
+        "side_prices": {
+          "away": 2.2,
+          "draw": 3.4,
+          "home": 3.35
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.41969,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.22,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "fra.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": -0.2191,
+      "expected_total": 2.9443,
+      "forecast_id": "040e80a02aa3707afd73",
+      "game_id": "401876392",
+      "grade_status": "pending",
+      "home": "Brest",
+      "league": "fra.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "040e80a02aa3707afd73",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles_v1",
+        "observed_utc": "2026-11-27T06:15:23Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T06:15:23Z",
+        "selected_decimal_price": 2.2
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.41969,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T19:45:00Z",
+      "selection": "away",
+      "source": "dixon_coles_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.564228,
+        "under": 0.435772
+      },
+      "away": "Paris FC",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401876392",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.9090909090909092,
+        "side_prices": {
+          "over": 1.9090909090909092,
+          "under": 1.8695652173913042
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.564228,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "fra.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.9443,
+      "forecast_id": "04311fea2724f1dac74c",
+      "game_id": "401876392",
+      "grade_status": "pending",
+      "home": "Brest",
+      "league": "fra.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "04311fea2724f1dac74c",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles_v1",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "selected_decimal_price": 1.9090909090909092
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.564228,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T19:45:00Z",
+      "selection": "over",
+      "source": "dixon_coles_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.564228,
+        "under": 0.435772
+      },
+      "away": "Paris FC",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401876392",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8695652173913042,
+        "side_prices": {
+          "over": 1.9090909090909092,
+          "under": 1.8695652173913042
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.435772,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "fra.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.9443,
+      "forecast_id": "eccc65909249fc5fc11a",
+      "game_id": "401876392",
+      "grade_status": "pending",
+      "home": "Brest",
+      "league": "fra.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "eccc65909249fc5fc11a",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles_v1",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "selected_decimal_price": 1.8695652173913042
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.435772,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T19:45:00Z",
+      "selection": "under",
+      "source": "dixon_coles_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.41969,
+        "home": 0.58031
+      },
+      "away": "Paris FC",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401876392",
+        "line": 0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.6666666666666665,
+        "side_prices": {
+          "away": 2.05,
+          "home": 1.6666666666666665
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.58031,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "fra.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": -0.2191,
+      "expected_total": null,
+      "forecast_id": "7719dd2d9dbfa97c372a",
+      "game_id": "401876392",
+      "grade_status": "pending",
+      "home": "Brest",
+      "league": "fra.1",
+      "line": 0.5,
+      "market": "spread",
+      "model": "dixon_coles_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "7719dd2d9dbfa97c372a",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles_v1",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "selected_decimal_price": 1.6666666666666665
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.58031,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T19:45:00Z",
+      "selection": "home",
+      "source": "dixon_coles_v1",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.41969,
+        "home": 0.58031
+      },
+      "away": "Paris FC",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401876392",
+        "line": 0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.05,
+        "side_prices": {
+          "away": 2.05,
+          "home": 1.6666666666666665
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.41969,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "fra.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles_v1"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas"
+        ]
+      },
+      "expected_margin": -0.2191,
+      "expected_total": null,
+      "forecast_id": "844ac2332abda81c8e4e",
+      "game_id": "401876392",
+      "grade_status": "pending",
+      "home": "Brest",
+      "league": "fra.1",
+      "line": 0.5,
+      "market": "spread",
+      "model": "dixon_coles_v1",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "844ac2332abda81c8e4e",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles_v1",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T10:15:20Z",
+        "selected_decimal_price": 2.05
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.41969,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T19:45:00Z",
+      "selection": "away",
+      "source": "dixon_coles_v1",
+      "training_games": 0
+    }
+  ],
+  "captured_at": "2026-11-27T10:15:20Z",
+  "date": "2026-11-27",
+  "decision_id": "453aa719f99de9e5f7d8",
+  "frozen_at": "2026-11-27T10:15:20Z",
+  "league": "FRA.1",
+  "paper_only": true,
+  "positions": [],
+  "reason": "no_qualifying_pre_tip_ticket_at_decision_cutoff",
+  "schema_version": "magolide.no_bet_decision",
+  "selection_policy": {
+    "allow_provisional": false,
+    "brier_cap": 0.22,
+    "brier_cap_three_way": 0.22,
+    "brier_cap_two_way": 0.25,
+    "cap_vs_base_rate": true,
+    "forbid_conflicting_game_sides": true,
+    "lane_permission": "probe_covered",
+    "limit": 3,
+    "max_combined_odds": 4.5,
+    "max_leg_odds": 3.0,
+    "min_combined_odds": 3.0,
+    "min_games": 30,
+    "min_leg_odds": 1.2,
+    "min_samples": 30,
+    "paper_only": true,
+    "price_weight": 0.15,
+    "probe_captured_utc": "2026-11-27T09:21:09Z",
+    "probe_market_evidence": {
+      "moneyline": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "moneyline_draw": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "spread": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "total": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      }
+    },
+    "probe_report_used": true,
+    "requested_legs": 2,
+    "require_disjoint_legs": true,
+    "stake_units_per_acca": 1.0,
+    "surface_resolution": "single_surface",
+    "ticket_markets": [
+      "moneyline",
+      "spread",
+      "total"
+    ]
+  },
+  "status": "frozen_no_bet",
+  "target_date": "2026-11-27",
+  "ticket_decision": {
+    "candidate_count": 7,
+    "captured_utc": "2026-11-27T10:15:20Z",
+    "eligible_count": 0,
+    "permission": "probe_covered",
+    "planned_cutoff_utc": "2026-11-27T10:00:00Z",
+    "probe_captured_utc": "2026-11-27T09:21:09Z",
+    "status": "frozen_no_bet"
+  }
+}

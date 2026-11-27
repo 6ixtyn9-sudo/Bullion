@@ -7,13 +7,13 @@
     "min_roi_samples": 5,
     "require_named_book": true
   },
-  "generated_utc": "2026-11-27T06:15:18Z",
+  "generated_utc": "2026-11-27T10:15:17Z",
   "run": {
-    "candidate_pool": 0,
+    "candidate_pool": 68,
     "cutoff_utc": "2026-11-27T14:00:00Z",
     "day": "2026-11-27",
     "eligible_legs": 0,
-    "forecasts": 66,
+    "forecasts": 68,
     "games": 15,
     "gaps": [],
     "lane": "nhl",
@@ -21,7 +21,11 @@
     "receipt_path": null,
     "refreshed_finals": 0,
     "status": "pre_cutoff_scan",
-    "ticket_markets": [],
+    "ticket_markets": [
+      "moneyline",
+      "spread",
+      "total"
+    ],
     "tickets": 0
   },
   "schema_version": "bullion.lane_run"
