@@ -23,6 +23,7 @@ from typing import Dict, List, Optional, Sequence, Tuple
 from ..espn import PredictorEvidence
 from ..models import BookQuote, Forecast, Game
 from . import (
+    DEFAULT_PRIOR_WEIGHT,
     Result,
     decay_weight,
     fit_ratings,
@@ -33,8 +34,13 @@ from . import (
     rest_adjustment,
 )
 
-FPI_SOURCE = "espn_fpi_v1"
-EMPIRICAL_SOURCE = "empirical_score_v1"
+FPI_SOURCE = "espn_fpi_v2"  # v2: fitted sigmas change under the fixed fit_ratings
+EMPIRICAL_SOURCE = "empirical_score_v2"  # v2: symmetric fit_ratings (MAP + hf ratio fix)
+#: Per-lane shrinkage priors (pseudo-games) from the train-split sweep. CFB's
+#: blowout-heavy, high-signal scoring wants light shrinkage (2 pseudo-games;
+#: train Brier 0.1618 vs 0.1706 at the default 4, holdout 0.1521 vs 0.1586);
+#: every other football lane stays on ``DEFAULT_PRIOR_WEIGHT``.
+PRIOR_WEIGHTS = {"cfb": 2.0}
 SIGMA_PRIORS = {"nfl": (13.5, 13.5), "cfb": (16.0, 14.5)}
 
 
@@ -113,14 +119,22 @@ def forecast(
         if not results:
             sigma_margin, sigma_total = SIGMA_PRIORS.get(game.league, (14.0, 14.0))
         else:
-            ratings = fit_ratings(results, reference_day=reference_day)
+            ratings = fit_ratings(
+                results,
+                reference_day=reference_day,
+                prior_weight=PRIOR_WEIGHTS.get(game.league, DEFAULT_PRIOR_WEIGHT),
+            )
             sigma_margin, sigma_total = _sigmas(
                 game.league, results, ratings, reference_day
             )
     else:
         if not results:
             return []
-        ratings = fit_ratings(results, reference_day=reference_day)
+        ratings = fit_ratings(
+            results,
+            reference_day=reference_day,
+            prior_weight=PRIOR_WEIGHTS.get(game.league, DEFAULT_PRIOR_WEIGHT),
+        )
         if not ratings.get("n"):
             return []
         home_rate, away_rate = rates_for(

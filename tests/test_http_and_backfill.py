@@ -397,7 +397,7 @@ def _frozen_pool_row(forecast_id: str, game_id: str, *, raw: float = 0.62) -> di
         "league": "nhl",
         "market": "moneyline",
         "period": "full_game",
-        "source": "nhl_poisson_v1",
+        "source": "nhl_poisson_v2",
         "selection": "home",
         "line": None,
         "raw_probability": raw,
@@ -470,7 +470,7 @@ def test_a_warm_cache_restores_history_without_duplicating_it(backfill, tmp_path
     from bullion.runner import _calibration_book
 
     league = LEAGUES["nhl"]
-    segment = ("nhl", "moneyline", "full_game", "nhl_poisson_v1")
+    segment = ("nhl", "moneyline", "full_game", "nhl_poisson_v2")
     localdata = tmp_path / "localdata"
     lane = localdata / "nhl"
     lane.mkdir(parents=True)
@@ -502,7 +502,7 @@ def test_a_warm_cache_restores_history_without_duplicating_it(backfill, tmp_path
                 market="moneyline",
                 selection="home",
                 raw_probability=0.62,
-                source="nhl_poisson_v1",
+                source="nhl_poisson_v2",
             )
         )
         pool.append(_frozen_pool_row(f"frozen-{game_id}", game_id))

@@ -121,7 +121,7 @@ def test_seed_produces_provenanced_moneyline_rows_and_is_idempotent(backfill, tm
         rows = [dict(row) for row in _seeded_rows(store)]
         assert len(rows) == 6
         assert {row["market"] for row in rows} == {"moneyline"}
-        assert {row["source"] for row in rows} == {"empirical_score_v1"}
+        assert {row["source"] for row in rows} == {"empirical_score_v2"}
         assert {row["observed_day"] for row in rows} == {"2026-10-04"}
         for row in rows:
             assert row["provenance"] == "walk_forward_seed"
@@ -152,7 +152,7 @@ def test_seed_never_displaces_a_live_pre_tip_snapshot(backfill, tmp_path):
                     market="moneyline",
                     selection="home",
                     raw_probability=0.9,
-                    source="empirical_score_v1",
+                    source="empirical_score_v2",
                 )
             ],
             observed_day="2026-10-04",
@@ -283,10 +283,10 @@ def test_seed_covers_nhl_uniformly_and_soccer_three_way(backfill, tmp_path):
             if row["league"] == "eng.1"
         }
         assert nhl_rows, "NHL is seeded like every other lane — the gate, not the seeder, rejects it"
-        assert {row["source"] for row in nhl_rows.values()} == {"nhl_poisson_v1"}
+        assert {row["source"] for row in nhl_rows.values()} == {"nhl_poisson_v2"}
         assert {row["selection"] for row in nhl_rows.values()} == {"home", "away"}
         assert soccer_rows, "soccer rows exist"
-        assert {row["source"] for row in soccer_rows.values()} == {"dixon_coles_v1"}
+        assert {row["source"] for row in soccer_rows.values()} == {"dixon_coles_v2"}
         assert {row["selection"] for row in soccer_rows.values()} == {"home", "draw", "away"}
         assert summary["lanes"]["nhl"]["inserted"] == 2
         assert summary["lanes"]["eng.1"]["inserted"] == 3
@@ -311,3 +311,35 @@ def test_seed_skips_matchdays_without_enough_history(backfill, tmp_path):
         # Both matchdays (8 and 10 priors) sit below the 15-final floor.
         assert summary["lanes"]["cfb"]["matchdays_below_min_history"] == 2
         assert store.counts()["forecast_snapshots"] == 0
+
+
+def test_source_bump_reseeds_instead_of_silently_seeding_zero(backfill, tmp_path):
+    """Regression for the per-source idempotence check (audit bug 5).
+
+    A SOURCE version bump must seed its own rows for history the old source
+    already covered; the old rows stay as evidence under their old segment.
+    """
+    with Store(tmp_path / "s.sqlite") as store:
+        _seed_cfb_history(store)
+        first = backfill.seed_walk_forward_ml(store, leagues=("cfb",))
+        assert first["lanes"]["cfb"]["inserted"] == 6
+
+        # Warm re-run with the SAME source: pure no-op.
+        warm = backfill.seed_walk_forward_ml(store, leagues=("cfb",))
+        assert warm["lanes"]["cfb"]["inserted"] == 0, (
+            "same source + same history must be a no-op"
+        )
+        # Now move the existing rows to an OLD tag, the way a bumped engine
+        # leaves its predecessor's evidence behind: the current source no longer
+        # covers this history, so it must re-seed rather than stay silent.
+        store.conn.execute(
+            "UPDATE forecast_snapshots SET source='empirical_score_v0',"
+            " forecast_id='legacy-'||forecast_id WHERE provenance='walk_forward_seed'"
+        )
+        store.conn.commit()
+        bumped = backfill.seed_walk_forward_ml(store, leagues=("cfb",))
+        assert bumped["lanes"]["cfb"]["inserted"] == 6, (
+            "a SOURCE bump must re-seed history under the new tag"
+        )
+        counts = store.counts()["forecast_snapshots"]
+        assert counts == 12, "old-source evidence survives next to the new tag"

@@ -14,8 +14,8 @@ lane does — they need a book quote or a provider snapshot no honest history
 can supply.
 
 The one deliberate exception is the model's own moneyline surface:
-``seed_walk_forward_ml`` replays ``empirical_score_v1`` / ``nhl_poisson_v1`` /
-``dixon_coles_v1`` over the backfilled finals, fitting strictly on finals whose
+``seed_walk_forward_ml`` replays ``empirical_score_v2`` / ``nhl_poisson_v2`` /
+``dixon_coles_v2`` over the backfilled finals, fitting strictly on finals whose
 SAST day precedes the forecast day, and persists those out-of-sample
 probabilities as ``provenance='walk_forward_seed'`` rows. They carry no price,
 no book, and no provider information — and every honesty gate
@@ -45,6 +45,7 @@ from bullion.espn import (  # noqa: E402
     season_events_url,
 )
 from bullion.engines import (  # noqa: E402
+    DEFAULT_PRIOR_WEIGHT,
     Result,
     fit_ratings,
     normal_cdf,
@@ -53,6 +54,7 @@ from bullion.engines import (  # noqa: E402
 )
 from bullion.engines import nhl as nhl_engine  # noqa: E402
 from bullion.engines import soccer as soccer_engine  # noqa: E402
+from bullion.engines import football as football_engine  # noqa: E402
 from bullion.models import LEAGUES, Sport, forecast_id_for, now_utc, sast_day  # noqa: E402
 from bullion.store import Store  # noqa: E402
 
@@ -341,7 +343,9 @@ def _score_matchday_moneyline(
         return scored
 
     if lane == "nhl":
-        ratings = fit_ratings(results, reference_day=day)
+        ratings = fit_ratings(
+            results, reference_day=day, prior_weight=nhl_engine.PRIOR_WEIGHT
+        )
         if not ratings.get("n"):
             return scored
         for game in games:
@@ -360,9 +364,13 @@ def _score_matchday_moneyline(
             scored.append((game["game_id"], "away", prob_away))
         return scored
 
-    # nfl / cfb: empirical_score_v1 (the FPI surface needs a live predictor
+    # nfl / cfb: empirical_score_v2 (the FPI surface needs a live predictor
     # snapshot, which a historical final can never have — it stays live-only).
-    ratings = fit_ratings(results, reference_day=day)
+    ratings = fit_ratings(
+        results,
+        reference_day=day,
+        prior_weight=football_engine.PRIOR_WEIGHTS.get(lane, DEFAULT_PRIOR_WEIGHT),
+    )
     if not ratings.get("n"):
         return scored
     from bullion.engines.football import SIGMA_PRIORS, residual_sigmas
@@ -400,9 +408,11 @@ def seed_walk_forward_ml(
     snapshot (recorded first, in :meth:`daily` and :meth:`rehydrate_forecasts`)
     can never be displaced by a seeded row.
 
-    Idempotence is checked per ``game_id``, not per day: warm ticks run one
-    ``SELECT DISTINCT`` per lane, find every historical matchday already
-    covered, and pay for zero fits. No gate constant is read or modified here —
+    Idempotence is checked per ``(game_id, source)``, not per day: warm ticks
+    run one ``SELECT DISTINCT`` per lane, find every historical matchday the
+    current source already covered, and pay for zero fits. A SOURCE version
+    bump re-seeds history under the new tag instead of silently seeding zero
+    rows. No gate constant is read or modified here —
     the seeder only supplies observations; calibration and the ticket gates
     re-measure them every run and fail closed.
     """
@@ -428,11 +438,23 @@ def seed_walk_forward_ml(
         ).fetchall()
         if not finals:
             continue
+        # The lane's moneyline model tag: matches what the daily engines emit.
+        source = (
+            soccer_engine.SOURCE
+            if lane in SOCCER_SEED_LANES
+            else nhl_engine.SOURCE
+            if lane == "nhl"
+            else football_engine.EMPIRICAL_SOURCE
+        )
+        # Idempotence is per (game_id, source): a SOURCE version bump must be
+        # able to seed its own rows for history the old source already covered,
+        # while a live row for the CURRENT source still excludes the whole game
+        # (INSERT OR IGNORE keeps the live row authoritative either way).
         have = {
-            row[0]
+            (row[0], row[1])
             for row in store.conn.execute(
                 """
-                SELECT DISTINCT game_id FROM forecast_snapshots
+                SELECT DISTINCT game_id, source FROM forecast_snapshots
                 WHERE league=? AND market='moneyline'
                 """,
                 (lane,),
@@ -449,7 +471,9 @@ def seed_walk_forward_ml(
             if len(prior_results) < MIN_SEED_HISTORY:
                 lane_stats["matchdays_below_min_history"] += 1
             else:
-                missing = [game for game in games if game["game_id"] not in have]
+                missing = [
+                    game for game in games if (game["game_id"], source) not in have
+                ]
                 if missing:
                     fit_started = time.monotonic()
                     scored = _score_matchday_moneyline(lane, day, prior_results, missing)
@@ -458,13 +482,6 @@ def seed_walk_forward_ml(
                     for game_id, selection, probability in scored:
                         market = "moneyline"
                         period = "full_game"
-                        source = (
-                            soccer_engine.SOURCE
-                            if lane in SOCCER_SEED_LANES
-                            else nhl_engine.SOURCE
-                            if lane == "nhl"
-                            else "empirical_score_v1"
-                        )
                         seeded_rows.append(
                             {
                                 "forecast_id": forecast_id_for(

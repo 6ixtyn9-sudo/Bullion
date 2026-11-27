@@ -139,6 +139,7 @@ def _calibration_book(store: Store, league: League, as_of_utc: str) -> Calibrati
             None if outcome == "push" else (1 if outcome == "win" else 0),
             result_day,
             str(row["game_id"]),
+            selection=str(row["selection"]),
         )
     return book
 

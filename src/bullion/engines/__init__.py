@@ -8,6 +8,11 @@ from datetime import date
 from typing import Dict, List, Sequence, Tuple
 
 MAX_GOALS = 10
+#: Global shrinkage prior (pseudo-games) for :func:`fit_ratings`, chosen by a
+#: {2,4,8,12,16} sweep on the train split of all 8 seeded lanes and confirmed
+#: on the untouched holdout. Per-lane overrides live in the engines that need
+#: one (see ``nhl.PRIOR_WEIGHT`` and ``football.PRIOR_WEIGHTS``).
+DEFAULT_PRIOR_WEIGHT = 4.0
 
 
 @dataclass(frozen=True)
@@ -72,14 +77,35 @@ def fit_ratings(
     half_life_days: float = 120.0,
     iterations: int = 25,
     home_advantage_prior: float = 1.10,
-    prior_weight: float = 2.0,
+    prior_weight: float = 4.0,
 ) -> Dict[str, object]:
     """Regularised attack/defence ratings via weighted iterative fitting.
 
     Returns ``{"league_rate", "home_factor", "attack", "defence", "n"}`` where
-    ``league_rate`` is the average score per team per game. Ratings are pulled
-    toward 1.0 by ``prior_weight`` pseudo-games, so a team with two games does
-    not get a 3.0 attack rating.
+    ``league_rate`` is the scoring level and ratings are pulled toward 1.0 by
+    ``prior_weight`` PSEUDO-GAMES (``prior_weight * league_rate`` goals), so a
+    team with two games does not get a 3.0 attack rating.
+
+    Three invariants fixed here (measured on the 2026-11-27 warehouse audit,
+    ``BULLION_AUDIT_AND_NHL_FIX.md``, corrective pass):
+
+    * Symmetric home advantage: ``lam_home = lr*att*def*s`` and
+      ``lam_away = lr*att*def/s`` with ``s = sqrt(home_factor)``. The old
+      asymmetric form applied the factor to home scoring only, which forced
+      the factor to converge to ``sqrt(true)`` (real NHL: 1.0699 fitted vs
+      1.15 true) and inflated expected totals by ~0.2 goals/game. The factor
+      is now identified by the HOME:AWAY ratio of observed vs factor-free
+      expectation, so it converges to the true advantage (1.1502 on the same
+      synthetic check) and totals stay level.
+    * TRUE damped Gamma-Poisson MAP: the team's own rating is divided out of
+      the exposure BEFORE the ratio. The old ratio kept the rating inside the
+      exposure, which pinned the fixed point at ``sqrt(true_rating)`` —
+      noiseless data with true attacks 1.40/0.60 converged to 1.1368/0.8632
+      (stationary, but wrong). With the exposure divided out, the same damped
+      step converges to the true rating (3x lower recovery error).
+    * ``league_rate`` is re-centred each iteration by
+      ``(total_goals / total_expected) ** 0.5`` so expected totals match the
+      observed scoring level despite the symmetric factor.
     """
     rows = [row for row in results if row.day < reference_day]
     teams: set[str] = set()
@@ -103,16 +129,23 @@ def fit_ratings(
     attack = {team: 1.0 for team in teams}
     defence = {team: 1.0 for team in teams}
     home_factor = home_advantage_prior
+    # prior_weight pseudo-games at the league's own scoring rate, in goals.
+    prior_goals = prior_weight * league_rate
     for _ in range(iterations):
+        scale = math.sqrt(home_factor)
         scored: Dict[str, float] = {team: 0.0 for team in teams}
         conceded: Dict[str, float] = {team: 0.0 for team in teams}
         expected_scored: Dict[str, float] = {team: 0.0 for team in teams}
         expected_conceded: Dict[str, float] = {team: 0.0 for team in teams}
         home_goals = 0.0
-        home_expected = 0.0
+        away_goals = 0.0
+        home_expected_base = 0.0
+        away_expected_base = 0.0
+        total_goals = 0.0
+        total_expected = 0.0
         for weight, row in zip(weights, rows):
-            lam_home = league_rate * attack[row.home_id] * defence[row.away_id] * home_factor
-            lam_away = league_rate * attack[row.away_id] * defence[row.home_id]
+            lam_home = league_rate * attack[row.home_id] * defence[row.away_id] * scale
+            lam_away = league_rate * attack[row.away_id] * defence[row.home_id] / scale
             scored[row.home_id] += weight * row.home_score
             conceded[row.away_id] += weight * row.home_score
             scored[row.away_id] += weight * row.away_score
@@ -122,18 +155,23 @@ def fit_ratings(
             expected_conceded[row.away_id] += weight * lam_home
             expected_conceded[row.home_id] += weight * lam_away
             home_goals += weight * row.home_score
-            home_expected += weight * lam_home
+            away_goals += weight * row.away_score
+            total_goals += weight * (row.home_score + row.away_score)
+            total_expected += weight * (lam_home + lam_away)
+            # Factor-free expectations: divide each side's own scale out.
+            home_expected_base += weight * lam_home / scale
+            away_expected_base += weight * lam_away * scale
         for team in teams:
-            # Damped multiplicative updates with hard bounds. Full-weight IPF
-            # diverges on an imbalanced schedule (a team that only ever plays
-            # one side of the fixture list is not identifiable), and a diverged
-            # rating is worse than an uninformative one.
-            target_attack = (scored[team] + prior_weight) / (
-                expected_scored[team] + prior_weight
-            )
-            target_defence = (conceded[team] + prior_weight) / (
-                expected_conceded[team] + prior_weight
-            )
+            # TRUE damped MAP with hard bounds: divide the team's own rating
+            # out of the exposure first, so the damped step
+            # ``a * (t/a)**0.5 = sqrt(a*t)`` has its fixed point at the true
+            # rating instead of its square root. The damping itself is kept:
+            # full-weight IPF diverges on an imbalanced schedule, and a
+            # diverged rating is worse than an uninformative one.
+            exp_scored = expected_scored[team] / attack[team]
+            exp_conceded = expected_conceded[team] / defence[team]
+            target_attack = (scored[team] + prior_goals) / (exp_scored + prior_goals)
+            target_defence = (conceded[team] + prior_goals) / (exp_conceded + prior_goals)
             attack[team] = _clamp(
                 attack[team] * max(target_attack / attack[team], 1e-9) ** 0.5, 0.50, 2.00
             )
@@ -146,8 +184,18 @@ def fit_ratings(
         for team in teams:
             attack[team] /= mean_attack
             defence[team] /= mean_defence
-        if home_expected > 0:
-            home_factor = max(1.0, min(1.25, home_goals / home_expected))
+        # Re-centre the scoring level so E[total] matches the observed total
+        # despite the (s + 1/s) asymmetry of the symmetric home factor.
+        if total_expected > 0:
+            league_rate *= (total_goals / total_expected) ** 0.5
+        # Home factor from the home:away ratio of observed vs factor-free
+        # expectation — identified by the ratio, so it converges to the true
+        # home advantage instead of its square root.
+        if home_expected_base > 0 and away_expected_base > 0:
+            raw_hf = (home_goals / home_expected_base) / (away_goals / away_expected_base)
+            home_factor = _clamp(
+                home_factor * max(raw_hf / home_factor, 1e-9) ** 0.5, 1.0, 1.35
+            )
     return {
         "league_rate": league_rate,
         "home_factor": home_factor,
@@ -164,15 +212,19 @@ def _clamp(value: float, low: float, high: float) -> float:
 def rates_for(
     ratings: Dict[str, object], home_id: str, away_id: str, *, neutral: bool = False
 ) -> Tuple[float, float]:
-    """Home/away scoring rates, using a neutral-site home factor of 1.0."""
+    """Home/away scoring rates under the symmetric home-advantage model.
+
+    The home factor is applied as ``sqrt(hf)`` to the home side and divided
+    out of the away side, mirroring exactly how ``fit_ratings`` saw the
+    training data. A neutral site uses a factor of 1.0.
+    """
     league_rate = float(ratings.get("league_rate") or 0.0)
     attack = ratings.get("attack") or {}
     defence = ratings.get("defence") or {}
     home_factor = float(ratings.get("home_factor") or 1.0)
-    if neutral:
-        home_factor = 1.0
-    lam_home = league_rate * attack.get(home_id, 1.0) * defence.get(away_id, 1.0) * home_factor
-    lam_away = league_rate * attack.get(away_id, 1.0) * defence.get(home_id, 1.0)
+    scale = 1.0 if neutral else math.sqrt(max(home_factor, 1e-6))
+    lam_home = league_rate * attack.get(home_id, 1.0) * defence.get(away_id, 1.0) * scale
+    lam_away = league_rate * attack.get(away_id, 1.0) * defence.get(home_id, 1.0) / scale
     return max(lam_home, 0.05), max(lam_away, 0.05)
 
 
