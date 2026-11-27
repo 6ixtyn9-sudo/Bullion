@@ -29,7 +29,7 @@ from bullion.runner import LaneRun, run_lane, select_leagues  # noqa: E402
 from bullion.store import Store  # noqa: E402
 from bullion.tickets import GatePolicy  # noqa: E402
 
-from backfill import rehydrate_forecasts  # noqa: E402  (same directory)
+from backfill import rehydrate_forecasts, seed_walk_forward_ml  # noqa: E402  (same directory)
 
 
 def load_probe(path: Optional[str]) -> Optional[Dict[str, Any]]:
@@ -79,6 +79,15 @@ def main(argv: Optional[List[str]] = None) -> int:
         # restored-but-stale warehouse would otherwise stay short of history
         # forever. Idempotent (`INSERT OR IGNORE`) and cheap.
         rehydrated = rehydrate_forecasts(store, localdata)
+        # Walk-forward moneyline seeding, strictly AFTER the receipt restore so
+        # live provenance always claims its wager id first. On a warm cache the
+        # per-game_id existence check makes this a no-op costing a handful of
+        # indexed queries and zero engine fits; a seeder failure must not cost
+        # the run its lanes, so it is isolated like a lane error.
+        try:
+            seeded = seed_walk_forward_ml(store)
+        except Exception as exc:  # noqa: BLE001 - isolation is the point
+            seeded = {"error": f"{type(exc).__name__}: {exc}"}
         for league in select_leagues(args.league):
             # One lane's exception must not cost the other eight. A provider
             # shape change in, say, UCL used to abort the whole run before the
@@ -120,6 +129,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "probe_report_used": probe is not None,
         "runs": [run.to_dict() for run in runs],
         "rehydrated": rehydrated,
+        "seeded_ml": seeded,
     }
     out_dir = localdata / "_runs"
     out_dir.mkdir(parents=True, exist_ok=True)

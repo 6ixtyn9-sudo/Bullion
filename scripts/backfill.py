@@ -8,8 +8,19 @@ What this deliberately does NOT do: fabricate pre-tip quotes for old games.
 Historical scoreboards are served today, so their prices are closing/after-the-
 fact numbers. Using them as ticket evidence would be a look-ahead fantasy, and
 using them to "warm calibration" would smuggle post-game information into a
-signal. Calibration therefore starts cold and must earn 30 settled
-observations per segment exactly like the live lane does.
+signal. Spread, total, and provider:espn_predictor calibration therefore starts
+cold and must earn 30 settled observations per segment exactly like the live
+lane does — they need a book quote or a provider snapshot no honest history
+can supply.
+
+The one deliberate exception is the model's own moneyline surface:
+``seed_walk_forward_ml`` replays ``empirical_score_v1`` / ``nhl_poisson_v1`` /
+``dixon_coles_v1`` over the backfilled finals, fitting strictly on finals whose
+SAST day precedes the forecast day, and persists those out-of-sample
+probabilities as ``provenance='walk_forward_seed'`` rows. They carry no price,
+no book, and no provider information — and every honesty gate
+(``DEFAULT_MIN_SAMPLES``, the Brier caps, ``cap_vs_base_rate``, the ROI band)
+re-measures over them exactly as over live rows and fails closed.
 """
 
 from __future__ import annotations
@@ -33,7 +44,16 @@ from bullion.espn import (  # noqa: E402
     parse_summary,
     season_events_url,
 )
-from bullion.models import LEAGUES, Sport, forecast_id_for, now_utc  # noqa: E402
+from bullion.engines import (  # noqa: E402
+    Result,
+    fit_ratings,
+    normal_cdf,
+    rates_for,
+    rest_adjustment,
+)
+from bullion.engines import nhl as nhl_engine  # noqa: E402
+from bullion.engines import soccer as soccer_engine  # noqa: E402
+from bullion.models import LEAGUES, Sport, forecast_id_for, now_utc, sast_day  # noqa: E402
 from bullion.store import Store  # noqa: E402
 
 REINDEX_PAGES = 25
@@ -259,6 +279,236 @@ def rehydrate_forecasts(store: Store, localdata: Path) -> Dict[str, int]:
     return counters
 
 
+# -- walk-forward moneyline seeding -------------------------------------------
+# The module docstring above used to end at "calibration must earn 30 settled
+# observations per segment exactly like the live lane does". That stays true for
+# every market that needs a book quote or a provider snapshot — spread, total,
+# and provider:espn_predictor remain 100% live-only, because no honest historical
+# price for them exists. The model's own moneyline probabilities are different:
+# empirical_score_v1, nhl_poisson_v1 and dixon_coles_v1 need nothing but official
+# final scores, so the seeder can replay them leak-proof (fit strictly on finals
+# with SAST day < the forecast day) and persist the result as calibration
+# evidence marked provenance='walk_forward_seed'. The honesty gates are NOT
+# relaxed by a single constant: DEFAULT_MIN_SAMPLES, the Brier caps,
+# cap_vs_base_rate and the ROI band all re-measure over the seeded rows exactly
+# as they measure over live rows, fail closed, and re-lock a lane whose engine
+# loses its edge (the 2026-11-27 study caught nhl_poisson_v1 doing exactly that:
+# transient pass on small-n noise, Brier 0.2507 > 0.25 at n=734).
+
+SEED_LANES = ("nhl", "nfl", "cfb", "eng.1", "esp.1", "ger.1", "ita.1", "fra.1")
+SOCCER_SEED_LANES = frozenset({"eng.1", "esp.1", "ger.1", "ita.1", "fra.1"})
+#: Minimum settled finals a matchday must have behind it before the seeder
+#: scores it. Mirrors the study's warmup floor; the production gates stay the
+#: ones that actually decide when a lane unlocks.
+MIN_SEED_HISTORY = 15
+
+
+def _score_matchday_moneyline(
+    lane: str,
+    day: str,
+    results: List[Result],
+    games: List[Dict[str, Any]],
+) -> List[Tuple[str, str, float]]:
+    """Production-exact moneyline probabilities for one SAST matchday.
+
+    Mirrors the daily runner's engine calls line for line (same fit, same rate
+    lookup, same rest adjustment, same distribution code). No book quotes exist
+    for these finals, so only ``market='moneyline'`` rows come out. The caller
+    guarantees ``results`` holds only finals with SAST day strictly before
+    ``day`` — that is the leak firewall.
+    """
+    scored: List[Tuple[str, str, float]] = []
+    if lane in SOCCER_SEED_LANES:
+        ratings = soccer_engine.fit_ratings(
+            results, reference_day=day, half_life_days=240.0
+        )
+        if not ratings.get("n"):
+            return scored
+        rho = soccer_engine.fit_rho(
+            results, ratings, reference_day=day, half_life_days=240.0
+        )
+        for game in games:
+            home_rate, away_rate = rates_for(
+                ratings,
+                game["home_team_id"],
+                game["away_team_id"],
+                neutral=bool(game["neutral_site"]),
+            )
+            matrix = soccer_engine.score_matrix(home_rate, away_rate, rho)
+            home, draw, away = soccer_engine._one_x_two(matrix)
+            for selection, probability in (("home", home), ("draw", draw), ("away", away)):
+                scored.append((game["game_id"], selection, probability))
+        return scored
+
+    if lane == "nhl":
+        ratings = fit_ratings(results, reference_day=day)
+        if not ratings.get("n"):
+            return scored
+        for game in games:
+            home_rate, away_rate = rates_for(
+                ratings,
+                game["home_team_id"],
+                game["away_team_id"],
+                neutral=bool(game["neutral_site"]),
+            )
+            home_rate *= rest_adjustment(results, game["home_team_id"], day)
+            away_rate *= rest_adjustment(results, game["away_team_id"], day)
+            margin, _total, _draw = nhl_engine._final_distributions(home_rate, away_rate)
+            prob_home = sum(p for m, p in margin.items() if m > 0)
+            prob_away = sum(p for m, p in margin.items() if m < 0)
+            scored.append((game["game_id"], "home", prob_home))
+            scored.append((game["game_id"], "away", prob_away))
+        return scored
+
+    # nfl / cfb: empirical_score_v1 (the FPI surface needs a live predictor
+    # snapshot, which a historical final can never have — it stays live-only).
+    ratings = fit_ratings(results, reference_day=day)
+    if not ratings.get("n"):
+        return scored
+    from bullion.engines.football import SIGMA_PRIORS, residual_sigmas
+
+    prior_margin, prior_total = SIGMA_PRIORS.get(lane, (14.0, 14.0))
+    sigma_margin, _sigma_total = residual_sigmas(results, ratings, reference_day=day)
+    sigma_margin = sigma_margin or prior_margin
+    for game in games:
+        home_rate, away_rate = rates_for(
+            ratings,
+            game["home_team_id"],
+            game["away_team_id"],
+            neutral=bool(game["neutral_site"]),
+        )
+        home_rate *= rest_adjustment(results, game["home_team_id"], day, penalty=0.99)
+        away_rate *= rest_adjustment(results, game["away_team_id"], day, penalty=0.99)
+        expected_margin = home_rate - away_rate
+        prob_home = 1.0 - normal_cdf((0.0 - expected_margin) / max(sigma_margin, 0.5))
+        scored.append((game["game_id"], "home", prob_home))
+        scored.append((game["game_id"], "away", 1.0 - prob_home))
+    return scored
+
+
+def seed_walk_forward_ml(
+    store: Store, *, leagues: Tuple[str, ...] = SEED_LANES
+) -> Dict[str, Any]:
+    """Replay each lane's moneyline model over its backfilled finals.
+
+    For every historical SAST matchday ``D`` the production engine is fitted on
+    finals with SAST day strictly before ``D`` and scores that day's finals;
+    rows are persisted through :meth:`Store.restore_forecasts` with
+    ``provenance='walk_forward_seed'`` and the same wager-only
+    :func:`bullion.models.forecast_id` a live tick uses. ``INSERT OR IGNORE``
+    therefore makes the whole pass idempotent and guarantees a live pre-tip
+    snapshot (recorded first, in :meth:`daily` and :meth:`rehydrate_forecasts`)
+    can never be displaced by a seeded row.
+
+    Idempotence is checked per ``game_id``, not per day: warm ticks run one
+    ``SELECT DISTINCT`` per lane, find every historical matchday already
+    covered, and pay for zero fits. No gate constant is read or modified here —
+    the seeder only supplies observations; calibration and the ticket gates
+    re-measure them every run and fail closed.
+    """
+    summary: Dict[str, Any] = {"lanes": {}, "fit_seconds": 0.0}
+    started = time.monotonic()
+    for lane in leagues:
+        lane_stats = {
+            "matchdays_scored": 0,
+            "rows": 0,
+            "inserted": 0,
+            "matchdays_below_min_history": 0,
+        }
+        summary["lanes"][lane] = lane_stats
+        if lane not in LEAGUES:
+            continue
+        finals = store.conn.execute(
+            """
+            SELECT * FROM games
+            WHERE league=? AND status='final' AND home_score IS NOT NULL
+            ORDER BY scheduled_utc
+            """,
+            (lane,),
+        ).fetchall()
+        if not finals:
+            continue
+        have = {
+            row[0]
+            for row in store.conn.execute(
+                """
+                SELECT DISTINCT game_id FROM forecast_snapshots
+                WHERE league=? AND market='moneyline'
+                """,
+                (lane,),
+            )
+        }
+        by_day: Dict[str, List[Dict[str, Any]]] = {}
+        for row in finals:
+            by_day.setdefault(sast_day(row["scheduled_utc"]), []).append(dict(row))
+        prior_results: List[Result] = []
+        seeded_rows: List[Dict[str, Any]] = []
+        created = now_utc()
+        for day in sorted(by_day):
+            games = by_day[day]
+            if len(prior_results) < MIN_SEED_HISTORY:
+                lane_stats["matchdays_below_min_history"] += 1
+            else:
+                missing = [game for game in games if game["game_id"] not in have]
+                if missing:
+                    fit_started = time.monotonic()
+                    scored = _score_matchday_moneyline(lane, day, prior_results, missing)
+                    summary["fit_seconds"] += time.monotonic() - fit_started
+                    lane_stats["matchdays_scored"] += 1
+                    for game_id, selection, probability in scored:
+                        market = "moneyline"
+                        period = "full_game"
+                        source = (
+                            soccer_engine.SOURCE
+                            if lane in SOCCER_SEED_LANES
+                            else nhl_engine.SOURCE
+                            if lane == "nhl"
+                            else "empirical_score_v1"
+                        )
+                        seeded_rows.append(
+                            {
+                                "forecast_id": forecast_id_for(
+                                    league=lane,
+                                    game_id=game_id,
+                                    market=market,
+                                    period=period,
+                                    selection=selection,
+                                    line=None,
+                                    source=source,
+                                ),
+                                "game_id": game_id,
+                                "league": lane,
+                                "market": market,
+                                "period": period,
+                                "source": source,
+                                "selection": selection,
+                                "line": None,
+                                "raw_probability": probability,
+                                "push_probability": 0.0,
+                                "observed_day": day,
+                                "created_utc": created,
+                            }
+                        )
+                    lane_stats["rows"] = len(seeded_rows)
+            for row in games:
+                prior_results.append(
+                    Result(
+                        home_id=row["home_team_id"],
+                        away_id=row["away_team_id"],
+                        home_score=float(row["home_score"]),
+                        away_score=float(row["away_score"]),
+                        day=day,
+                    )
+                )
+        if seeded_rows:
+            lane_stats["inserted"] = store.restore_forecasts(
+                seeded_rows, provenance="walk_forward_seed"
+            )
+    summary["seconds"] = round(time.monotonic() - started, 2)
+    summary["fit_seconds"] = round(summary["fit_seconds"], 2)
+    return summary
+
+
 def run(
     *,
     store: Store,
@@ -453,11 +703,15 @@ def main(argv: Optional[List[str]] = None) -> int:
         )
         # Runs on every invocation, not just a cold cache: it is idempotent, and
         # a partially lost cache heals the same way a fully lost one does.
+        # Order matters: receipts (provenance='live') claim their wager ids
+        # before the walk-forward seeder runs, so INSERT OR IGNORE can never
+        # displace a real pre-tip snapshot with a replayed one.
         localdata_dir = Path(args.localdata)
         if not localdata_dir.is_absolute():
             localdata_dir = ROOT / localdata_dir
         rehydrated = rehydrate_forecasts(store, localdata_dir)
         manifest["rehydrated"] = rehydrated
+        manifest["seeded_ml"] = seed_walk_forward_ml(store)
         manifest["counts"] = store.counts()
     out = Path(args.out)
     if not out.is_absolute():
