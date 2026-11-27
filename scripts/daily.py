@@ -27,7 +27,20 @@ from bullion.espn import EspnClient  # noqa: E402
 from bullion.models import sast_day, now_utc  # noqa: E402
 from bullion.runner import LaneRun, run_lane, select_leagues  # noqa: E402
 from bullion.store import Store  # noqa: E402
-from bullion.tickets import GatePolicy  # noqa: E402
+from bullion.tickets import (  # noqa: E402
+    DEFAULT_ACCA_LIMIT,
+    DEFAULT_MAX_COMBINED_ODDS,
+    DEFAULT_MAX_LEGS,
+    DEFAULT_MIN_COMBINED_ODDS,
+    DEFAULT_MIN_LEGS,
+    EDGE_FLAG_THRESHOLD,
+    MAX_CLAIMED_EDGE,
+    MAX_LEG_ODDS,
+    MIN_LEG_ODDS,
+    RANKING_METRIC_KELLY,
+    VALID_RANKING_METRICS,
+    GatePolicy,
+)
 
 from backfill import rehydrate_forecasts, seed_walk_forward_ml  # noqa: E402  (same directory)
 
@@ -49,12 +62,54 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--db", default="localdata/bullion.db")
     parser.add_argument("--localdata", default="localdata")
     parser.add_argument("--probe-report", default=None)
-    parser.add_argument("--legs", type=int, default=2)
-    parser.add_argument("--limit", type=int, default=3)
-    parser.add_argument("--min-leg-odds", type=float, default=1.20)
-    parser.add_argument("--max-leg-odds", type=float, default=3.00)
-    parser.add_argument("--min-odds", type=float, default=3.00, help="combined acca band (0 disables)")
-    parser.add_argument("--max-odds", type=float, default=4.50, help="combined acca band")
+    parser.add_argument(
+        "--legs",
+        type=int,
+        default=None,
+        help="pin both ends of the leg range (legacy override); empty = use --min-legs/--max-legs",
+    )
+    parser.add_argument("--min-legs", type=int, default=DEFAULT_MIN_LEGS)
+    parser.add_argument("--max-legs", type=int, default=DEFAULT_MAX_LEGS)
+    parser.add_argument("--limit", type=int, default=DEFAULT_ACCA_LIMIT)
+    parser.add_argument("--min-leg-odds", type=float, default=MIN_LEG_ODDS)
+    parser.add_argument("--max-leg-odds", type=float, default=MAX_LEG_ODDS)
+    parser.add_argument(
+        "--min-odds", type=float, default=DEFAULT_MIN_COMBINED_ODDS, help="combined acca band"
+    )
+    parser.add_argument(
+        "--max-odds", type=float, default=DEFAULT_MAX_COMBINED_ODDS, help="combined acca band"
+    )
+    parser.add_argument(
+        "--ranking-metric",
+        default=RANKING_METRIC_KELLY,
+        choices=list(VALID_RANKING_METRICS),
+        help="acca ranking objective",
+    )
+    parser.add_argument(
+        "--max-claimed-edge",
+        type=float,
+        default=MAX_CLAIMED_EDGE,
+        help="hard sanity cap on p*O-1 (0 or negative disables)",
+    )
+    parser.add_argument(
+        "--edge-flag-threshold",
+        type=float,
+        default=EDGE_FLAG_THRESHOLD,
+        help="non-blocking audit tag above this claimed edge (0 or negative disables)",
+    )
+    parser.add_argument(
+        "--forbid-alt-line-reuse",
+        dest="forbid_alt_line_reuse",
+        action="store_true",
+        default=True,
+        help="no (game, market, selection) reuse across accas at another line",
+    )
+    parser.add_argument(
+        "--allow-alt-line-reuse",
+        dest="forbid_alt_line_reuse",
+        action="store_false",
+        help="allow the same side at a different line in a second acca",
+    )
     parser.add_argument(
         "--no-combined-band", action="store_true", help="accept any combined price"
     )
@@ -71,7 +126,14 @@ def main(argv: Optional[List[str]] = None) -> int:
         db_path = ROOT / db_path
 
     probe = load_probe(args.probe_report)
-    policy = GatePolicy(min_leg_odds=args.min_leg_odds, max_leg_odds=args.max_leg_odds)
+    policy = GatePolicy(
+        min_leg_odds=args.min_leg_odds,
+        max_leg_odds=args.max_leg_odds,
+        max_claimed_edge=args.max_claimed_edge if args.max_claimed_edge > 0 else None,
+        edge_flag_threshold=(
+            args.edge_flag_threshold if args.edge_flag_threshold > 0 else None
+        ),
+    )
     runs = []
     with Store(db_path) as store:
         # Repairs a partially lost cache before anything reads it: the workflow
@@ -102,10 +164,14 @@ def main(argv: Optional[List[str]] = None) -> int:
                     as_of_utc=args.as_of,
                     probe_report=probe,
                     legs=args.legs,
+                    min_legs=args.min_legs,
+                    max_legs=args.max_legs,
                     limit=args.limit,
                     policy=policy,
                     min_combined_odds=None if args.no_combined_band else args.min_odds,
                     max_combined_odds=None if args.no_combined_band else args.max_odds,
+                    ranking_metric=args.ranking_metric,
+                    forbid_alt_line_reuse=args.forbid_alt_line_reuse,
                 )
             except Exception as exc:  # noqa: BLE001 - isolation is the point
                 run = LaneRun(

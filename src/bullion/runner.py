@@ -52,7 +52,14 @@ from .models import (
 )
 from .store import Store
 from .tickets import (
+    DEFAULT_ACCA_LIMIT,
+    DEFAULT_MAX_COMBINED_ODDS,
+    DEFAULT_MAX_LEGS,
+    DEFAULT_MIN_COMBINED_ODDS,
+    DEFAULT_MIN_LEGS,
     PRICE_WEIGHT,
+    RANKING_METRIC_KELLY,
+    VALID_RANKING_METRICS,
     GatePolicy,
     build_accas,
     decision_cutoff,
@@ -371,15 +378,29 @@ def run_lane(
     client: EspnClient,
     as_of_utc: Optional[str] = None,
     probe_report: Optional[Dict[str, Any]] = None,
-    legs: int = 2,
-    limit: int = 3,
+    legs: Optional[int] = None,
+    min_legs: int = DEFAULT_MIN_LEGS,
+    max_legs: int = DEFAULT_MAX_LEGS,
+    limit: int = DEFAULT_ACCA_LIMIT,
     policy: Optional[GatePolicy] = None,
-    min_combined_odds: Optional[float] = 3.00,
-    max_combined_odds: Optional[float] = 4.50,
+    min_combined_odds: Optional[float] = DEFAULT_MIN_COMBINED_ODDS,
+    max_combined_odds: Optional[float] = DEFAULT_MAX_COMBINED_ODDS,
+    ranking_metric: str = RANKING_METRIC_KELLY,
+    forbid_alt_line_reuse: bool = True,
 ) -> LaneRun:
     """Run one lane for one SAST day. Freezes only at/after the lane cutoff."""
     as_of = to_utc_z(as_of_utc or now_utc())
     policy = policy or GatePolicy()
+    if ranking_metric not in VALID_RANKING_METRICS:
+        raise ValueError(f"unknown ranking metric {ranking_metric!r}")
+    # ``legs`` is the pre-Option-1 override: an explicit single leg count pins
+    # both ends of the range, otherwise 2- and 3-leg accas compete together.
+    if legs is not None:
+        eff_min_legs = eff_max_legs = int(legs)
+    else:
+        eff_min_legs, eff_max_legs = int(min_legs), int(max_legs)
+    if not (2 <= eff_min_legs <= eff_max_legs <= 6):
+        raise ValueError("min_legs/max_legs must satisfy 2 <= min <= max <= 6")
     run = LaneRun(lane=league.key, day=day, status="started")
     gaps = run.gaps
     permission: LanePermission = lane_permission(probe_report, league)
@@ -490,14 +511,19 @@ def run_lane(
     run.eligible_legs = len(eligible)
     tickets = build_accas(
         eligible,
-        legs=legs,
+        min_legs=eff_min_legs,
+        max_legs=eff_max_legs,
         limit=limit,
         price_weight=PRICE_WEIGHT,
+        ranking_metric=ranking_metric,
         min_leg_odds=policy.min_leg_odds,
         max_leg_odds=policy.max_leg_odds,
         min_combined_odds=min_combined_odds,
         max_combined_odds=max_combined_odds,
         forbid_conflicting_game_sides=True,
+        forbid_alt_line_reuse=forbid_alt_line_reuse,
+        max_claimed_edge=policy.max_claimed_edge,
+        edge_flag_threshold=policy.edge_flag_threshold,
     )
     run.tickets = len(tickets)
 
@@ -516,7 +542,13 @@ def run_lane(
         return finish()
 
     selection_policy = {
-        "requested_legs": legs,
+        "requested_legs": eff_max_legs,
+        "ranking_metric": ranking_metric,
+        "min_legs": eff_min_legs,
+        "max_legs": eff_max_legs,
+        "forbid_alt_line_reuse": forbid_alt_line_reuse,
+        "max_claimed_edge": policy.max_claimed_edge,
+        "edge_flag_threshold": policy.edge_flag_threshold,
         "limit": limit,
         "allow_provisional": False,
         "require_disjoint_legs": True,

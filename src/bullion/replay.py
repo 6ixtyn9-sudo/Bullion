@@ -29,7 +29,9 @@ from .tickets import (
     MIN_LEG_ODDS,
     NO_BET_SCHEMA,
     PRICE_WEIGHT,
+    RANKING_METRIC_BLEND,
     TICKET_SCHEMA,
+    VALID_RANKING_METRICS,
     GatePolicy,
     build_accas,
     eligible_rows,
@@ -45,12 +47,18 @@ STAKE_MODES = frozenset({"flat", "daily_pct", "kelly", "skim"})
 @dataclass(frozen=True)
 class ReplaySpec:
     legs: Optional[int] = None
+    min_legs: Optional[int] = None
+    max_legs: Optional[int] = None
     limit: Optional[int] = None
     min_leg_odds: Optional[float] = None
     max_leg_odds: Optional[float] = None
     price_weight: Optional[float] = None
     min_combined_odds: Optional[float] = None
     max_combined_odds: Optional[float] = None
+    ranking_metric: Optional[str] = None
+    max_claimed_edge: Optional[float] = None
+    edge_flag_threshold: Optional[float] = None
+    forbid_alt_line_reuse: Optional[bool] = None
     stake_mode: str = "flat"
     daily_pct: float = 0.25
     kelly_fraction: float = 0.25
@@ -59,6 +67,8 @@ class ReplaySpec:
     def __post_init__(self) -> None:
         if self.stake_mode not in STAKE_MODES:
             raise ValueError(f"unknown stake mode {self.stake_mode!r}")
+        if self.ranking_metric is not None and self.ranking_metric not in VALID_RANKING_METRICS:
+            raise ValueError(f"unknown ranking metric {self.ranking_metric!r}")
         if self.daily_pct <= 0 or self.daily_pct > 1:
             raise ValueError("daily_pct must be in (0, 1]")
         if self.kelly_fraction <= 0 or self.kelly_fraction > 1:
@@ -188,10 +198,38 @@ def load_evidence(
     return evidence
 
 
-def _policy_limits(day: DayEvidence, spec: ReplaySpec) -> Dict[str, Any]:
+def policy_limits(day: DayEvidence, spec: ReplaySpec) -> Dict[str, Any]:
+    """Selection knobs for one frozen day: spec override, else the receipt.
+
+    A receipt frozen before Option 1 carries none of the new keys, so the
+    fallbacks here have to rebuild the OLD policy exactly: blend ranking, a fixed
+    ``requested_legs`` count, no edge cap and no edge tag. Rebuilding a legacy
+    pool with the new Kelly defaults, or retro-filtering it with the 0.40 cap,
+    would "prove" a parity the receipt never had.
+    """
     policy = day.selection_policy
+    requested_legs = int(policy.get("requested_legs") or 2)
+    legacy_min_legs = spec.legs or requested_legs
     return {
-        "legs": spec.legs or int(policy.get("requested_legs") or 2),
+        "legs": spec.legs or requested_legs,
+        "min_legs": spec.min_legs
+        if spec.min_legs is not None
+        else (spec.legs or int(policy.get("min_legs") or legacy_min_legs)),
+        "max_legs": spec.max_legs
+        if spec.max_legs is not None
+        else (spec.legs or int(policy.get("max_legs") or requested_legs)),
+        "ranking_metric": spec.ranking_metric
+        if spec.ranking_metric is not None
+        else str(policy.get("ranking_metric") or RANKING_METRIC_BLEND),
+        "max_claimed_edge": spec.max_claimed_edge
+        if spec.max_claimed_edge is not None
+        else policy.get("max_claimed_edge"),
+        "edge_flag_threshold": spec.edge_flag_threshold
+        if spec.edge_flag_threshold is not None
+        else policy.get("edge_flag_threshold"),
+        "forbid_alt_line_reuse": spec.forbid_alt_line_reuse
+        if spec.forbid_alt_line_reuse is not None
+        else bool(policy.get("forbid_alt_line_reuse", False)),
         "limit": spec.limit or int(policy.get("limit") or 3),
         "min_leg_odds": spec.min_leg_odds
         if spec.min_leg_odds is not None
@@ -213,27 +251,37 @@ def _policy_limits(day: DayEvidence, spec: ReplaySpec) -> Dict[str, Any]:
 
 
 def select_tickets(day: DayEvidence, spec: ReplaySpec = ReplaySpec()) -> List[Dict[str, Any]]:
-    limits = _policy_limits(day, spec)
+    limits = policy_limits(day, spec)
     rows = eligible_rows(
         day.candidate_pool,
         policy=GatePolicy(
             min_leg_odds=limits["min_leg_odds"],
             max_leg_odds=limits["max_leg_odds"],
             brier_cap_2way=DEFAULT_BRIER_CAP_2WAY,
+            # Explicitly the receipt's value, never GatePolicy's default: a
+            # legacy pool must not be retro-filtered by a cap that did not
+            # exist when it was frozen.
+            max_claimed_edge=limits["max_claimed_edge"],
+            edge_flag_threshold=limits["edge_flag_threshold"],
         ),
     )
-    if len(rows) < limits["legs"]:
+    if len(rows) < limits["min_legs"]:
         return []
     return build_accas(
         rows,
-        legs=limits["legs"],
+        min_legs=limits["min_legs"],
+        max_legs=limits["max_legs"],
         limit=limits["limit"],
         price_weight=limits["price_weight"],
+        ranking_metric=limits["ranking_metric"],
         min_leg_odds=limits["min_leg_odds"],
         max_leg_odds=limits["max_leg_odds"],
         min_combined_odds=limits["min_combined_odds"],
         max_combined_odds=limits["max_combined_odds"],
         forbid_conflicting_game_sides=limits["forbid_conflicting"],
+        forbid_alt_line_reuse=limits["forbid_alt_line_reuse"],
+        max_claimed_edge=limits["max_claimed_edge"],
+        edge_flag_threshold=limits["edge_flag_threshold"],
     )
 
 
