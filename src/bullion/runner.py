@@ -59,7 +59,6 @@ from .tickets import (
     eligible_rows,
     freeze_receipt,
     pick_row,
-    render_card,
     resolve_outcome,
     roi_band,
     score_forecasts,
@@ -564,9 +563,9 @@ def run_lane(
     run.status = "frozen_ticket" if receipt else "frozen_no_bet"
     if receipt is not None:
         run.receipt_path = str(localdata / league.lane / f"auto_tickets_{day}_decision.json")
-        card_dir = localdata / league.lane / "cards"
-        card_dir.mkdir(parents=True, exist_ok=True)
-        (card_dir / f"auto_tickets_{day}.txt").write_text(render_card(receipt), encoding="utf-8")
+        # The human card is written by ``settle_lane`` in ``finish()``, which
+        # runs after this freeze: it re-renders every dated card at the lane
+        # root from the graded copy, so a frozen PENDING never outlives a result.
     else:
         run.reason = (
             "no qualifying pre-tip ticket at cutoff"

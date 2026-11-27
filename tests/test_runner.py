@@ -247,7 +247,8 @@ def test_cutoff_scan_with_probe_freezes_a_receipt_or_no_bet_lock(tmp_path):
         assert receipt["schema_version"] == "magolide.paper_ticket_receipt"
         assert receipt["candidate_pool"], "a frozen receipt must carry its pool"
         assert receipt["selection_policy"]["probe_report_used"] is True
-        assert (lane_dir / "cards" / f"auto_tickets_{DAY}.txt").exists()
+        assert (lane_dir / f"auto_tickets_{DAY}.txt").exists()
+        assert (lane_dir / "auto_tickets_performance.txt").exists()
         assert (lane_dir / "auto_tickets_performance.json").exists()
         from bullion.replay import check_parity, load_evidence
 
