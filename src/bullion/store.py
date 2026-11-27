@@ -92,7 +92,8 @@ CREATE TABLE IF NOT EXISTS forecast_snapshots (
     raw_probability REAL NOT NULL,
     push_probability REAL NOT NULL DEFAULT 0,
     observed_day TEXT NOT NULL,
-    created_utc TEXT NOT NULL
+    created_utc TEXT NOT NULL,
+    provenance TEXT NOT NULL DEFAULT 'live'
 );
 CREATE INDEX IF NOT EXISTS forecast_league ON forecast_snapshots (league, observed_day);
 """
@@ -119,6 +120,14 @@ class Store:
         additions = {
             "predictor_snapshots": {
                 "predicted_margin": "REAL",
+            },
+            "forecast_snapshots": {
+                # Provenance of a calibration observation: 'live' (recorded by a
+                # scheduled pre-tip tick or restored from a receipt) vs
+                # 'walk_forward_seed' (replayed from backfilled finals by
+                # scripts/backfill.py). Additive; the calibration reader
+                # ignores it, the audit reporting groups by it.
+                "provenance": "TEXT NOT NULL DEFAULT 'live'",
             },
         }
         for table, columns in additions.items():
@@ -298,8 +307,9 @@ class Store:
                 """
                 INSERT OR IGNORE INTO forecast_snapshots
                     (forecast_id, game_id, league, market, period, source, selection,
-                     line, raw_probability, push_probability, observed_day, created_utc)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                     line, raw_probability, push_probability, observed_day, created_utc,
+                     provenance)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,
                 (
                     forecast.forecast_id,
@@ -314,13 +324,16 @@ class Store:
                     float(forecast.push_probability),
                     observed_day,
                     now_utc(),
+                    "live",
                 ),
             )
             written += cursor.rowcount
         self.conn.commit()
         return written
 
-    def restore_forecasts(self, rows: Iterable[Dict[str, Any]]) -> int:
+    def restore_forecasts(
+        self, rows: Iterable[Dict[str, Any]], *, provenance: str = "live"
+    ) -> int:
         """Re-insert frozen pre-tip forecasts from committed receipts.
 
         ``forecast_snapshots`` lives only in the gitignored SQLite cache, so one
@@ -331,7 +344,9 @@ class Store:
         because a receipt's id was frozen after a book was attached and the
         warehouse records the forecast before; copying it inserted a second row
         for an observation the cache already held. ``INSERT OR IGNORE`` keeps
-        this idempotent next to live recording.
+        this idempotent next to live recording. ``provenance`` is ``'live'``
+        for receipt restores; the walk-forward seeder passes
+        ``'walk_forward_seed'`` so replayed history stays auditable.
         """
         restored = 0
         for row in rows:
@@ -339,8 +354,9 @@ class Store:
                 """
                 INSERT OR IGNORE INTO forecast_snapshots
                     (forecast_id, game_id, league, market, period, source, selection,
-                     line, raw_probability, push_probability, observed_day, created_utc)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                     line, raw_probability, push_probability, observed_day, created_utc,
+                     provenance)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,
                 (
                     row["forecast_id"],
@@ -355,6 +371,7 @@ class Store:
                     float(row.get("push_probability") or 0.0),
                     row["observed_day"],
                     row["created_utc"],
+                    provenance,
                 ),
             )
             restored += cursor.rowcount
