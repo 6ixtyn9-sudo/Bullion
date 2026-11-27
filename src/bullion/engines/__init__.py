@@ -8,6 +8,12 @@ from datetime import date
 from typing import Dict, List, Sequence, Tuple
 
 MAX_GOALS = 10
+
+# Engine ``SOURCE`` tags name a model FAMILY, not a revision. Seeding and
+# calibration are keyed on ``(game_id, source)``, so a materially different
+# fit must ship under its own tag (the seeder then re-seeds history under it);
+# a refit of the same family keeps the tag and its accumulated evidence.
+
 #: Global shrinkage prior (pseudo-games) for :func:`fit_ratings`, chosen by a
 #: {2,4,8,12,16} sweep on the train split of all 8 seeded lanes and confirmed
 #: on the untouched holdout. Per-lane overrides live in the engines that need

@@ -34,8 +34,9 @@ from . import (
     rest_adjustment,
 )
 
-FPI_SOURCE = "espn_fpi_v2"  # v2: fitted sigmas change under the fixed fit_ratings
-EMPIRICAL_SOURCE = "empirical_score_v2"  # v2: symmetric fit_ratings (MAP + hf ratio fix)
+#: Both surfaces ride the shared ``fit_ratings`` (symmetric home factor, MAP).
+FPI_SOURCE = "espn_fpi"
+EMPIRICAL_SOURCE = "empirical_score"
 #: Per-lane shrinkage priors (pseudo-games) from the train-split sweep. CFB's
 #: blowout-heavy, high-signal scoring wants light shrinkage (2 pseudo-games;
 #: train Brier 0.1618 vs 0.1706 at the default 4, holdout 0.1521 vs 0.1586);

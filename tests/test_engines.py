@@ -233,7 +233,7 @@ def test_soccer_totals_have_half_line_and_integer_behaviour():
 
 def test_calibration_excludes_same_day_and_future_results():
     book = CalibrationBook()
-    segment = ("nhl", "moneyline", "full_game", "nhl_poisson_v2")
+    segment = ("nhl", "moneyline", "full_game", "nhl_poisson")
     for index in range(40):
         book.add(segment, 0.6, 1, "2026-11-01", f"history{index}")
     book.add(segment, 0.6, 0, "2026-11-28", "same-day")  # the scoring day itself
@@ -246,7 +246,7 @@ def test_calibration_excludes_same_day_and_future_results():
 
 def test_calibration_requires_thirty_samples():
     book = CalibrationBook()
-    segment = ("nhl", "total", "full_game", "nhl_poisson_v2")
+    segment = ("nhl", "total", "full_game", "nhl_poisson")
     for index in range(29):
         book.add(segment, 0.5, 1, "2026-11-01", f"history{index}")
     report = book.report(segment, "2026-11-28")
@@ -257,7 +257,7 @@ def test_calibration_requires_thirty_samples():
 
 def test_calibration_brier_cap_rejects_a_bad_segment():
     book = CalibrationBook()
-    segment = ("eng.1", "moneyline", "full_game", "dixon_coles_v2")
+    segment = ("eng.1", "moneyline", "full_game", "dixon_coles")
     for index in range(40):
         book.add(segment, 0.9, 1 if index % 5 == 0 else 0, "2026-11-01", f"history{index}")
     report = book.report(segment, "2026-11-28", brier_cap=0.22, cap_vs_base_rate=True)
@@ -282,7 +282,7 @@ def test_calibration_fails_closed_when_a_sample_has_no_fixture_id():
     restore exactly the inflation the per-game gate exists to prevent.
     """
     book = CalibrationBook()
-    segment = ("nhl", "moneyline", "full_game", "nhl_poisson_v2")
+    segment = ("nhl", "moneyline", "full_game", "nhl_poisson")
     for index in range(40):
         book.add(segment, 0.62, 1 if index < 25 else 0, "2026-11-01")
     report = book.report(segment, "2026-11-28")
@@ -295,7 +295,7 @@ def test_calibration_fails_closed_when_a_sample_has_no_fixture_id():
 
 def test_calibration_counts_unique_games_not_correlated_sides():
     """A fixture with three quoted sides is one observation, not three."""
-    segment = ("nfl", "moneyline", "full_game", "espn_fpi_v2")
+    segment = ("nfl", "moneyline", "full_game", "espn_fpi")
     book = CalibrationBook()
     for index in range(10):
         for side, probability, outcome in (("home", 0.6, 1), ("away", 0.35, 0), ("draw", 0.05, 0)):
@@ -317,7 +317,7 @@ def test_calibration_counts_unique_games_not_correlated_sides():
 
 def test_calibration_weights_every_fixture_equally():
     """One row in game A must weigh as much as three rows in game B."""
-    segment = ("nhl", "moneyline", "full_game", "nhl_poisson_v2")
+    segment = ("nhl", "moneyline", "full_game", "nhl_poisson")
     book = CalibrationBook()
     book.add(segment, 1.0, 1, "2026-11-01", "quiet")  # single-row fixture, perfect
     for _ in range(3):
@@ -449,7 +449,7 @@ def test_class_frequency_baseline_blocks_pooled_baseline_vacuity():
     pooled gate but fails the tightened one (baseline 0.21).
     """
     book = CalibrationBook()
-    segment = ("nhl", "moneyline", "full_game", "nhl_poisson_v2")
+    segment = ("nhl", "moneyline", "full_game", "nhl_poisson")
     for index in range(40):
         home_won = 1 if index % 10 < 7 else 0
         book.add(segment, 0.55, home_won, "2026-11-01", f"g{index}", selection="home")
@@ -464,7 +464,7 @@ def test_class_frequency_baseline_blocks_pooled_baseline_vacuity():
 
 def test_class_frequency_baseline_admits_a_real_signal():
     book = CalibrationBook()
-    segment = ("nhl", "moneyline", "full_game", "nhl_poisson_v2")
+    segment = ("nhl", "moneyline", "full_game", "nhl_poisson")
     for index in range(40):
         home_won = 1 if index % 10 < 7 else 0
         p_home = 0.9 if home_won else 0.5
@@ -478,7 +478,7 @@ def test_class_frequency_baseline_admits_a_real_signal():
 def test_class_frequency_baseline_falls_back_without_selection_labels():
     """Rows fed without a selection keep the pooled base rate (back-compat)."""
     book = CalibrationBook()
-    segment = ("nhl", "moneyline", "full_game", "nhl_poisson_v2")
+    segment = ("nhl", "moneyline", "full_game", "nhl_poisson")
     for index in range(40):
         book.add(segment, 0.5, index % 2, "2026-11-01", f"g{index}")
     report = book.report(segment, "2026-11-28", cap_vs_base_rate=True)

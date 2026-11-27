@@ -32,8 +32,8 @@ from bullion.tickets import (
 )
 
 DAY = "2026-11-28"
-SEGMENT = ("nhl", "moneyline", "full_game", "nhl_poisson_v2")
-SOURCE = "nhl_poisson_v2"
+SEGMENT = ("nhl", "moneyline", "full_game", "nhl_poisson")
+SOURCE = "nhl_poisson"
 
 
 def _calibrated_report(n: int = 40, probability: float = 0.62, wins: int = 25):
@@ -537,7 +537,7 @@ def _three_way_pool(
     Brier that says nothing about the home/away prices being booked.
     """
     league = LEAGUES["eng.1"]
-    source = "dixon_coles_v2"
+    source = "dixon_coles"
     segment = (league.key, "moneyline", "full_game", source)
     book = CalibrationBook()
     for index in range(40):

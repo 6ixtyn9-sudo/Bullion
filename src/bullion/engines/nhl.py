@@ -28,7 +28,8 @@ from . import (
     rest_adjustment,
 )
 
-SOURCE = "nhl_poisson_v2"  # v2: symmetric fit_ratings (MAP + home-factor ratio fix)
+#: Symmetric home factor + damped Gamma-Poisson MAP fit (see ``fit_ratings``).
+SOURCE = "nhl_poisson"
 #: Shrinkage prior (pseudo-games) for the NHL fit, chosen by the {2,4,8,12,16}
 #: sweep on the NHL train split only and confirmed on the untouched holdout
 #: (Brier 0.2495 at 16 vs 0.2546 at the global default 4). Hockey's weak

@@ -81,7 +81,7 @@ def test_every_daily_run_rehydrates_a_warehouse_that_already_exists(daily, tmp_p
                         "league": "nhl",
                         "market": "moneyline",
                         "period": "full_game",
-                        "source": "nhl_poisson_v2",
+                        "source": "nhl_poisson",
                         "selection": "home",
                         "line": None,
                         "raw_probability": 0.62,

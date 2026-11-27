@@ -1,5 +1,13 @@
 # BULLION — Full-System Audit & NHL Fix (corrective pass, v2)
 
+> **Naming note (added after the fix merged):** the SOURCE tags quoted
+> throughout this document (`nhl_poisson_v1/v2`, `empirical_score_v1/v2`,
+> `espn_fpi_v1/v2`, `dixon_coles_v1/v2`) were retired in favour of bare
+> model-family names (`nhl_poisson`, `empirical_score`, `espn_fpi`,
+> `dixon_coles`). Evidence, numbers and the embedded patch are unchanged —
+> only the tag strings moved.
+
+
 **Repo:** `6ixtyn9-sudo/Bullion` @ `main` (`84a3c59`, after PR #10)
 **Warehouse:** real cached `localdata/bullion.db` — **6,230 finals** across 9 leagues
 (nhl 750 · nfl 746 · cfb 737 · eng.1 750 · esp.1 500 *(cap)* · ger.1 750 · ita.1 750 ·

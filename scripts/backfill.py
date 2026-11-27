@@ -14,8 +14,8 @@ lane does — they need a book quote or a provider snapshot no honest history
 can supply.
 
 The one deliberate exception is the model's own moneyline surface:
-``seed_walk_forward_ml`` replays ``empirical_score_v2`` / ``nhl_poisson_v2`` /
-``dixon_coles_v2`` over the backfilled finals, fitting strictly on finals whose
+``seed_walk_forward_ml`` replays ``empirical_score`` / ``nhl_poisson`` /
+``dixon_coles`` over the backfilled finals, fitting strictly on finals whose
 SAST day precedes the forecast day, and persists those out-of-sample
 probabilities as ``provenance='walk_forward_seed'`` rows. They carry no price,
 no book, and no provider information — and every honesty gate
@@ -287,15 +287,15 @@ def rehydrate_forecasts(store: Store, localdata: Path) -> Dict[str, int]:
 # every market that needs a book quote or a provider snapshot — spread, total,
 # and provider:espn_predictor remain 100% live-only, because no honest historical
 # price for them exists. The model's own moneyline probabilities are different:
-# empirical_score_v1, nhl_poisson_v1 and dixon_coles_v1 need nothing but official
+# empirical_score, nhl_poisson and dixon_coles need nothing but official
 # final scores, so the seeder can replay them leak-proof (fit strictly on finals
 # with SAST day < the forecast day) and persist the result as calibration
 # evidence marked provenance='walk_forward_seed'. The honesty gates are NOT
 # relaxed by a single constant: DEFAULT_MIN_SAMPLES, the Brier caps,
 # cap_vs_base_rate and the ROI band all re-measure over the seeded rows exactly
 # as they measure over live rows, fail closed, and re-lock a lane whose engine
-# loses its edge (the 2026-11-27 study caught nhl_poisson_v1 doing exactly that:
-# transient pass on small-n noise, Brier 0.2507 > 0.25 at n=734).
+# loses its edge (the 2026-11-27 study caught the previous NHL fit doing
+# exactly that: transient pass on small-n noise, Brier 0.2507 > 0.25 at n=734).
 
 SEED_LANES = ("nhl", "nfl", "cfb", "eng.1", "esp.1", "ger.1", "ita.1", "fra.1")
 SOCCER_SEED_LANES = frozenset({"eng.1", "esp.1", "ger.1", "ita.1", "fra.1"})
@@ -364,7 +364,7 @@ def _score_matchday_moneyline(
             scored.append((game["game_id"], "away", prob_away))
         return scored
 
-    # nfl / cfb: empirical_score_v2 (the FPI surface needs a live predictor
+    # nfl / cfb: empirical_score (the FPI surface needs a live predictor
     # snapshot, which a historical final can never have — it stays live-only).
     ratings = fit_ratings(
         results,

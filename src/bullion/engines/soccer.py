@@ -29,7 +29,8 @@ from . import (
     rates_for,
 )
 
-SOURCE = "dixon_coles_v2"  # v2: fit_ratings pseudo-game prior + home-factor fix
+#: Pseudo-game prior + symmetric home factor from ``fit_ratings``.
+SOURCE = "dixon_coles"
 RHO_GRID_MIN = -0.18
 RHO_GRID_MAX = 0.18
 RHO_GRID_STEP = 0.01

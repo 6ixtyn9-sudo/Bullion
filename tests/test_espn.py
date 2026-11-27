@@ -110,7 +110,7 @@ def test_post_tip_quote_raises_at_the_ticket_boundary():
         market="moneyline",
         selection="home",
         raw_probability=0.55,
-        source="nhl_poisson_v2",
+        source="nhl_poisson",
     )
     quote = BookQuote(
         game_id="401",
