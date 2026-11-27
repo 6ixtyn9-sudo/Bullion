@@ -803,28 +803,70 @@ def build_accas(
             return []
         prices = [float(row_price(row) or 0.0) for row in candidates]
         probabilities = [_row_probability(row) for row in candidates]
+        # Hoisted out of the inner loops: the walk asks these questions once per
+        # candidate combination, and a dict lookup apiece was a third of the
+        # runtime on a 390-row board.
+        fixture_keys = [_fixture_key(row) for row in candidates]
+        forecast_ids = [str(row.get("forecast_id")) for row in candidates]
         low_band = 0.0 if min_combined_odds is None else float(min_combined_odds)
         high_band = math.inf if max_combined_odds is None else float(max_combined_odds)
         # Float products sit on the band edges exactly often enough to matter.
         low_edge = low_band * (1.0 - 1e-12)
         high_edge = high_band * (1.0 + 1e-12)
 
-        # Two precomputations that make the last-leg scan cheap without making
-        # it approximate. ``g*`` is strictly increasing in both the joint
-        # probability and the joint price (see ``kelly_log_growth``), so a last
-        # leg beaten on BOTH axes by another in-band leg can never be the best
-        # completion of this prefix; prices are sorted, so "another in-band leg"
-        # with a higher price is simply a later index. That reduces the scan to
-        # the suffix maxima of probability — a handful of legs on a real board,
-        # instead of every in-band price, which is what a 130-fixture slate
-        # needed to stay exact rather than quadratic-cubic slow.
-        prev_greater = [-1] * n
-        stack: List[int] = []
-        for index in range(n):
-            while stack and probabilities[stack[-1]] <= probabilities[index]:
-                stack.pop()
-            prev_greater[index] = stack[-1] if stack else -1
-            stack.append(index)
+        # A last leg beaten on BOTH probability and price by another in-band leg
+        # can never be the best completion of this prefix: ``g*`` is strictly
+        # increasing in both (see ``kelly_log_growth``). Prices are sorted, so
+        # "another in-band leg with a higher price" is simply a later index, and
+        # the frontier of a window is the run of strict probability maxima found
+        # walking right to left. That is what keeps a 130-fixture slate exact
+        # instead of quadratic-cubic slow.
+        #
+        # The trap a precomputed "previous strictly greater probability" chain
+        # falls into: a leg from a fixture already in the ticket cannot be
+        # chosen, so it cannot dominate anything either. Skipping it must NOT
+        # raise the bar, or it masks every legal leg it happens to beat — on a
+        # multi-market board (moneyline + spread + total on the same match) that
+        # silently drops real optima. A max segment tree answering "rightmost
+        # index in [lo, hi] with probability >= threshold" lets a colliding leg
+        # be stepped over with the threshold left exactly where it was.
+        size = 1
+        while size < n:
+            size <<= 1
+        tree = [-1.0] * (2 * size)
+        tree[size : size + n] = probabilities
+        for node in range(size - 1, 0, -1):
+            tree[node] = max(tree[2 * node], tree[2 * node + 1])
+
+        def _rightmost_ge(lo: int, hi: int, threshold: float) -> int:
+            """Largest index in ``[lo, hi]`` with ``probability >= threshold``."""
+            if hi < lo:
+                return -1
+            left, right = lo + size, hi + size + 1
+            cover_left: List[int] = []
+            cover_right: List[int] = []
+            while left < right:
+                if left & 1:
+                    cover_left.append(left)
+                    left += 1
+                if right & 1:
+                    right -= 1
+                    cover_right.append(right)
+                left >>= 1
+                right >>= 1
+            # Canonical cover, right to left: the first qualifying node holds
+            # the answer, then descend to its rightmost qualifying leaf.
+            for node in cover_right + cover_left[::-1]:
+                if tree[node] < threshold:
+                    continue
+                while node < size:
+                    node = node * 2 + 1
+                    if tree[node] < threshold:
+                        node -= 1
+                index = node - size
+                return index if index < n else -1
+            return -1
+
         # Legs that share a price and a probability are interchangeable for
         # scoring; keep each distinguishable value's smallest forecast id so the
         # deterministic tie-break still has something to compare.
@@ -834,7 +876,7 @@ def build_accas(
                 (probabilities[index], prices[index]), []
             ).append(index)
         for members in same_value.values():
-            members.sort(key=lambda i: str(candidates[i].get("forecast_id")))
+            members.sort(key=forecast_ids.__getitem__)
 
         def _walk(
             start: int, chosen: Tuple[int, ...], prefix_price: float, prefix_prob: float
@@ -867,13 +909,22 @@ def build_accas(
             if remaining == 1:
                 first = bisect.bisect_left(prices, low_edge / prefix_price, start)
                 last = bisect.bisect_right(prices, high_edge / prefix_price, start)
-                used_fixtures = {_fixture_key(candidates[i]) for i in chosen}
-                index = last - 1
-                while index >= first:
+                used_fixtures = {fixture_keys[i] for i in chosen}
+                cursor = last - 1
+                threshold = 0.0
+                while cursor >= first:
+                    index = _rightmost_ge(first, cursor, threshold)
+                    if index < 0:
+                        break
+                    cursor = index - 1
+                    if fixture_keys[index] in used_fixtures:
+                        # Unusable in this ticket, so it dominates nothing and
+                        # the threshold must stay put.
+                        continue
                     for member in same_value[(probabilities[index], prices[index])]:
                         if not (first <= member < last):
                             continue
-                        if _fixture_key(candidates[member]) in used_fixtures:
+                        if fixture_keys[member] in used_fixtures:
                             continue
                         yield (
                             chosen + (member,),
@@ -881,7 +932,10 @@ def build_accas(
                             prefix_prob * probabilities[member],
                         )
                         break
-                    index = prev_greater[index]
+                    # Strictly above this probability: an equal-probability leg
+                    # to the left is the same trade at a lower price, and the
+                    # right-hand one is already on offer.
+                    threshold = math.nextafter(probabilities[index], math.inf)
                 return
             # Only as many legs as are still *required* must survive the
             # choice; with min_legs already met the walk may take any index.
@@ -901,7 +955,7 @@ def build_accas(
                     continue
                 if not (low_edge <= price <= high_edge):
                     continue
-                if not _distinct([candidates[index] for index in chosen]):
+                if len({fixture_keys[i] for i in chosen}) != len(chosen):
                     continue
                 growth = kelly_log_growth(probability, price)
                 if growth == float("-inf"):
@@ -912,7 +966,7 @@ def build_accas(
                 -item[0],
                 -item[1],
                 item[2],
-                tuple(str(candidates[index].get("forecast_id")) for index in item[3]),
+                tuple(forecast_ids[index] for index in item[3]),
             )
         )
         output: List[Dict[str, Any]] = []
