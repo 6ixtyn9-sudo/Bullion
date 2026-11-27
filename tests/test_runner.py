@@ -204,6 +204,62 @@ def test_lane_without_probe_stays_research_only_and_freezes_no_ticket(tmp_path):
     assert coverage["run"]["games"] == 5
 
 
+def _run_with_probe(tmp_path, **kwargs):
+    with Store(tmp_path / "db.sqlite") as store:
+        _seed_history(store)
+        return run_lane(
+            league=LEAGUES["nhl"],
+            day=DAY,
+            store=store,
+            localdata=tmp_path,
+            client=EspnClient(fetch=FakeEspn()),
+            as_of_utc="2026-11-28T15:00:00Z",
+            probe_report=_probe_report(),
+            **kwargs,
+        )
+
+
+def _frozen_policy(tmp_path):
+    path = tmp_path / "nhl" / f"auto_tickets_{DAY}_decision.json"
+    if not path.exists():
+        path = tmp_path / "nhl" / f"auto_tickets_{DAY}_no_bet.json"
+    return json.loads(path.read_text())["selection_policy"]
+
+
+def test_default_selection_policy_is_option_1(tmp_path):
+    """Option 1 shape and Option A tripwire are the defaults a lane freezes."""
+    _run_with_probe(tmp_path)
+    policy = _frozen_policy(tmp_path)
+    assert policy["ranking_metric"] == "kelly_log_growth"
+    assert policy["min_legs"] == 2 and policy["max_legs"] == 3
+    assert policy["requested_legs"] == 3
+    assert policy["limit"] == 3
+    assert policy["min_combined_odds"] == 3.30 and policy["max_combined_odds"] == 5.00
+    assert policy["min_leg_odds"] == 1.20 and policy["max_leg_odds"] == 3.00
+    assert policy["max_claimed_edge"] == 0.40
+    assert policy["edge_flag_threshold"] == 0.15
+    assert policy["forbid_alt_line_reuse"] is True
+    assert policy["forbid_conflicting_game_sides"] is True
+    assert policy["stake_units_per_acca"] == 1.0
+
+
+def test_pinned_legs_and_blend_reproduce_the_legacy_contract(tmp_path):
+    _run_with_probe(tmp_path, legs=2, ranking_metric="probability_price_blend")
+    policy = _frozen_policy(tmp_path)
+    assert policy["requested_legs"] == 2
+    assert policy["min_legs"] == 2 and policy["max_legs"] == 2
+    assert policy["ranking_metric"] == "probability_price_blend"
+
+
+def test_lane_rejects_an_impossible_shape(tmp_path):
+    with pytest.raises(ValueError):
+        _run_with_probe(tmp_path, min_legs=1, max_legs=3)
+    with pytest.raises(ValueError):
+        _run_with_probe(tmp_path, min_legs=4, max_legs=2)
+    with pytest.raises(ValueError):
+        _run_with_probe(tmp_path, ranking_metric="made_up")
+
+
 def test_pre_cutoff_scan_never_freezes(tmp_path):
     with Store(tmp_path / "db.sqlite") as store:
         _seed_history(store)
@@ -243,7 +299,9 @@ def test_cutoff_scan_with_probe_freezes_a_receipt_or_no_bet_lock(tmp_path):
     receipt_path = lane_dir / f"auto_tickets_{DAY}_decision.json"
     if run.status == "frozen_ticket":
         receipt = json.loads(receipt_path.read_text())
-        assert all(3.0 <= acca["combined_decimal_odds"] <= 4.5 for acca in receipt["accas"])
+        assert all(3.30 <= acca["combined_decimal_odds"] <= 5.00 for acca in receipt["accas"])
+        assert all(2 <= acca["leg_count"] <= 3 for acca in receipt["accas"])
+        assert receipt["selection_policy"]["ranking_metric"] == "kelly_log_growth"
         assert receipt["schema_version"] == "magolide.paper_ticket_receipt"
         assert receipt["candidate_pool"], "a frozen receipt must carry its pool"
         assert receipt["selection_policy"]["probe_report_used"] is True

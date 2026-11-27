@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from bullion.replay import (  # noqa: E402
+    VALID_RANKING_METRICS,
     ReplaySpec,
     check_parity,
     compare_variants,
@@ -34,17 +35,43 @@ from bullion.replay import (  # noqa: E402
 
 VALID_KEYS = {
     "legs",
+    "min_legs",
+    "max_legs",
     "limit",
     "min_leg_odds",
     "max_leg_odds",
     "price_weight",
     "min_odds",
     "max_odds",
+    "ranking_metric",
+    "max_claimed_edge",
+    "edge_flag_threshold",
+    "forbid_alt_line_reuse",
     "stake_mode",
     "daily_pct",
     "kelly_fraction",
     "slots",
 }
+
+# CLI spellings that mean a ReplaySpec field of a different name. Resolved
+# BEFORE the VALID_KEYS check, which used to reject ``min_odds=`` for a key it
+# then went on to accept.
+ALIASES = {
+    "min_odds": "min_combined_odds",
+    "max_odds": "max_combined_odds",
+}
+
+BOOL_FIELDS = {"forbid_alt_line_reuse"}
+INT_FIELDS = {"legs", "min_legs", "max_legs", "limit", "slots"}
+
+
+def _parse_bool(raw: str) -> bool:
+    lowered = raw.strip().lower()
+    if lowered in {"1", "true", "yes", "on"}:
+        return True
+    if lowered in {"0", "false", "no", "off"}:
+        return False
+    raise SystemExit(f"expected a boolean (true/false), got {raw!r}")
 
 
 def parse_variant(raw: Optional[str], base: ReplaySpec) -> ReplaySpec:
@@ -58,19 +85,22 @@ def parse_variant(raw: Optional[str], base: ReplaySpec) -> ReplaySpec:
         if "=" not in chunk:
             raise SystemExit(f"variant entry must be key=value (got {chunk!r})")
         key, value = (part.strip() for part in chunk.split("=", 1))
-        if key == "min_odds":
-            key = "min_combined_odds"
-        if key == "max_odds":
-            key = "max_combined_odds"
         if key not in VALID_KEYS:
             raise SystemExit(f"unknown variant key {key!r}; known: {sorted(VALID_KEYS)}")
-        field = key
-        if field in {"stake_mode"}:
+        field = ALIASES.get(key, key)
+        if field in {"stake_mode", "ranking_metric"}:
             overrides[field] = value
-        elif field in {"legs", "limit", "slots"}:
+        elif field in BOOL_FIELDS:
+            overrides[field] = _parse_bool(value)
+        elif field in INT_FIELDS:
             overrides[field] = int(value)
         else:
             overrides[field] = float(value)
+    metric = overrides.get("ranking_metric")
+    if metric is not None and metric not in VALID_RANKING_METRICS:
+        raise SystemExit(
+            f"unknown ranking_metric {metric!r}; known: {sorted(VALID_RANKING_METRICS)}"
+        )
     return ReplaySpec(**{**base.__dict__, **overrides})
 
 

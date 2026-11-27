@@ -27,10 +27,20 @@ before 30 settled observations exist per segment.
 * **No uncalibrated legs.** A leg needs ≥30 walk-forward settled observations in
   its segment (`league, market, period, source`), a Brier cap, positive calibrated
   EV, a pre-tip named-book price, and a positive prior settled ROI band.
-* **No longshot chasing.** Leg prices are hard-bounded to `[1.20, 3.00]`; two-leg
-  accas land naturally in the `@3.00–@4.00` band.
-* **No 2→5 acca dilution.** Default `limit=3` per lane per day, disjoint legs —
-  no `#4/#5` filler.
+* **No longshot chasing.** Leg prices are hard-bounded to `[1.20, 3.00]`, and a
+  ticket must combine into `[@3.30, @5.00]`: short enough to be a bet, long
+  enough to be worth freezing.
+* **No 2→5 acca dilution.** Two- and three-leg accas compete in one pool and the
+  best three win (`limit=3` per lane per day, disjoint legs) — no `#4/#5` filler.
+* **Accas are ranked by exact log growth.** `kelly_log_growth` scores the whole
+  ticket by the growth of its full-Kelly stake, `p·ln(pO) + (1−p)·ln(O(1−p)/(O−1))`,
+  so at equal edge a shorter ticket outranks a longer one instead of being
+  punished for a low price. `probability_price_blend` remains available, and is
+  what replay uses for receipts frozen before this policy.
+* **Two-tier edge tripwire.** A claimed `p·O − 1` above 15% is tagged
+  `[EDGE>15% AUDIT]` on the card and counted per acca; above 40% the leg is
+  refused outright (`edge_above_sanity_cap`). That magnitude is a broken input,
+  not a signal — and the cap never retro-filters a receipt frozen without it.
 * **No unfaithful history.** Every receipt freezes a decision-time
   `candidate_pool`; replay rebuilds tickets from that pool via the *same*
   `build_accas` the live runner uses, and `--parity` proves it.
@@ -261,13 +271,20 @@ integer lines carry a real `push_probability`.
   wager from a second model surface to its **more confident** row rather than
   whichever arrived first, and `build_accas()` refuses any combination with two
   legs from the same fixture.
-* **Two-leg accas are enumerated, not searched.** A best-first walk cannot be
-  both complete and bounded: on a 67-fixture board the below-band favourite
-  pairs ahead of the first in-band pair by more than the pop budget, which
-  returned zero accas on exactly the big slates the lane exists for. With two
-  legs the space is quadratic and cheap, so every pair is enumerated and
-  filtered; three or more legs keep the bounded walk with a budget that scales
-  with the candidate pool (`max(5000, 200 × candidates)`).
+* **The Kelly search is exact.** Legs are sorted by price, so the last leg of a
+  ticket is the contiguous price window that lands the product inside the band,
+  found with `bisect`; every admissible 2- and 3-leg combination is scored, with
+  no hop budget and no capped greedy. A last leg beaten on both probability and
+  price by another in-band leg cannot be optimal (`g*` rises with both), which
+  is what keeps a 130-fixture slate exact instead of quadratic-cubic slow.
+* **The legacy blend path is untouched.** Two-leg accas stay enumerated rather
+  than searched, because a best-first walk cannot be both complete and bounded:
+  on a 67-fixture board the below-band favourite pairs ahead of the first
+  in-band pair by more than the pop budget, which returned zero accas on exactly
+  the big slates the lane exists for. Three or more legs keep the bounded walk
+  with a budget that scales with the candidate pool (`max(5000, 200 × candidates)`).
+  That code path is what every pre-Option-1 receipt must replay through
+  byte-for-byte, so it is the one thing this policy deliberately did not touch.
 * **`prior_roi` ignores pushes**, because a pushed stake returns exactly its own
   unit and is not evidence of edge.
 * **Shape is fail-closed, in every league.** A soccer `moneyline` without its

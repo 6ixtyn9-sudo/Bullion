@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import itertools
 import json
+import math
 from pathlib import Path
 
 import pytest
@@ -12,6 +14,7 @@ from bullion.models import LEAGUES, ActualResult, BookQuote, Forecast, Game, Sta
 from bullion.replay import (
     ReplaySpec,
     check_parity,
+    policy_limits as replay_policy_limits,
     compare_variants,
     load_evidence,
     merge_days,
@@ -19,15 +22,23 @@ from bullion.replay import (
     select_tickets,
 )
 from bullion.tickets import (
+    EDGE_FLAG_THRESHOLD,
+    MAX_CLAIMED_EDGE,
+    PRICE_WEIGHT,
+    RANKING_METRIC_BLEND,
+    RANKING_METRIC_KELLY,
     GatePolicy,
     build_accas,
     eligible_rows,
     expected_value,
+    kelly_log_growth,
+    kelly_stake_fraction,
     freeze_receipt,
     pick_row,
     render_card,
     render_performance,
     roi_band,
+    row_price,
     score_forecasts,
     settle_lane,
 )
@@ -997,11 +1008,15 @@ def test_harness_reports_no_bet_days_explicitly(tmp_path):
 def test_no_bet_pool_feeds_counterfactual_replay_at_parity(tmp_path):
     """A declined pool is still replayable evidence, not a dead end.
 
-    Four eligible legs at 2.90 combine to 8.41 for two legs, outside the frozen
+    Four eligible legs at 2.20 combine to 4.84 for two legs, outside the frozen
     [3.00, 4.50] acca band — a genuine no-bet at parity. Widening that band in
     the replay harness then has to be able to bet the same frozen pool.
+
+    The price is 2.20 rather than the 2.90 this test used to use: at a 0.62
+    calibrated probability that was a +80% claimed edge, i.e. exactly the broken
+    input ``MAX_CLAIMED_EDGE`` now rejects, so no leg would have been eligible.
     """
-    league, rows = _pool(tmp_path, n=4, price=2.90)
+    league, rows = _pool(tmp_path, n=4, price=2.20)
     policy = {
         "requested_legs": 2,
         "limit": 1,
@@ -1237,3 +1252,566 @@ def test_replay_settles_a_ticket_even_when_a_same_day_leg_is_pending():
     assert result["pending_days"] == 1
     assert result["settled_days"] == 1, "one settled ticket is a settled day"
     assert result["profit_units"] == pytest.approx(1.95**2 - 1.0, rel=1e-6)
+
+
+# ---------------------------------------------------------------------------
+# Option 1 (exact Kelly log-growth ranking) + Option A (two-tier edge tripwire)
+# ---------------------------------------------------------------------------
+
+
+def _leg_row(
+    index: int,
+    *,
+    price: float,
+    probability: float,
+    market: str = "moneyline",
+    selection: str = "home",
+    line=None,
+    game_id=None,
+    period: str = "full_game",
+):
+    """A minimal row that ``build_accas`` accepts, priced like a real leg."""
+    return {
+        "forecast_id": f"f{index}-{market}-{selection}",
+        "league": "nhl",
+        "game_id": game_id if game_id is not None else f"g{index}",
+        "market": market,
+        "period": period,
+        "selection": selection,
+        "line": line,
+        "scheduled_utc": "2026-11-28T18:00:00Z",
+        "raw_probability": probability,
+        "calibrated_probability": probability,
+        "book": {"book": "TestBook", "selected_decimal_price": price},
+    }
+
+
+def _leg_keys(ticket):
+    return [
+        (leg["game_id"], leg["market"], leg["selection"], leg.get("line"))
+        for leg in ticket["legs"]
+    ]
+
+
+def test_kelly_log_growth_is_exact_full_kelly():
+    """``g*`` must be the real log growth of the full-Kelly stake, not a proxy."""
+    growth = kelly_log_growth(1.05 / 1.30, 1.30)
+    assert growth == pytest.approx(0.004346, abs=1e-6)
+    assert kelly_log_growth(1.05 / 3.00, 3.00) == pytest.approx(0.000620, abs=1e-6)
+    assert growth / kelly_log_growth(1.05 / 3.00, 3.00) == pytest.approx(7.01, abs=0.01)
+
+    # Rebuild g* from the reported stake fraction: same number to float noise.
+    # The win branch grows by f*(O-1), not by f; that is the whole point of
+    # scoring the *stake*, not the price.
+    for probability, price in ((0.60, 1.80), (0.45, 2.50), (0.30, 4.20)):
+        fraction = kelly_stake_fraction(probability, price)
+        assert 0.0 < fraction < 1.0
+        rebuilt = probability * math.log(1.0 + fraction * (price - 1.0)) + (
+            1.0 - probability
+        ) * math.log(1.0 - fraction)
+        assert kelly_log_growth(probability, price) == pytest.approx(rebuilt, abs=1e-12)
+
+    # No edge, no growth: a bet that cannot win a unit is not a bet.
+    assert kelly_log_growth(0.35, 2.00) == float("-inf")
+    assert kelly_log_growth(0.50, 2.00) == float("-inf")
+
+    # At a fixed edge the exact objective prefers the shorter price.
+    short = kelly_log_growth(1.05 / 1.30, 1.30)
+    mid = kelly_log_growth(1.05 / 2.00, 2.00)
+    long = kelly_log_growth(1.05 / 3.00, 3.00)
+    assert short > mid > long > 0.0
+
+
+def test_kelly_stake_fraction_matches_closed_form():
+    assert kelly_stake_fraction(0.45, 2.50) == pytest.approx(0.125 / 1.5, abs=1e-12)
+    assert kelly_stake_fraction(0.60, 2.00) == pytest.approx(0.20, abs=1e-12)
+    assert kelly_stake_fraction(0.40, 2.00) == 0.0
+    assert kelly_stake_fraction(0.30, 2.00) == 0.0
+
+
+def _wager_key(row):
+    return (
+        row.get("league"),
+        row.get("game_id"),
+        row.get("market"),
+        row.get("period"),
+        row.get("selection"),
+        row.get("line"),
+    )
+
+
+def _best_combo(
+    rows,
+    *,
+    min_legs,
+    max_legs,
+    min_combined_odds,
+    max_combined_odds,
+    min_leg_odds=1.20,
+    max_leg_odds=3.00,
+    max_claimed_edge=None,
+):
+    """Highest-growth in-band combination: enumerated, no pruning at all."""
+    usable = []
+    for row in rows:
+        price = row_price(row)
+        probability = float(row["calibrated_probability"])
+        if price is None or not (min_leg_odds <= price <= max_leg_odds):
+            continue
+        if max_claimed_edge is not None and probability * price - 1.0 > max_claimed_edge:
+            continue
+        usable.append(row)
+
+    scored = []
+    for size in range(min_legs, max_legs + 1):
+        for combo in itertools.combinations(usable, size):
+            if len({row["game_id"] for row in combo}) != size:
+                continue
+            price = math.prod(row_price(row) for row in combo)
+            if not (min_combined_odds <= price <= max_combined_odds):
+                continue
+            probability = math.prod(
+                float(row["calibrated_probability"]) for row in combo
+            )
+            growth = kelly_log_growth(probability, price)
+            if growth == float("-inf"):
+                continue
+            scored.append(
+                (
+                    -growth,
+                    -probability,
+                    price,
+                    tuple(str(row["forecast_id"]) for row in combo),
+                    combo,
+                )
+            )
+    if not scored:
+        return None
+    scored.sort(key=lambda item: item[:4])
+    return scored[0][4]
+
+
+def _brute_force_kelly(rows, *, min_legs, max_legs, limit, **bands):
+    """The residual-pool argmax loop, with every combination enumerated.
+
+    ``build_accas`` re-selects on the pool left over after each ticket, so the
+    reference has to as well; this compares the *search*, not a different
+    selection rule.
+    """
+    remaining, used_wagers, used_sides, output = list(rows), set(), set(), []
+    while len(output) < limit:
+        pool = [
+            row
+            for row in remaining
+            if _wager_key(row) not in used_wagers
+            and (row["game_id"], row["market"], row["selection"]) not in used_sides
+        ]
+        best = _best_combo(pool, min_legs=min_legs, max_legs=max_legs, **bands)
+        if best is None:
+            break
+        output.append(best)
+        for row in best:
+            used_wagers.add(_wager_key(row))
+            used_sides.add((row["game_id"], row["market"], row["selection"]))
+    return output
+
+
+@pytest.mark.parametrize("max_legs", [2, 3])
+def test_exact_kelly_search_matches_brute_force(max_legs):
+    """The price-sorted window walk must visit exactly the combinations it scores."""
+    prices = [1.35, 1.55, 1.72, 1.90, 2.05, 2.30, 2.55, 2.80]
+    rows = []
+    for index, price in enumerate(prices):
+        rows.append(
+            _leg_row(index, price=price, probability=round(1.22 / price, 4))
+        )
+        # A second market on the same fixture: in the pool, never in one acca.
+        rows.append(
+            _leg_row(
+                index,
+                price=round(price * 0.92, 2),
+                probability=round(1.18 / (price * 0.92), 4),
+                market="total",
+                selection="over",
+                line=5.5,
+            )
+        )
+
+    reference = _brute_force_kelly(
+        rows,
+        min_legs=2,
+        max_legs=max_legs,
+        limit=3,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+    )
+    tickets = build_accas(
+        rows,
+        min_legs=2,
+        max_legs=max_legs,
+        limit=3,
+        ranking_metric=RANKING_METRIC_KELLY,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+        forbid_alt_line_reuse=True,
+    )
+    assert reference, "the fixture must contain in-band combinations"
+    assert [_leg_keys(ticket) for ticket in tickets] == [
+        [(row["game_id"], row["market"], row["selection"], row.get("line")) for row in combo]
+        for combo in reference
+    ]
+    growths = [ticket["ranking_score"] for ticket in tickets]
+    assert growths == sorted(growths, reverse=True)
+    for ticket in tickets:
+        assert 3.30 - 1e-9 <= ticket["combined_decimal_odds"] <= 5.00 + 1e-9
+        assert ticket["ranking_metric"] == RANKING_METRIC_KELLY
+        assert ticket["kelly_fraction"] > 0.0
+        assert ticket["leg_count"] == len(ticket["legs"])
+
+
+def test_exact_kelly_matches_brute_force_on_a_real_board():
+    """The last-leg frontier must lose no optimum on a realistic slate."""
+    _league, rows = _three_market_board(games=15)
+    eligible = eligible_rows(rows, policy=GatePolicy())
+    assert len(eligible) == 45
+    bands = {"min_combined_odds": 3.30, "max_combined_odds": 5.00}
+    reference = _brute_force_kelly(
+        eligible, min_legs=2, max_legs=3, limit=3, **bands
+    )
+    tickets = build_accas(
+        eligible,
+        min_legs=2,
+        max_legs=3,
+        limit=3,
+        ranking_metric=RANKING_METRIC_KELLY,
+        **bands,
+    )
+    assert reference
+    assert [ticket["leg_count"] for ticket in tickets] == [len(combo) for combo in reference]
+    for ticket, combo in zip(tickets, reference):
+        assert ticket["ranking_score"] == pytest.approx(
+            kelly_log_growth(
+                math.prod(row["calibrated_probability"] for row in combo),
+                math.prod(row_price(row) for row in combo),
+            ),
+            abs=1e-7,
+        )
+        assert ticket["combined_decimal_odds"] == pytest.approx(
+            math.prod(row_price(row) for row in combo)
+        )
+
+
+def test_kelly_prefers_shorter_price_at_equal_edge():
+    """Equal edge, different price: exact log growth takes the short ticket."""
+    rows = [
+        _leg_row(0, price=2.00, probability=1.20 / 2.00),
+        _leg_row(1, price=2.00, probability=1.20 / 2.00),
+        _leg_row(2, price=2.10, probability=1.20 / 2.10),
+        _leg_row(3, price=2.10, probability=1.20 / 2.10),
+    ]
+    tickets = build_accas(
+        rows,
+        min_legs=2,
+        max_legs=2,
+        limit=3,
+        ranking_metric=RANKING_METRIC_KELLY,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+    )
+    assert tickets[0]["combined_decimal_odds"] == pytest.approx(4.00)
+    assert [ticket["combined_decimal_odds"] for ticket in tickets] == sorted(
+        ticket["combined_decimal_odds"] for ticket in tickets
+    )
+
+
+def test_two_and_three_leg_tickets_compete_in_one_pool():
+    """Short-priced legs make 3-leg tickets; mid-priced legs make 2-leg ones."""
+    rows = [
+        _leg_row(index, price=1.50, probability=1.30 / 1.50) for index in range(6)
+    ] + [_leg_row(10 + index, price=1.90, probability=1.06 / 1.90) for index in range(4)]
+
+    mixed = build_accas(
+        rows,
+        min_legs=2,
+        max_legs=3,
+        limit=3,
+        ranking_metric=RANKING_METRIC_KELLY,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+    )
+    pairs_only = build_accas(
+        rows,
+        min_legs=2,
+        max_legs=2,
+        limit=3,
+        ranking_metric=RANKING_METRIC_KELLY,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+    )
+    assert [ticket["leg_count"] for ticket in mixed] == [3, 3, 2]
+    assert {ticket["leg_count"] for ticket in pairs_only} == {2}
+    # A superset of candidates can never rank a worse number one.
+    assert mixed[0]["ranking_score"] > pairs_only[0]["ranking_score"]
+
+    pinned = build_accas(
+        rows,
+        legs=3,
+        limit=2,
+        ranking_metric=RANKING_METRIC_KELLY,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+    )
+    assert [ticket["leg_count"] for ticket in pinned] == [3, 3]
+    assert [ticket["acca_id"] for ticket in pinned] == [
+        ticket["acca_id"] for ticket in mixed[:2]
+    ]
+
+
+def test_pairs_are_not_pruned_by_a_three_leg_ceiling():
+    """Regression: a 2-leg pool under ``max_legs=3`` must still find its pairs.
+
+    The window walk used to bound the cheapest completion with *all* remaining
+    legs, so four 1.90 legs (pair 3.61, triple 6.86) were pruned to nothing.
+    """
+    rows = [_leg_row(index, price=1.90, probability=1.06 / 1.90) for index in range(4)]
+    tickets = build_accas(
+        rows,
+        min_legs=2,
+        max_legs=3,
+        limit=3,
+        ranking_metric=RANKING_METRIC_KELLY,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+    )
+    assert [ticket["leg_count"] for ticket in tickets] == [2, 2]
+    assert all(ticket["combined_decimal_odds"] == pytest.approx(3.61) for ticket in tickets)
+
+
+def test_leg_range_validation_is_explicit():
+    rows = [_leg_row(0, price=1.60, probability=0.70)]
+    with pytest.raises(ValueError):
+        build_accas(rows, min_legs=1, max_legs=3)
+    with pytest.raises(ValueError):
+        build_accas(rows, min_legs=3, max_legs=2)
+    with pytest.raises(ValueError):
+        build_accas(rows, min_legs=2, max_legs=7)
+    with pytest.raises(ValueError):
+        build_accas(rows, ranking_metric="not_a_metric")
+
+
+def test_default_build_accas_contract_is_still_two_leg_blend():
+    """``build_accas(rows)`` is the pre-Option-1 contract: two legs, blend."""
+    rows = [
+        _leg_row(0, price=1.95, probability=0.60),
+        _leg_row(1, price=1.90, probability=0.61),
+    ]
+    tickets = build_accas(rows)
+    assert tickets
+    assert all(ticket["leg_count"] == 2 for ticket in tickets)
+    assert all(ticket["ranking_metric"] == RANKING_METRIC_BLEND for ticket in tickets)
+    assert all(ticket["ranking_price_weight"] == PRICE_WEIGHT for ticket in tickets)
+    assert all(ticket["kelly_fraction"] > 0.0 for ticket in tickets)
+
+
+def test_option_a_sanity_cap_blocks_broken_edges_only(tmp_path):
+    """+12%/+24% trade (24% tagged); +55% is refused as a broken input.
+
+    Calibration moves a raw 0.50 to 0.562 and a raw 0.61 to 0.618, so the
+    claimed edges here are the calibrated ones — the tripwire reads the number
+    the ticket is actually built on, not the model's raw output.
+    """
+    honest = _pool(tmp_path, n=4, price=2.00, probability=0.50)
+    rows = honest[1]
+    eligible = eligible_rows(rows, policy=GatePolicy())
+    assert len(eligible) == 4
+    assert all(
+        row["eligibility"]["claimed_edge"] == pytest.approx(0.1247, abs=1e-4)
+        for row in eligible
+    )
+    assert not any(row["eligibility"]["edge_implausible"] for row in eligible)
+
+    tagged = _pool(tmp_path, n=4, price=2.00, probability=0.61)
+    rows = tagged[1]
+    eligible = eligible_rows(rows, policy=GatePolicy())
+    assert len(eligible) == 4
+    assert all(
+        row["eligibility"]["claimed_edge"] == pytest.approx(0.2360, abs=1e-4)
+        for row in eligible
+    )
+    assert all(row["eligibility"]["edge_implausible"] for row in eligible)
+
+    broken = _pool(tmp_path, n=4, price=2.00, probability=0.775)
+    rows = broken[1]
+    assert eligible_rows(rows, policy=GatePolicy()) == []
+    assert all(
+        "edge_above_sanity_cap" in row["eligibility"]["reasons"] for row in rows
+    )
+    # The cap is a rejection, not a housekeeping filter: the row still records
+    # what it claimed, so an audit can see why it was refused.
+    assert all(
+        row["eligibility"]["claimed_edge"] == pytest.approx(0.55, abs=1e-6)
+        for row in rows
+    )
+
+
+def test_edge_cap_is_off_for_legacy_policy_and_on_by_default():
+    assert GatePolicy().max_claimed_edge == MAX_CLAIMED_EDGE
+    assert GatePolicy(max_claimed_edge=None).max_claimed_edge is None
+    assert GatePolicy().to_policy_dict()["max_claimed_edge"] == MAX_CLAIMED_EDGE
+    assert GatePolicy().to_policy_dict()["edge_flag_threshold"] == EDGE_FLAG_THRESHOLD
+
+    rows = [
+        _leg_row(0, price=2.00, probability=0.775),  # +55%
+        _leg_row(1, price=2.00, probability=0.775),
+    ]
+    assert build_accas(rows, min_combined_odds=None, max_combined_odds=None) != []
+    capped = build_accas(
+        rows,
+        min_combined_odds=None,
+        max_combined_odds=None,
+        max_claimed_edge=MAX_CLAIMED_EDGE,
+    )
+    assert capped == []
+
+
+def test_ticket_and_card_carry_the_edge_audit_tag(tmp_path):
+    league, rows = _pool(tmp_path, n=4, price=2.00, probability=0.61)
+    eligible = eligible_rows(rows, policy=GatePolicy())
+    tickets = build_accas(
+        eligible,
+        min_legs=2,
+        max_legs=2,
+        limit=1,
+        ranking_metric=RANKING_METRIC_KELLY,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+        edge_flag_threshold=EDGE_FLAG_THRESHOLD,
+    )
+    assert tickets
+    ticket = tickets[0]
+    assert ticket["edge_implausible"] is True
+    assert ticket["edge_implausible_leg_count"] == 2
+    assert all(leg["edge_implausible"] for leg in ticket["legs"])
+
+    receipt = freeze_receipt(
+        tmp_path,
+        league=league,
+        day=DAY,
+        captured_utc="2026-11-28T15:00:00Z",
+        candidate_pool=rows,
+        accas=tickets,
+        selection_policy={
+            "requested_legs": 2,
+            "min_legs": 2,
+            "max_legs": 2,
+            "limit": 1,
+            "ranking_metric": RANKING_METRIC_KELLY,
+            "edge_flag_threshold": EDGE_FLAG_THRESHOLD,
+            "max_claimed_edge": MAX_CLAIMED_EDGE,
+        },
+        decision_state={"status": "frozen", "planned_cutoff_utc": "2026-11-28T14:00:00Z"},
+    )
+    card = render_card(receipt)
+    assert card.count("[EDGE>15% AUDIT]") == 2
+    assert "kelly_log_growth" in card
+
+
+def test_replay_legacy_receipt_defaults_to_the_old_policy(tmp_path):
+    """A pre-Option-1 receipt replays as blend / fixed legs / no edge cap."""
+    league, rows = _pool(tmp_path, n=4, price=2.20)
+    _freeze(tmp_path, rows, league=league, legs=2, limit=1)
+    settle_lane(tmp_path, league, _final_games([row["game_id"] for row in rows]))
+    day = load_evidence(tmp_path)[0]
+    limits = replay_policy_limits(day, ReplaySpec())
+    assert limits["ranking_metric"] == RANKING_METRIC_BLEND
+    assert limits["min_legs"] == 2 and limits["max_legs"] == 2
+    assert limits["max_claimed_edge"] is None
+    assert limits["edge_flag_threshold"] is None
+    assert limits["forbid_alt_line_reuse"] is False
+    assert check_parity([day])["parity"] is True
+    replayed = select_tickets(day, ReplaySpec())
+    assert [ticket["leg_count"] for ticket in replayed] == [2]
+    assert replayed[0]["ranking_metric"] == RANKING_METRIC_BLEND
+
+
+def test_replay_spec_reads_option_1_keys_from_a_new_receipt(tmp_path):
+    league, rows = _pool(tmp_path, n=6, price=2.20)
+    policy = GatePolicy()
+    eligible = eligible_rows(rows, policy=policy)
+    tickets = build_accas(
+        eligible,
+        min_legs=2,
+        max_legs=3,
+        limit=2,
+        ranking_metric=RANKING_METRIC_KELLY,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+        max_claimed_edge=policy.max_claimed_edge,
+        edge_flag_threshold=policy.edge_flag_threshold,
+    )
+    if not tickets:
+        pytest.skip("pool has no in-band combination")
+    freeze_receipt(
+        tmp_path,
+        league=league,
+        day=DAY,
+        captured_utc="2026-11-28T15:00:00Z",
+        candidate_pool=rows,
+        accas=tickets,
+        selection_policy={
+            "requested_legs": 3,
+            "min_legs": 2,
+            "max_legs": 3,
+            "limit": 2,
+            "min_leg_odds": 1.20,
+            "max_leg_odds": 3.00,
+            "price_weight": 0.15,
+            "min_combined_odds": 3.30,
+            "max_combined_odds": 5.00,
+            "ranking_metric": RANKING_METRIC_KELLY,
+            "forbid_alt_line_reuse": True,
+            "max_claimed_edge": policy.max_claimed_edge,
+            "edge_flag_threshold": policy.edge_flag_threshold,
+        },
+        decision_state={"status": "frozen", "planned_cutoff_utc": "2026-11-28T14:00:00Z"},
+    )
+    settle_lane(tmp_path, league, _final_games([row["game_id"] for row in rows]))
+    day = load_evidence(tmp_path)[0]
+    limits = replay_policy_limits(day, ReplaySpec())
+    assert limits["ranking_metric"] == RANKING_METRIC_KELLY
+    assert limits["min_legs"] == 2 and limits["max_legs"] == 3
+    assert limits["max_claimed_edge"] == MAX_CLAIMED_EDGE
+    assert limits["edge_flag_threshold"] == EDGE_FLAG_THRESHOLD
+    assert limits["forbid_alt_line_reuse"] is True
+    assert check_parity([day])["parity"] is True
+    replayed = select_tickets(day, ReplaySpec())
+    assert [ticket["acca_id"] for ticket in replayed] == [t["acca_id"] for t in tickets]
+
+
+def test_harness_variant_parsing_accepts_option_1_keys():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "bullion_replay_harness_variants",
+        Path(__file__).resolve().parents[1] / "scripts" / "replay_harness.py",
+    )
+    harness = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(harness)
+    parsed = harness.parse_variant(
+        "min_odds=2.6,max_odds=9,min_legs=2,max_legs=3,"
+        "ranking_metric=kelly_log_growth,max_claimed_edge=0.4,"
+        "edge_flag_threshold=0.15,forbid_alt_line_reuse=false,legs=3",
+        ReplaySpec(),
+    )
+    assert parsed.min_combined_odds == pytest.approx(2.6)
+    assert parsed.max_combined_odds == pytest.approx(9.0)
+    assert parsed.min_legs == 2 and parsed.max_legs == 3 and parsed.legs == 3
+    assert parsed.ranking_metric == RANKING_METRIC_KELLY
+    assert parsed.max_claimed_edge == pytest.approx(0.4)
+    assert parsed.edge_flag_threshold == pytest.approx(0.15)
+    assert parsed.forbid_alt_line_reuse is False
+
+    with pytest.raises(SystemExit):
+        harness.parse_variant("not_a_key=1", ReplaySpec())
+    with pytest.raises(SystemExit):
+        harness.parse_variant("ranking_metric=made_up", ReplaySpec())
