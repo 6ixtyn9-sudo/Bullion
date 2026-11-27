@@ -28,7 +28,12 @@ from . import (
     rest_adjustment,
 )
 
-SOURCE = "nhl_poisson_v1"
+SOURCE = "nhl_poisson_v2"  # v2: symmetric fit_ratings (MAP + home-factor ratio fix)
+#: Shrinkage prior (pseudo-games) for the NHL fit, chosen by the {2,4,8,12,16}
+#: sweep on the NHL train split only and confirmed on the untouched holdout
+#: (Brier 0.2495 at 16 vs 0.2546 at the global default 4). Hockey's weak
+#: per-game signal needs much heavier shrinkage than the other lanes.
+PRIOR_WEIGHT = 16.0
 OT_HOME_WIN_SHARE = 0.52  # 3-on-3 + shootout edge for the home side (prior)
 #: Extra goals beyond regulation, for the games that reach OT/SO. NHL overtime is
 #: sudden death and a shootout winner is credited exactly one goal, so **every**
@@ -94,7 +99,7 @@ def forecast(
     reference_day: str,
 ) -> List[Forecast]:
     """Model probabilities for every quoted NHL line. Prices are attached later."""
-    ratings = fit_ratings(results, reference_day=reference_day)
+    ratings = fit_ratings(results, reference_day=reference_day, prior_weight=PRIOR_WEIGHT)
     if not ratings.get("n"):
         return []
     home_rate, away_rate = rates_for(ratings, game.home_team_id, game.away_team_id,

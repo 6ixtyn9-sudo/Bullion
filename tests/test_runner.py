@@ -149,7 +149,7 @@ def _seed_history(store: Store) -> None:
             market="moneyline",
             selection="home",
             raw_probability=0.62,
-            source="nhl_poisson_v1",
+            source="nhl_poisson_v2",
         )
         store.record_forecasts([forecast], sast_day(game.scheduled_utc))
 

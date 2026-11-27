@@ -111,6 +111,38 @@ class Observation:
     outcome: Optional[int]  # 1 win, 0 loss, None push/void
     result_day: str  # SAST day the result became known
     game_id: str = ""  # fixture the row came from, for per-game weighting
+    selection: str = ""  # row's class ("home"/"draw"/"away", "over"/"under", ...)
+
+
+def _class_frequency_baseline(
+    rows: List[Observation], weights: List[float]
+) -> Optional[float]:
+    """Brier of always predicting each selection's realized frequency.
+
+    The pooled base rate is vacuous for two-sided moneyline (home+away rows
+    pool to rate exactly 0.5 -> baseline 0.2500) and near-vacuous for 1X2
+    (rate exactly 1/3 -> baseline 0.2222): every game contributes one win, so
+    the pooled rate carries no class information and any model with residual
+    signal passes ``not_better_than_base_rate`` even when it is worse than
+    blindly predicting the realized home/draw/away frequencies. This baseline
+    scores the strongest prediction that uses no team information — each
+    selection graded at its realized win frequency — so a model must beat the
+    actual class base rates, not coin-flipping odds. For balanced two- and
+    three-class moneyline segments it is equal or tighter than the pooled
+    baseline. Rows without a selection label (legacy callers, tests) fall
+    back to the pooled base rate.
+    """
+    if not rows or any(not row.selection for row in rows):
+        return None
+    wins: Dict[str, int] = {}
+    total: Dict[str, int] = {}
+    for row in rows:
+        total[row.selection] = total.get(row.selection, 0) + 1
+        wins[row.selection] = wins.get(row.selection, 0) + (1 if row.outcome == 1 else 0)
+    baseline_pairs = [
+        (wins[row.selection] / total[row.selection], int(row.outcome)) for row in rows
+    ]
+    return brier_score(baseline_pairs, weights)
 
 
 @dataclass
@@ -176,10 +208,12 @@ class CalibrationBook:
         outcome: Optional[int],
         result_day: str,
         game_id: str = "",
+        selection: str = "",
     ) -> None:
         self._rows.setdefault(tuple(segment), []).append(
             Observation(
-                tuple(segment), float(probability), outcome, str(result_day), str(game_id or "")
+                tuple(segment), float(probability), outcome, str(result_day),
+                str(game_id or ""), str(selection or ""),
             )
         )
 
@@ -191,6 +225,7 @@ class CalibrationBook:
                 observation.outcome,
                 observation.result_day,
                 observation.game_id,
+                observation.selection,
             )
 
     def settled(self, segment: Tuple[str, str, str, str], as_of_day: str) -> List[Observation]:
@@ -229,7 +264,8 @@ class CalibrationBook:
             n=len(pairs),
             n_games=n_games,
             brier=brier_score(pairs, weights),
-            baseline_brier=base_rate_brier(pairs, weights),
+            baseline_brier=_class_frequency_baseline(rows, weights)
+            or base_rate_brier(pairs, weights),
             brier_cap=cap,
             min_samples=min_samples,
         )
