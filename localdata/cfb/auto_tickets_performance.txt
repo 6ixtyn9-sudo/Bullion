@@ -1,0 +1,29 @@
+BULLION AUTO-TICKETS (ROLLING) — CFB paper performance
+========================================================================
+BANK     100.000 units   x1.000 of the 100-unit base
+CAPITAL  98.000 free / 2.000 reserved paper units
+RECORD   no settled paper positions yet
+OPEN     2 held paper positions · 4 awaiting legs in open tickets
+LEGS     0 settled legs across 0 settled positions
+SAMPLE   [LOW SAMPLE: n < 30] no profit, edge, or readiness claim is supported
+
+BET-DAYS, oldest first (1)
+  2026-11-27  —      staked 0.000  returned —         net —        pending 2.000  bank* 100.000
+
+HELD (not yet settled; stake counted as committed)
+  2026-11-27 PAPER 2-LEG ACCA #1 @3.040 stake 1.000 · receipt 68202609de6f012d8318
+      Iowa Hawkeyes vs Nebraska Cornhuskers · TIP-OFF Fri 2026-11-27 19:08 SAST · MONEYLINE -> HOME @1.505 · DraftKings · ⏳ PENDING
+      UTSA Roadrunners vs Tulsa Golden Hurricane · TIP-OFF Fri 2026-11-27 19:00 SAST · MONEYLINE -> HOME @2.020 · DraftKings · ⏳ PENDING
+  2026-11-27 PAPER 2-LEG ACCA #2 @3.192 stake 1.000 · receipt 68202609de6f012d8318
+      New Mexico Lobos vs Air Force Falcons · TIP-OFF Fri 2026-11-27 23:30 SAST · MONEYLINE -> HOME @1.388 · DraftKings · ⏳ PENDING
+      Ohio Bobcats vs Toledo Rockets · TIP-OFF Fri 2026-11-27 19:00 SAST · MONEYLINE -> HOME @2.300 · DraftKings · ⏳ PENDING
+
+SETTLED (most recent 0 of 0 bet-days)
+  None.
+
+NOTES
+  bank* is reconstructed from latest known results by ticket date; pending is held at cost.
+  This is not a settlement-time equity curve or certified betting ROI.
+  A known losing leg settles its paper position as a loss even if other legs remain unresolved.
+  Receipts are immutable: this ledger re-derives from them, it never rewrites them.
+  Paper only. No real-money stakes or automatic promotion.

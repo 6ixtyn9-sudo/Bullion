@@ -18,6 +18,7 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 from .calibration import (
     DEFAULT_BRIER_CAP_2WAY,
     DEFAULT_BRIER_CAP_3WAY,
+    DEFAULT_MIN_SAMPLES,
     CalibrationReport,
 )
 from .models import (
@@ -905,6 +906,7 @@ def settle_lane(
     if not lane_dir.exists():
         return None
     history: List[Dict[str, Any]] = []
+    graded_receipts: List[Tuple[str, Dict[str, Any]]] = []
     for path in sorted(lane_dir.iterdir()):
         receipt_match = RECEIPT_RE.match(path.name)
         no_bet_match = NO_BET_RE.match(path.name)
@@ -937,6 +939,8 @@ def settle_lane(
             or receipt.get("target_date")
             or (receipt_match or no_bet_match).group(1)
         )
+        if schema == TICKET_SCHEMA:
+            graded_receipts.append((str(day), receipt))
         history.append(
             {
                 "date": day,
@@ -979,6 +983,17 @@ def settle_lane(
     (lane_dir / "auto_tickets_performance.json").write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
+    (lane_dir / "auto_tickets_performance.txt").write_text(
+        render_performance(report, games_by_id=games_by_id), encoding="utf-8"
+    )
+    # The dated card is a view, never evidence: rebuild it from the graded copy
+    # of the immutable receipt so a settled leg cannot keep its frozen PENDING
+    # label. Cards sit at the lane root, beside their receipts.
+    for card_day, graded_receipt in graded_receipts:
+        (lane_dir / f"auto_tickets_{card_day}.txt").write_text(
+            render_card(graded_receipt, games_by_id=games_by_id, performance=report),
+            encoding="utf-8",
+        )
     return report
 
 
@@ -1083,42 +1098,353 @@ def settled_pick_history(localdata: Path, league: League) -> List[Tuple[str, flo
 
 
 # ---------------------------------------------------------------------------
-# Card rendering
+# Human-readable card and rolling performance rendering
 # ---------------------------------------------------------------------------
 
+#: Nominal paper bank every rolling ledger starts from. A position stakes one
+#: unit of it; nothing here refills, compounds, or touches real money.
+PAPER_BANK_UNITS = 100.0
 
-def render_card(receipt: Dict[str, Any]) -> str:
-    lines = [
-        f"BULLION PAPER CARD — {receipt.get('league')} — {receipt.get('date')}",
-        f"frozen {format_sast(receipt.get('frozen_at'))} · paper only · stake 1.00u/position",
-        "",
+_GRADE_BADGES = {
+    "win": ("✅", "WIN"),
+    "loss": ("❌", "LOSS"),
+    "push": ("➖", "PUSH"),
+    "pending": ("⏳", "PENDING"),
+    "void": ("⚪", "VOID"),
+}
+
+
+def _grade_badge(status: Any) -> str:
+    """Text marker for a grade, so a card never says "settled" ambiguously."""
+    normalized = str(status or "unknown").lower()
+    icon, label = _GRADE_BADGES.get(normalized, ("❔", normalized.upper()))
+    return f"{icon} {label}"
+
+
+def _grade_count_summary(counts: Dict[str, int], suffixes: Dict[str, str]) -> str:
+    """``winner`` counts in stable grade order, e.g. ``✅ WIN 2W / ❌ LOSS 1L``."""
+    normalized: Dict[str, int] = {}
+    for status, count in counts.items():
+        normalized[str(status or "unknown").lower()] = normalized.get(
+            str(status or "unknown").lower(), 0
+        ) + int(count)
+    order = ["win", "loss", "push", "pending", "void"]
+    order.extend(sorted(status for status in normalized if status not in order))
+    parts = [
+        f"{_grade_badge(status)} {normalized[status]}{suffixes.get(status, '')}"
+        for status in order
+        if normalized.get(status, 0) > 0
     ]
+    return " / ".join(parts)
+
+
+def _selection_label(row: Dict[str, Any]) -> str:
+    market = str(row.get("market") or "?").replace("_", " ").upper()
+    selection = str(row.get("selection") or "?").upper()
+    line = row.get("line")
+    line_text = "" if not isinstance(line, (int, float)) or isinstance(line, bool) else f" {float(line):g}"
+    return f"{market}{line_text} -> {selection}"
+
+
+def _sast(value: Any) -> str:
+    return "unknown" if value is None else format_sast(value)
+
+
+def _clock(value: Any) -> str:
+    parts = _sast(value).split()
+    return parts[2] if len(parts) >= 4 else _sast(value)
+
+
+def _leg_score(leg: Dict[str, Any], games_by_id: Optional[Dict[str, Any]]) -> str:
+    """`` · FINAL 24-17`` once the fixture has an official result."""
+    if not games_by_id:
+        return ""
+    game = games_by_id.get(str(leg.get("game_id")))
+    actual = getattr(game, "actual", None)
+    if game is None or actual is None or not getattr(game, "final", False):
+        return ""
+    return f" · FINAL {actual.home_score:g}-{actual.away_score:g}"
+
+
+def _position_stake(position: Dict[str, Any]) -> float:
+    stake = position.get("stake_units")
+    return float(stake) if isinstance(stake, (int, float)) and not isinstance(stake, bool) else 1.0
+
+
+def _bank_totals(report: Dict[str, Any]) -> Tuple[float, float, float]:
+    """``(bank, free, reserved)`` from the report's own graded history."""
+    settled = 0.0
+    reserved = 0.0
+    for day in report.get("history") or []:
+        for position in day.get("positions") or []:
+            profit = position.get("profit_units")
+            if profit is None:
+                reserved += _position_stake(position)
+            else:
+                settled += float(profit)
+    bank = PAPER_BANK_UNITS + settled
+    return bank, bank - reserved, reserved
+
+
+def _position_label(position: Dict[str, Any], indexes: Dict[str, int]) -> str:
+    ticket_type = "single" if position.get("ticket_type") == "single" else "acca"
+    indexes[ticket_type] = indexes.get(ticket_type, 0) + 1
+    if ticket_type == "single":
+        return f"PAPER SINGLE #{indexes[ticket_type]}"
+    leg_count = int(position.get("leg_count") or len(position.get("legs") or []))
+    return f"PAPER {leg_count}-LEG ACCA #{indexes[ticket_type]}"
+
+
+def _books(position: Dict[str, Any]) -> str:
+    return ", ".join(position.get("bookmakers") or []) or "multiple/no book"
+
+
+def render_card(
+    receipt: Dict[str, Any],
+    *,
+    games_by_id: Optional[Dict[str, Any]] = None,
+    performance: Optional[Dict[str, Any]] = None,
+) -> str:
+    """The mutable human card for one frozen day.
+
+    The receipt is immutable evidence, so this view is re-rendered after every
+    grading pass: a leg that has since been graded shows its live status and
+    official score instead of the ``PENDING`` it was frozen with.
+    """
     positions = _positions(receipt)
-    if not positions:
-        lines.append("No qualifying ticket was frozen at the decision cutoff.")
-    for position in positions:
+    acca_count = sum(position.get("ticket_type") == "acca" for position in positions)
+    single_count = len(positions) - acca_count
+    labels: List[str] = []
+    if acca_count:
+        labels.append(f"{acca_count} paper acca" + ("" if acca_count == 1 else "s"))
+    if single_count:
+        labels.append(f"{single_count} paper single" + ("" if single_count == 1 else "s"))
+    lines = [
+        f"BULLION PAPER TICKETS — {receipt.get('league')} {receipt.get('date')}",
+        "=" * 72,
+    ]
+    if performance is not None:
+        bank, free, reserved = _bank_totals(performance)
         lines.append(
-            f"[{position.get('ticket_type','acca').upper()}] @{position['combined_decimal_odds']:.2f} "
-            f"· joint p={position['estimated_joint_win_probability']:.3f} "
-            f"· {position['leg_count']} legs"
+            f"CURRENT PAPER BANK (all dates): {bank:.3f} units · "
+            f"free {free:.3f} / reserved {reserved:.3f}"
+        )
+    lines.extend(
+        [
+            f"{', '.join(labels) or '0 paper positions'} · 1 ticket publication · times in SAST",
+            "PAPER ONLY — flat one unit per position; no automatic betting writes.",
+            "Frozen tickets retain their original decision basis; empty scans do not cancel them.",
+            "",
+        ]
+    )
+    if not positions:
+        lines.extend(["NO PAPER BET — no single or multi-leg paper ticket at publication.", ""])
+    indexes: Dict[str, int] = {}
+    for position in positions:
+        status = str(position.get("grade_status") or "pending")
+        profit = position.get("profit_units")
+        settlement = f" · net {float(profit):+.3f}u" if status != "pending" and profit is not None else ""
+        lines.append(
+            f"[{_position_label(position, indexes)}] "
+            f"@{float(position['combined_decimal_odds']):.3f} — "
+            f"{_position_stake(position):.6f} paper units — {_books(position)} "
+            f"· {_grade_badge(status)}{settlement}"
+        )
+        lines.append(
+            f"   Published {_sast(receipt.get('frozen_at'))} · "
+            f"joint p={float(position['estimated_joint_win_probability']):.1%}"
         )
         for leg in position.get("legs") or []:
-            price = row_price(leg) or 0.0
-            book = (leg.get("book") or {}).get("book") or "?"
+            price = row_price(leg)
             probability = leg.get("calibrated_probability")
-            lines.append(
-                f"  - {format_sast(leg.get('scheduled_utc'))} | "
-                f"{leg.get('away')} @ {leg.get('home')} | "
-                f"{str(leg.get('market')).upper()} {leg.get('line') if leg.get('line') is not None else ''}"
-                f" -> {str(leg.get('selection')).upper()} @{price:.2f} ({book})"
-                f"{'' if probability is None else f' p={probability:.3f}'}"
+            book = (leg.get("book") or {}).get("book")
+            price_text = "@n/a" if price is None else f"@{price:.3f}"
+            detail = (
+                (f"· p={float(probability):.1%} " if probability is not None else "")
+                + (f"· {book} " if book else "")
+                + f"· {_grade_badge(leg.get('grade_status') or 'pending')}"
+                + _leg_score(leg, games_by_id)
             )
+            lines.append(
+                f"   {leg.get('home')} vs {leg.get('away')} · "
+                f"TIP-OFF {_sast(leg.get('scheduled_utc'))}"
+            )
+            lines.append(f"      {_selection_label(leg)} {price_text} {detail}")
         lines.append("")
     policy = receipt.get("selection_policy") or {}
-    lines.append(
-        "gates: named-book pre-tip only · calibrated n>="
-        f"{policy.get('min_samples', 30)} · brier<={policy.get('brier_cap')} · "
-        f"legs {policy.get('min_leg_odds')}-{policy.get('max_leg_odds')} · limit {policy.get('limit')}"
+    lines.extend(
+        [
+            f"DECISION FROZEN AT {_clock(receipt.get('frozen_at'))}",
+            "gates: named-book pre-tip only · calibrated n>="
+            f"{policy.get('min_samples', DEFAULT_MIN_SAMPLES)} · "
+            f"brier<={policy.get('brier_cap') or DEFAULT_BRIER_CAP_2WAY} · "
+            f"legs {policy.get('min_leg_odds')}-{policy.get('max_leg_odds')} · "
+            f"limit {policy.get('limit')}",
+            "Selections, prices, and stakes stay frozen; displayed grades refresh "
+            "when reconciled results arrive.",
+            "No profit, edge, or readiness claim is made from an unsettled paper card.",
+            "Paper only. No real-money stakes or automatic promotion.",
+            "",
+        ]
     )
-    lines.append("No profit, edge, or readiness claim is made from an unsettled paper card.")
-    return "\n".join(lines) + "\n"
+    return "\n".join(lines)
+
+
+def render_performance(
+    report: Dict[str, Any], *, games_by_id: Optional[Dict[str, Any]] = None
+) -> str:
+    """The rolling paper ledger, in the same shape as the ticket card.
+
+    Every figure is reconstructed from ``report['history']`` — the JSON stays
+    the single source of truth, and this view never invents a number the
+    receipt cannot back.
+    """
+    history = list(report.get("history") or [])
+    bank, free, reserved = _bank_totals(report)
+    settled_positions = [
+        position
+        for day in history
+        for position in day.get("positions") or []
+        if position.get("profit_units") is not None
+    ]
+    pending_positions = [
+        position
+        for day in history
+        for position in day.get("positions") or []
+        if position.get("profit_units") is None
+    ]
+    lines = [
+        f"BULLION AUTO-TICKETS (ROLLING) — {report.get('league')} paper performance",
+        "=" * 72,
+        f"BANK     {bank:.3f} units   x{bank / PAPER_BANK_UNITS:.3f} of the "
+        f"{PAPER_BANK_UNITS:.0f}-unit base",
+        f"CAPITAL  {free:.3f} free / {reserved:.3f} reserved paper units",
+    ]
+    record = _grade_count_summary(
+        {
+            "win": int(report.get("wins") or 0),
+            "loss": int(report.get("losses") or 0),
+            "push": int(report.get("pushes") or 0),
+        },
+        suffixes={"win": "W", "loss": "L", "push": "P"},
+    )
+    hit_rate = report.get("hit_rate")
+    roi = report.get("roi")
+    roi_text = "n/a" if roi is None else f"{float(roi):+.1%}"
+    if record:
+        hit_text = "" if hit_rate is None else f" ({float(hit_rate):.1%} hit)"
+        lines.append(f"RECORD   {record}{hit_text} · ROI {roi_text}")
+    elif settled_positions:
+        lines.append(f"RECORD   no win/loss decisions yet · ROI {roi_text}")
+    else:
+        lines.append("RECORD   no settled paper positions yet")
+    awaiting_legs = sum(
+        1
+        for position in pending_positions
+        for leg in position.get("legs") or []
+        if leg.get("outcome") is None
+    )
+    settled_legs = sum(
+        1
+        for position in settled_positions
+        for leg in position.get("legs") or []
+        if leg.get("outcome") in {"win", "loss", "push"}
+    )
+    lines.extend(
+        [
+            f"OPEN     {len(pending_positions)} held paper positions · "
+            f"{awaiting_legs} awaiting legs in open tickets",
+            f"LEGS     {settled_legs} settled legs across "
+            f"{len(settled_positions)} settled positions",
+        ]
+    )
+    if report.get("low_sample_flag"):
+        lines.append(
+            "SAMPLE   " + str(report.get("low_sample_note") or "[LOW SAMPLE: n < 30]")
+        )
+    lines.extend(["", f"BET-DAYS, oldest first ({len(history)})"])
+    running = PAPER_BANK_UNITS
+    for day in history:
+        positions = day.get("positions") or []
+        settled = [p for p in positions if p.get("profit_units") is not None]
+        pending = [p for p in positions if p.get("profit_units") is None]
+        staked = sum(_position_stake(position) for position in settled)
+        net = sum(float(position["profit_units"]) for position in settled)
+        running += net
+        wins = sum(position.get("grade_status") == "win" for position in settled)
+        losses = sum(position.get("grade_status") == "loss" for position in settled)
+        record_text = f"{wins}W-{losses}L" if settled else "—"
+        returned_text = f"{staked + net:.3f}" if settled else "—"
+        net_text = f"{net:+.3f}" if settled else "—"
+        lines.append(
+            f"  {day.get('date')}  {record_text:<6} staked {staked:.3f}  "
+            f"returned {returned_text:<9} net {net_text:<8} "
+            f"pending {sum(_position_stake(p) for p in pending):.3f}  "
+            f"bank* {running:.3f}"
+        )
+    lines.extend(["", "HELD (not yet settled; stake counted as committed)"])
+    if not pending_positions:
+        lines.append("  None.")
+    else:
+        indexes: Dict[str, int] = {}
+        for day in history:
+            for position in day.get("positions") or []:
+                if position.get("profit_units") is not None:
+                    continue
+                lines.append(
+                    f"  {day.get('date')} {_position_label(position, indexes)} "
+                    f"@{float(position['combined_decimal_odds']):.3f} "
+                    f"stake {_position_stake(position):.3f} · receipt {day.get('decision_id')}"
+                )
+                for leg in position.get("legs") or []:
+                    price = row_price(leg)
+                    book = (leg.get("book") or {}).get("book") or "no matched book"
+                    lines.append(
+                        f"      {leg.get('home')} vs {leg.get('away')} · "
+                        f"TIP-OFF {_sast(leg.get('scheduled_utc'))} · "
+                        f"{_selection_label(leg)} "
+                        f"{'@n/a' if price is None else f'@{price:.3f}'} · {book} · "
+                        f"{_grade_badge(leg.get('grade_status') or 'pending')}"
+                    )
+    settled_days = [day for day in history if any(
+        position.get("profit_units") is not None for position in day.get("positions") or []
+    )]
+    recent = settled_days[-5:]
+    lines.extend(["", f"SETTLED (most recent {len(recent)} of {len(settled_days)} bet-days)"])
+    if not recent:
+        lines.append("  None.")
+    else:
+        for day in recent:
+            indexes = {}
+            for position in day.get("positions") or []:
+                if position.get("profit_units") is None:
+                    continue
+                lines.append(
+                    f"  {day.get('date')} {_position_label(position, indexes)} "
+                    f"@{float(position['combined_decimal_odds']):.3f} "
+                    f"stake {_position_stake(position):.3f} · "
+                    f"{_grade_badge(position.get('grade_status'))} · "
+                    f"net {float(position['profit_units']):+.3f}u"
+                )
+                for leg in position.get("legs") or []:
+                    price = row_price(leg)
+                    lines.append(
+                        f"      {leg.get('home')} vs {leg.get('away')} · "
+                        f"{_selection_label(leg)} "
+                        f"{'@n/a' if price is None else f'@{price:.3f}'} · "
+                        f"{_grade_badge(leg.get('grade_status') or 'pending')}"
+                        f"{_leg_score(leg, games_by_id)}"
+                    )
+    lines.extend(
+        [
+            "",
+            "NOTES",
+            "  bank* is reconstructed from latest known results by ticket date; pending is held at cost.",
+            "  This is not a settlement-time equity curve or certified betting ROI.",
+            "  A known losing leg settles its paper position as a loss even if other legs remain unresolved.",
+            "  Receipts are immutable: this ledger re-derives from them, it never rewrites them.",
+            "  Paper only. No real-money stakes or automatic promotion.",
+            "",
+        ]
+    )
+    return "\n".join(lines)

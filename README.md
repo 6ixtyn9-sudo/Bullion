@@ -227,6 +227,13 @@ checkout: `forecasting.replay.load_localdata_evidence(/path/to/bullion/localdata
 returned the day, its 4-row candidate pool, and all settled outcomes, and
 `_performance_outcomes_by_receipt` read them via the documented fields.
 
+Human-readable mirrors sit next to their JSON: `auto_tickets_<day>.txt` is the
+mutable card for one frozen day (re-rendered on every settlement pass, so a
+settled leg shows its status and official score instead of the `PENDING` it was
+frozen with) and `auto_tickets_performance.txt` is the rolling paper ledger
+(bank, W-L-P record, per-day `BET-DAYS`, `HELD` and recent `SETTLED` tickets).
+Neither ever feeds a gate: every decision and replay reads the JSON.
+
 Semantic notes for cross-sport readers: soccer 1X2 is
 `market="moneyline"` with `selection` in `{home, draw, away}`; hockey pucklines
 and soccer handicaps are `market="spread"` with a **home-oriented** `line`;
@@ -303,8 +310,9 @@ integer lines carry a real `push_probability`.
 ## Immutability and sizing
 
 * Receipts and `auto_tickets_<day>_no_bet.json` locks are write-once. Later scans
-  grade into `auto_tickets_performance.json` and refresh `cards/*.txt`; they never
-  rotate a frozen selection or price.
+  grade into `auto_tickets_performance.json` / `.txt` and refresh
+  `auto_tickets_<day>.txt` beside its receipt; they never rotate a frozen
+  selection or price.
 * A no-bet lock carries the `candidate_pool` and `selection_policy` it declined,
   and settlement grades that pool (`positions: []`, so ticket P&L is untouched).
   Replay treats such a day as a legitimate 0-ticket day and `--parity` still has

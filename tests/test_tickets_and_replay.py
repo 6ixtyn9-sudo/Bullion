@@ -26,6 +26,7 @@ from bullion.tickets import (
     freeze_receipt,
     pick_row,
     render_card,
+    render_performance,
     roi_band,
     score_forecasts,
     settle_lane,
@@ -517,10 +518,157 @@ def test_card_renders_sast_and_paper_only_language(tmp_path):
     receipt, _ = _freeze(tmp_path, rows, league=league)
     card = render_card(receipt)
     assert "SAST" in card
-    assert "paper only" in card
+    assert "paper only" in card.lower()
     assert "No profit, edge, or readiness claim" in card
     assert "named-book pre-tip only" in card
     assert "calibrated n>=30" in card
+    # Nothing settled yet, so every leg and the ticket itself stay PENDING.
+    assert "⏳ PENDING" in card
+    assert "FINAL" not in card
+
+
+def test_settled_card_moves_to_the_lane_root_and_shows_the_result(tmp_path):
+    """The dated card is a lane-root view that refreshes; the receipt is frozen."""
+    league, rows = _pool(tmp_path)
+    _freeze(tmp_path, rows, league=league)
+    lane = tmp_path / "nhl"
+    receipt_path = lane / f"auto_tickets_{DAY}_decision.json"
+    frozen_bytes = receipt_path.read_bytes()
+
+    settle_lane(tmp_path, league, _final_games([row["game_id"] for row in rows]))
+
+    assert not (lane / "cards").exists(), "the card no longer hides inside cards/"
+    card = (lane / f"auto_tickets_{DAY}.txt").read_text()
+    assert card.startswith(f"BULLION PAPER TICKETS — NHL {DAY}")
+    assert "CURRENT PAPER BANK (all dates): 102." in card
+    assert "✅ WIN" in card
+    assert "FINAL 4-1" in card, "a settled leg carries its official score"
+    assert "⏳ PENDING" not in card, "no frozen PENDING may outlive a result"
+    assert "net +2." in card
+    assert receipt_path.read_bytes() == frozen_bytes, "the receipt itself is immutable"
+
+
+def _stub_leg(*, game_id: str, selection: str = "home", price: float = 1.95, outcome=None) -> dict:
+    return {
+        "game_id": game_id,
+        "home": "Home 1",
+        "away": "Away 1",
+        "scheduled_utc": "2026-11-28T18:00:00Z",
+        "market": "moneyline",
+        "selection": selection,
+        "line": None,
+        "calibrated_probability": 0.62,
+        "grade_status": outcome or "pending",
+        "outcome": outcome,
+        "book": {"book": "DraftKings", "selected_decimal_price": price},
+    }
+
+
+def _stub_position(*, status: str, profit, legs, odds: float = 1.90, stake: float = 1.0) -> dict:
+    return {
+        "ticket_type": "acca",
+        "grade_status": status,
+        "profit_units": profit,
+        "stake_units": stake,
+        "combined_decimal_odds": odds,
+        "estimated_joint_win_probability": 0.5,
+        "leg_count": len(legs),
+        "legs": legs,
+        "bookmakers": ["DraftKings"],
+    }
+
+
+def _stub_report() -> dict:
+    settled_legs = [_stub_leg(game_id="g1", outcome="win"), _stub_leg(game_id="g2", outcome="win")]
+    pending_legs = [_stub_leg(game_id="g3"), _stub_leg(game_id="g4")]
+    return {
+        "schema_version": "magolide.paper_ticket_performance",
+        "league": "NHL",
+        "settled_positions": 1,
+        "pending_positions": 1,
+        "wins": 1,
+        "losses": 0,
+        "pushes": 0,
+        "hit_rate": 1.0,
+        "settled_stake_units": 1.0,
+        "profit_units": 0.9,
+        "roi": 0.9,
+        "low_sample_flag": True,
+        "low_sample_note": "[LOW SAMPLE: n < 30] no profit, edge, or readiness claim is supported",
+        "history": [
+            {
+                "date": "2026-11-26",
+                "decision_id": "dec-nobet",
+                "frozen_at": "2026-11-26T14:00:00Z",
+                "status": "frozen_no_bet",
+                "positions": [],
+            },
+            {
+                "date": "2026-11-27",
+                "decision_id": "dec-win",
+                "frozen_at": "2026-11-27T14:00:00Z",
+                "status": "frozen",
+                "positions": [
+                    _stub_position(status="win", profit=0.9, legs=settled_legs, odds=1.90)
+                ],
+            },
+            {
+                "date": "2026-11-28",
+                "decision_id": "dec-held",
+                "frozen_at": "2026-11-28T14:00:00Z",
+                "status": "frozen",
+                "positions": [
+                    _stub_position(status="pending", profit=None, legs=pending_legs, odds=3.80)
+                ],
+            },
+        ],
+    }
+
+
+def test_performance_render_tracks_bank_record_bet_days_and_held():
+    report = _stub_report()
+    text = render_performance(report)
+
+    assert text.startswith("BULLION AUTO-TICKETS (ROLLING) — NHL paper performance")
+    # 100-unit base, +0.900 banked, the held ticket's stake reserved at cost.
+    assert "BANK     100.900 units   x1.009 of the 100-unit base" in text
+    assert "CAPITAL  99.900 free / 1.000 reserved paper units" in text
+    assert "RECORD   ✅ WIN 1W (100.0% hit) · ROI +90.0%" in text
+    assert "OPEN     1 held paper positions · 2 awaiting legs in open tickets" in text
+    assert "LEGS     2 settled legs across 1 settled positions" in text
+    assert "[LOW SAMPLE: n < 30]" in text
+
+    # BET-DAYS, oldest first: the no-bet day, the settled day, then the held one.
+    assert "BET-DAYS, oldest first (3)" in text
+    table = text.split("BET-DAYS, oldest first (3)")[1].split("\n\n")[0]
+    rows = [line for line in table.splitlines() if line.strip()]
+    assert [row.split()[0] for row in rows] == ["2026-11-26", "2026-11-27", "2026-11-28"]
+    assert rows[0].split()[1] == "—", "a no-bet day has no record to show"
+    assert "1W-0L" in rows[1] and "staked 1.000" in rows[1]
+    assert "returned 1.900" in rows[1] and "net +0.900" in rows[1]
+    assert "bank* 100.900" in rows[1]
+    assert "pending 1.000" in rows[2] and "bank* 100.900" in rows[2]
+
+    held = text.split("HELD (not yet settled; stake counted as committed)")[1]
+    held = held.split("SETTLED (most recent")[0]
+    assert "ACCA #1 @3.800 stake 1.000 · receipt dec-held" in held
+    assert "TIP-OFF Sat 2026-11-28 20:00 SAST" in held
+    assert "@1.950" in held and "DraftKings" in held and "⏳ PENDING" in held
+
+    settled = text.split("SETTLED (most recent")[1]
+    assert "✅ WIN · net +0.900u" in settled
+    assert settled.count("✅ WIN") == 3  # the position and both legs
+
+    assert render_performance(report) == text, "rendering is deterministic"
+
+
+def test_performance_render_is_empty_before_any_receipt():
+    text = render_performance({"league": "NHL", "history": []})
+    assert "BANK     100.000 units" in text
+    assert "RECORD   no settled paper positions yet" in text
+    assert "BET-DAYS, oldest first (0)" in text
+    assert "HELD (not yet settled; stake counted as committed)\n  None." in text
+    assert "SETTLED (most recent 0 of 0 bet-days)\n  None." in text
 
 
 def _three_way_pool(
