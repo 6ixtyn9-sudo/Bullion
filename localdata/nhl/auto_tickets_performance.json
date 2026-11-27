@@ -1,7 +1,26 @@
 {
   "history": [
     {
-      "candidate_pool_outcomes": {},
+      "candidate_pool_outcomes": {
+        "02ef765e6e8654e03aa2": "win",
+        "2767c74de94da48e0a37": "loss",
+        "2edd1dbbbeb53dbbc3d7": "loss",
+        "30652a6c0697b8142542": "win",
+        "6713c00fdb767210fccf": "loss",
+        "75a7602e190d581b2e00": "loss",
+        "7b4cd5fccca414f18520": "loss",
+        "94ef3cef4f2f9142f691": "loss",
+        "96707695873ebd01490e": "loss",
+        "b280d33039721e0174a6": "win",
+        "c88175d4235cc4ddb2ef": "loss",
+        "cd4ee54dfb849622f693": "win",
+        "cdc372ae6d8cea124e6f": "win",
+        "e737625a5a7468a2cb8a": "loss",
+        "eecfb95a891627b34b58": "win",
+        "f445965aa98ba626114b": "win",
+        "f865ca0c93fa0defcf51": "win",
+        "fd6527267247e5dbc31b": "win"
+      },
       "date": "2026-11-27",
       "decision_id": "849a8616dcda6065d4a2",
       "frozen_at": "2026-11-27T14:15:56Z",

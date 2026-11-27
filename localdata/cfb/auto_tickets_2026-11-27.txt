@@ -1,26 +1,26 @@
 BULLION PAPER TICKETS — CFB 2026-11-27
 ========================================================================
-CURRENT PAPER BANK (all dates): 100.000 units · free 98.000 / reserved 2.000
+CURRENT PAPER BANK (all dates): 101.040 units · free 101.040 / reserved 0.000
 2 paper accas · 1 ticket publication · times in SAST
 PAPER ONLY — flat one unit per position; no automatic betting writes.
 Frozen tickets retain their original decision basis; empty scans do not cancel them.
 
-[PAPER 2-LEG ACCA #1] @3.040 — 1.000000 paper units — DraftKings · ⏳ PENDING
+[PAPER 2-LEG ACCA #1] @3.040 — 1.000000 paper units — DraftKings · ✅ WIN · net +2.040u
    Published Fri 2026-11-27 16:15 SAST · joint p=51.7%
    Iowa Hawkeyes vs Nebraska Cornhuskers · TIP-OFF Fri 2026-11-27 19:08 SAST
-      MONEYLINE -> HOME @1.505 · p=80.3% · DraftKings · ⏳ PENDING
+      MONEYLINE -> HOME @1.505 · p=80.3% · DraftKings · ✅ WIN · FINAL 31-7
    UTSA Roadrunners vs Tulsa Golden Hurricane · TIP-OFF Fri 2026-11-27 19:00 SAST
-      MONEYLINE -> HOME @2.020 · p=64.3% · DraftKings · ⏳ PENDING
+      MONEYLINE -> HOME @2.020 · p=64.3% · DraftKings · ✅ WIN · FINAL 28-22
 
-[PAPER 2-LEG ACCA #2] @3.192 — 1.000000 paper units — DraftKings · ⏳ PENDING
+[PAPER 2-LEG ACCA #2] @3.192 — 1.000000 paper units — DraftKings · ❌ LOSS · net -1.000u
    Published Fri 2026-11-27 16:15 SAST · joint p=51.0%
    New Mexico Lobos vs Air Force Falcons · TIP-OFF Fri 2026-11-27 23:30 SAST
       MONEYLINE -> HOME @1.388 · p=90.3% · DraftKings · ⏳ PENDING
    Ohio Bobcats vs Toledo Rockets · TIP-OFF Fri 2026-11-27 19:00 SAST
-      MONEYLINE -> HOME @2.300 · p=56.5% · DraftKings · ⏳ PENDING
+      MONEYLINE -> HOME @2.300 · p=56.5% · DraftKings · ❌ LOSS · FINAL 31-34
 
 DECISION FROZEN AT 16:15
-gates: named-book pre-tip only · calibrated n>=30 · brier<=0.25 · legs 1.2-3.0 · limit 3
+gates: named-book pre-tip only · calibrated n>=30 · brier<=0.25 · legs 1.2-3.0 · accas 2 · limit 3
 Selections, prices, and stakes stay frozen; displayed grades refresh when reconciled results arrive.
 No profit, edge, or readiness claim is made from an unsettled paper card.
 Paper only. No real-money stakes or automatic promotion.

@@ -2,23 +2,79 @@
   "gate": {
     "brier_cap": 0.25,
     "brier_cap_three_way": 0.22,
+    "edge_flag_threshold": 0.15,
+    "max_claimed_edge": 0.4,
     "max_leg_odds": 3.0,
     "min_leg_odds": 1.2,
     "min_roi_samples": 5,
     "require_named_book": true
   },
-  "generated_utc": "2026-11-27T14:16:01Z",
+  "generated_utc": "2026-11-27T21:16:07Z",
   "run": {
-    "candidate_pool": 66,
+    "candidate_pool": 8,
     "cutoff_utc": "2026-11-27T14:00:00Z",
     "day": "2026-11-27",
-    "eligible_legs": 5,
-    "forecasts": 110,
+    "eligible_legs": 1,
+    "forecasts": 14,
     "games": 14,
     "gaps": [
       {
         "field": "pickcenter",
         "game_id": "401856879",
+        "league": "cfb",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401869930",
+        "league": "cfb",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401856759",
+        "league": "cfb",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401862838",
+        "league": "cfb",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401864549",
+        "league": "cfb",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401858536",
+        "league": "cfb",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401856762",
+        "league": "cfb",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401862840",
+        "league": "cfb",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401866472",
+        "league": "cfb",
+        "reason": "no odds offers on event"
+      },
+      {
+        "field": "pickcenter",
+        "game_id": "401866473",
         "league": "cfb",
         "reason": "no odds offers on event"
       }
@@ -33,7 +89,7 @@
       "spread",
       "total"
     ],
-    "tickets": 2
+    "tickets": 0
   },
   "schema_version": "bullion.lane_run"
 }

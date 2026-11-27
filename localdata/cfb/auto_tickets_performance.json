@@ -1,7 +1,40 @@
 {
   "history": [
     {
-      "candidate_pool_outcomes": {},
+      "candidate_pool_outcomes": {
+        "036d487b6a8ef73cee20": "win",
+        "0c921998e5adc09c4003": "loss",
+        "10219090c0e31203408e": "loss",
+        "11bdc69942838ce22374": "loss",
+        "166c3332146ac4ae1874": "win",
+        "1d84589dd4fe46a7ef99": "loss",
+        "2b93cc57d1282b18c374": "loss",
+        "30c8eec8ddb81bffd7b6": "win",
+        "3326ea84437c18547893": "win",
+        "3e28c7311815a671aa33": "loss",
+        "42252a9100101bdba409": "win",
+        "434df896cc9dd2bc2cb4": "loss",
+        "4a3968b5bd53295336b6": "push",
+        "4b32ddeaa3f5844cc102": "loss",
+        "6695de13924c1387d130": "win",
+        "6b202a273dfd7a0c6af1": "loss",
+        "7325e326b1c0f6a40e06": "win",
+        "75f07bf6a4a908997edd": "loss",
+        "7c537103142bfdbded62": "win",
+        "8734e5267b1ef43f71b2": "push",
+        "8823d7fb1ea1360292e6": "win",
+        "9586b3f934cdf3ab77a6": "win",
+        "98345efdef4c0fce5100": "win",
+        "9ec9d4036a34fa343290": "loss",
+        "bd316e3c24fe4cca9976": "win",
+        "bdec43ea9528c1229a28": "loss",
+        "c1f42a308d06c2d030d3": "loss",
+        "c385aef67bb330d29bf3": "win",
+        "cfa079782ba896b7c8e7": "loss",
+        "e326c86fa755be1beca7": "win",
+        "f56dfc3c5caf43125aa1": "loss",
+        "ff563bb2315fb23e1688": "win"
+      },
       "date": "2026-11-27",
       "decision_id": "68202609de6f012d8318",
       "frozen_at": "2026-11-27T14:15:58Z",
@@ -14,11 +47,11 @@
           "combined_decimal_odds": 3.0402,
           "effective_decimal_odds": 3.0402,
           "estimated_joint_win_probability": 0.51663892,
-          "grade_status": "pending",
+          "grade_status": "win",
           "leg_count": 2,
           "leg_outcomes": [
-            null,
-            null
+            "win",
+            "win"
           ],
           "legs": [
             {
@@ -87,13 +120,13 @@
               "expected_total": 48.1128,
               "forecast_id": "ff563bb2315fb23e1688",
               "game_id": "401858536",
-              "grade_status": "pending",
+              "grade_status": "win",
               "home": "Iowa Hawkeyes",
               "league": "cfb",
               "line": null,
               "market": "moneyline",
               "model": "empirical_score_v2",
-              "outcome": null,
+              "outcome": "win",
               "paper_only": true,
               "period": "full_game",
               "pick_id": "ff563bb2315fb23e1688",
@@ -184,13 +217,13 @@
               "expected_total": 45.8228,
               "forecast_id": "42252a9100101bdba409",
               "game_id": "401862840",
-              "grade_status": "pending",
+              "grade_status": "win",
               "home": "UTSA Roadrunners",
               "league": "cfb",
               "line": null,
               "market": "moneyline",
               "model": "empirical_score_v2",
-              "outcome": null,
+              "outcome": "win",
               "paper_only": true,
               "period": "full_game",
               "pick_id": "42252a9100101bdba409",
@@ -217,7 +250,7 @@
             }
           ],
           "paper_only": true,
-          "profit_units": null,
+          "profit_units": 2.040202,
           "provisional_leg_count": 0,
           "provisional_sample_gate_bypassed": false,
           "publication_index": 1,
@@ -226,7 +259,7 @@
           "stake_units": 1.0,
           "ticket_id": "6f1e9e155b0c588893ed",
           "ticket_type": "acca",
-          "unresolved_legs": 2
+          "unresolved_legs": 0
         },
         {
           "bookmakers": [
@@ -235,11 +268,11 @@
           "combined_decimal_odds": 3.1915,
           "effective_decimal_odds": 3.1915,
           "estimated_joint_win_probability": 0.51018076,
-          "grade_status": "pending",
+          "grade_status": "loss",
           "leg_count": 2,
           "leg_outcomes": [
             null,
-            null
+            "loss"
           ],
           "legs": [
             {
@@ -405,13 +438,13 @@
               "expected_total": 63.6413,
               "forecast_id": "2b93cc57d1282b18c374",
               "game_id": "401866473",
-              "grade_status": "pending",
+              "grade_status": "loss",
               "home": "Ohio Bobcats",
               "league": "cfb",
               "line": null,
               "market": "moneyline",
               "model": "empirical_score_v2",
-              "outcome": null,
+              "outcome": "loss",
               "paper_only": true,
               "period": "full_game",
               "pick_id": "2b93cc57d1282b18c374",
@@ -438,7 +471,7 @@
             }
           ],
           "paper_only": true,
-          "profit_units": null,
+          "profit_units": -1.0,
           "provisional_leg_count": 0,
           "provisional_sample_gate_bypassed": false,
           "publication_index": 2,
@@ -447,24 +480,24 @@
           "stake_units": 1.0,
           "ticket_id": "03a4fd29acc3b95c854b",
           "ticket_type": "acca",
-          "unresolved_legs": 2
+          "unresolved_legs": 1
         }
       ],
       "status": "frozen"
     }
   ],
-  "hit_rate": null,
+  "hit_rate": 0.5,
   "league": "CFB",
-  "losses": 0,
+  "losses": 1,
   "low_sample_flag": true,
   "low_sample_note": "[LOW SAMPLE: n < 30] no profit, edge, or readiness claim is supported",
-  "pending_positions": 2,
-  "profit_units": 0,
+  "pending_positions": 0,
+  "profit_units": 1.040202,
   "pushes": 0,
-  "roi": null,
+  "roi": 0.5201009999999999,
   "schema_version": "magolide.paper_ticket_performance",
-  "settled_positions": 0,
-  "settled_stake_units": 0,
+  "settled_positions": 2,
+  "settled_stake_units": 2.0,
   "stake_policy": "flat_one_paper_unit_per_position_no_refill_no_real_money",
-  "wins": 0
+  "wins": 1
 }

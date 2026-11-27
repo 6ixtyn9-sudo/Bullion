@@ -2,12 +2,14 @@
   "gate": {
     "brier_cap": 0.25,
     "brier_cap_three_way": 0.22,
+    "edge_flag_threshold": 0.15,
+    "max_claimed_edge": 0.4,
     "max_leg_odds": 3.0,
     "min_leg_odds": 1.2,
     "min_roi_samples": 5,
     "require_named_book": true
   },
-  "generated_utc": "2026-11-27T14:16:06Z",
+  "generated_utc": "2026-11-27T21:16:09Z",
   "run": {
     "candidate_pool": 0,
     "cutoff_utc": null,

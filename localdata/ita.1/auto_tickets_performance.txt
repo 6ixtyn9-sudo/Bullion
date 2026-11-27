@@ -1,0 +1,24 @@
+BULLION AUTO-TICKETS (ROLLING) — ITA.1 paper performance
+========================================================================
+BANK     100.000 units   x1.000 of the 100-unit base
+CAPITAL  100.000 free / 0.000 reserved paper units
+RECORD   no settled paper positions yet
+OPEN     0 held paper positions · 0 awaiting legs in open tickets
+LEGS     0 settled legs across 0 settled positions
+SAMPLE   [LOW SAMPLE: n < 30] no profit, edge, or readiness claim is supported
+
+BET-DAYS, oldest first (1)
+  2026-11-27  —      staked 0.000  returned —         net —        pending 0.000  bank* 100.000
+
+HELD (not yet settled; stake counted as committed)
+  None.
+
+SETTLED (most recent 0 of 0 bet-days)
+  None.
+
+NOTES
+  bank* is reconstructed from latest known results by ticket date; pending is held at cost.
+  This is not a settlement-time equity curve or certified betting ROI.
+  A known losing leg settles its paper position as a loss even if other legs remain unresolved.
+  Receipts are immutable: this ledger re-derives from them, it never rewrites them.
+  Paper only. No real-money stakes or automatic promotion.
