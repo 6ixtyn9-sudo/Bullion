@@ -5,6 +5,7 @@ from __future__ import annotations
 import itertools
 import json
 import math
+import random
 from pathlib import Path
 
 import pytest
@@ -1361,6 +1362,9 @@ def _best_combo(
         if max_claimed_edge is not None and probability * price - 1.0 > max_claimed_edge:
             continue
         usable.append(row)
+    usable.sort(
+        key=lambda row: (row_price(row), str(row.get("game_id")), str(row.get("forecast_id")))
+    )
 
     scored = []
     for size in range(min_legs, max_legs + 1):
@@ -1387,6 +1391,8 @@ def _best_combo(
             )
     if not scored:
         return None
+    # ``_kelly`` builds its tie-break tuple in canonical (price, game, id)
+    # order, so the reference has to as well or an exact tie reads as a bug.
     scored.sort(key=lambda item: item[:4])
     return scored[0][4]
 
@@ -1499,6 +1505,113 @@ def test_exact_kelly_matches_brute_force_on_a_real_board():
         assert ticket["combined_decimal_odds"] == pytest.approx(
             math.prod(row_price(row) for row in combo)
         )
+
+
+def _multi_market_board(seed: int, games: int = 8, correlated: bool = True):
+    """Fixtures with three priced markets, the shape that made the bug bite."""
+    rng = random.Random(seed)
+    rows = []
+    for game in range(games):
+        strength = rng.uniform(0.45, 0.80)
+        for market, selection in (
+            ("moneyline", "home"),
+            ("spread", "home"),
+            ("total", "over"),
+        ):
+            price = round(rng.uniform(1.30, 2.60), 2)
+            if correlated:
+                probability = min(
+                    0.95, max(0.30, strength + rng.uniform(-0.06, 0.06))
+                )
+            else:
+                probability = rng.uniform(0.45, 0.80)
+            # inside the 40% per-leg edge cap, so both sides of the frontier legal
+            probability = min(probability, 1.38 / price)
+            rows.append(
+                _leg_row(
+                    0,
+                    price=price,
+                    probability=round(probability, 4),
+                    market=market,
+                    selection=selection,
+                    game_id=f"G{game}",
+                )
+            )
+    rows.sort(key=lambda row: (row_price(row), str(row["game_id"]), str(row["forecast_id"])))
+    return rows
+
+
+def test_frontier_never_lets_a_fixture_collision_mask_a_legal_leg():
+    """The trap: a same-fixture leg must not raise the dominance bar.
+
+    ``f3`` sits on ``G1`` — already in the ticket — at a higher price and a
+    higher probability than ``f2``. If it is allowed to prune the scan (it
+    cannot be chosen, so it must not dominate), ``(f0, f1, f2)`` disappears and
+    the build silently settles for ``(f1, f2, f3)`` at a worse growth rate.
+    """
+    rows = [
+        _leg_row(0, price=1.40, probability=0.78, game_id="G1"),
+        _leg_row(1, price=1.50, probability=0.72, game_id="G2"),
+        _leg_row(2, price=1.80, probability=0.60, game_id="G3"),
+        _leg_row(3, price=1.85, probability=0.61, game_id="G1"),
+    ]
+    tickets = build_accas(
+        rows,
+        min_legs=2,
+        max_legs=3,
+        limit=3,
+        ranking_metric=RANKING_METRIC_KELLY,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+        forbid_alt_line_reuse=True,
+    )
+    assert tickets
+    assert [leg["forecast_id"].split("-")[0] for leg in tickets[0]["legs"]] == [
+        "f0",
+        "f1",
+        "f2",
+    ]
+    assert tickets[0]["combined_decimal_odds"] == pytest.approx(3.78)
+    assert tickets[0]["ranking_score"] == pytest.approx(0.012800, abs=1e-6)
+    reference = _brute_force_kelly(
+        rows,
+        min_legs=2,
+        max_legs=3,
+        limit=3,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+    )
+    assert [sorted(leg["forecast_id"] for leg in ticket["legs"]) for ticket in tickets] == [
+        sorted(row["forecast_id"] for row in combo) for combo in reference
+    ]
+
+
+@pytest.mark.parametrize("seed", [0, 1, 2, 3, 4, 5, 6, 7])
+def test_kelly_matches_brute_force_on_multi_market_seeds(seed):
+    """Multi-market boards, correlated and not, against exhaustive enumeration."""
+    rows = _multi_market_board(seed, games=8, correlated=seed % 2 == 0)
+    eligible = eligible_rows(rows, policy=GatePolicy(max_claimed_edge=None))
+    reference = _brute_force_kelly(
+        eligible,
+        min_legs=2,
+        max_legs=3,
+        limit=3,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+    )
+    tickets = build_accas(
+        eligible,
+        min_legs=2,
+        max_legs=3,
+        limit=3,
+        ranking_metric=RANKING_METRIC_KELLY,
+        min_combined_odds=3.30,
+        max_combined_odds=5.00,
+        forbid_alt_line_reuse=True,
+    )
+    assert [sorted(leg["forecast_id"] for leg in ticket["legs"]) for ticket in tickets] == [
+        sorted(row["forecast_id"] for row in combo) for combo in reference
+    ]
 
 
 def test_kelly_prefers_shorter_price_at_equal_edge():

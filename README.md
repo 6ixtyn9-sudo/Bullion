@@ -276,7 +276,11 @@ integer lines carry a real `push_probability`.
   found with `bisect`; every admissible 2- and 3-leg combination is scored, with
   no hop budget and no capped greedy. A last leg beaten on both probability and
   price by another in-band leg cannot be optimal (`g*` rises with both), which
-  is what keeps a 130-fixture slate exact instead of quadratic-cubic slow.
+  keeps a 130-fixture slate fast. The subtlety that makes it exact rather than
+  merely fast: on a multi-market board a leg from a fixture already in the
+  ticket cannot be chosen, so it must not prune anything either — it is stepped
+  over without raising the bar, which is why the frontier is walked with a
+  segment tree instead of a precomputed "previous greater probability" chain.
 * **The legacy blend path is untouched.** Two-leg accas stay enumerated rather
   than searched, because a best-first walk cannot be both complete and bounded:
   on a 67-fixture board the below-band favourite pairs ahead of the first
