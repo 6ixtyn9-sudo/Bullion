@@ -1,10 +1,10 @@
 {
-  "generated_utc": "2026-11-27T10:15:20Z",
+  "generated_utc": "2026-11-27T14:16:06Z",
   "probe_report_used": true,
   "rehydrated": {
-    "files": 1,
+    "files": 6,
     "restored": 0,
-    "rows": 24,
+    "rows": 59,
     "skipped": 0
   },
   "runs": [
@@ -17,10 +17,10 @@
       "games": 15,
       "gaps": [],
       "lane": "nhl",
-      "reason": "decision cutoff 2026-11-27T14:00:00Z not reached; scan only",
+      "reason": "no qualifying pre-tip ticket at cutoff",
       "receipt_path": null,
       "refreshed_finals": 0,
-      "status": "pre_cutoff_scan",
+      "status": "frozen_no_bet",
       "ticket_markets": [
         "moneyline",
         "spread",
@@ -56,10 +56,10 @@
         }
       ],
       "lane": "nfl",
-      "reason": "decision cutoff 2026-11-27T14:00:00Z not reached; scan only",
+      "reason": "no qualifying pre-tip ticket at cutoff",
       "receipt_path": null,
       "refreshed_finals": 0,
-      "status": "pre_cutoff_scan",
+      "status": "frozen_no_bet",
       "ticket_markets": [
         "moneyline",
         "spread",
@@ -68,11 +68,11 @@
       "tickets": 0
     },
     {
-      "candidate_pool": 100,
+      "candidate_pool": 66,
       "cutoff_utc": "2026-11-27T14:00:00Z",
       "day": "2026-11-27",
-      "eligible_legs": 0,
-      "forecasts": 100,
+      "eligible_legs": 5,
+      "forecasts": 110,
       "games": 14,
       "gaps": [
         {
@@ -83,22 +83,22 @@
         }
       ],
       "lane": "cfb",
-      "reason": "decision cutoff 2026-11-27T14:00:00Z not reached; scan only",
-      "receipt_path": null,
+      "reason": "",
+      "receipt_path": "/home/runner/work/Bullion/Bullion/localdata/cfb/auto_tickets_2026-11-27_decision.json",
       "refreshed_finals": 0,
-      "status": "pre_cutoff_scan",
+      "status": "frozen_ticket",
       "ticket_markets": [
         "moneyline",
         "spread",
         "total"
       ],
-      "tickets": 0
+      "tickets": 2
     },
     {
       "candidate_pool": 7,
       "cutoff_utc": "2026-11-27T10:00:00Z",
       "day": "2026-11-27",
-      "eligible_legs": 0,
+      "eligible_legs": 1,
       "forecasts": 7,
       "games": 1,
       "gaps": [],
@@ -118,7 +118,7 @@
       "candidate_pool": 7,
       "cutoff_utc": "2026-11-27T10:00:00Z",
       "day": "2026-11-27",
-      "eligible_legs": 0,
+      "eligible_legs": 1,
       "forecasts": 7,
       "games": 1,
       "gaps": [],
@@ -158,7 +158,7 @@
       "candidate_pool": 7,
       "cutoff_utc": "2026-11-27T10:00:00Z",
       "day": "2026-11-27",
-      "eligible_legs": 0,
+      "eligible_legs": 1,
       "forecasts": 7,
       "games": 1,
       "gaps": [],
@@ -212,5 +212,59 @@
     }
   ],
   "sast_day": "2026-11-27",
-  "schema_version": "bullion.daily_run"
+  "schema_version": "bullion.daily_run",
+  "seeded_ml": {
+    "fit_seconds": 40.03,
+    "lanes": {
+      "cfb": {
+        "inserted": 1436,
+        "matchdays_below_min_history": 6,
+        "matchdays_scored": 50,
+        "rows": 1436
+      },
+      "eng.1": {
+        "inserted": 2199,
+        "matchdays_below_min_history": 9,
+        "matchdays_scored": 225,
+        "rows": 2199
+      },
+      "esp.1": {
+        "inserted": 2205,
+        "matchdays_below_min_history": 5,
+        "matchdays_scored": 279,
+        "rows": 2205
+      },
+      "fra.1": {
+        "inserted": 2196,
+        "matchdays_below_min_history": 6,
+        "matchdays_scored": 244,
+        "rows": 2196
+      },
+      "ger.1": {
+        "inserted": 2205,
+        "matchdays_below_min_history": 4,
+        "matchdays_scored": 238,
+        "rows": 2205
+      },
+      "ita.1": {
+        "inserted": 2196,
+        "matchdays_below_min_history": 5,
+        "matchdays_scored": 271,
+        "rows": 2196
+      },
+      "nfl": {
+        "inserted": 1462,
+        "matchdays_below_min_history": 2,
+        "matchdays_scored": 215,
+        "rows": 1462
+      },
+      "nhl": {
+        "inserted": 1496,
+        "matchdays_below_min_history": 3,
+        "matchdays_scored": 106,
+        "rows": 1496
+      }
+    },
+    "seconds": 40.27
+  }
 }

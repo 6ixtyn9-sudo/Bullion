@@ -33,6 +33,15 @@
       "league": "NFL",
       "positions": [],
       "status": "frozen_no_bet"
+    },
+    {
+      "candidate_pool_outcomes": {},
+      "date": "2026-11-27",
+      "decision_id": "1c5f4593fe99ca4d6fa7",
+      "frozen_at": "2026-11-27T14:15:57Z",
+      "league": "NFL",
+      "positions": [],
+      "status": "frozen_no_bet"
     }
   ],
   "hit_rate": null,

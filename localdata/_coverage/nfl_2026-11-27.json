@@ -7,7 +7,7 @@
     "min_roi_samples": 5,
     "require_named_book": true
   },
-  "generated_utc": "2026-11-27T10:15:17Z",
+  "generated_utc": "2026-11-27T14:15:58Z",
   "run": {
     "candidate_pool": 6,
     "cutoff_utc": "2026-11-27T14:00:00Z",
@@ -36,10 +36,10 @@
       }
     ],
     "lane": "nfl",
-    "reason": "decision cutoff 2026-11-27T14:00:00Z not reached; scan only",
+    "reason": "no qualifying pre-tip ticket at cutoff",
     "receipt_path": null,
     "refreshed_finals": 0,
-    "status": "pre_cutoff_scan",
+    "status": "frozen_no_bet",
     "ticket_markets": [
       "moneyline",
       "spread",

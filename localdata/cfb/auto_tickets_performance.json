@@ -1,0 +1,470 @@
+{
+  "history": [
+    {
+      "candidate_pool_outcomes": {},
+      "date": "2026-11-27",
+      "decision_id": "68202609de6f012d8318",
+      "frozen_at": "2026-11-27T14:15:58Z",
+      "league": "CFB",
+      "positions": [
+        {
+          "bookmakers": [
+            "DraftKings"
+          ],
+          "combined_decimal_odds": 3.0402,
+          "effective_decimal_odds": 3.0402,
+          "estimated_joint_win_probability": 0.51663892,
+          "grade_status": "pending",
+          "leg_count": 2,
+          "leg_outcomes": [
+            null,
+            null
+          ],
+          "legs": [
+            {
+              "alternative_probabilities": {
+                "away": 0.24352,
+                "home": 0.75648
+              },
+              "away": "Nebraska Cornhuskers",
+              "book": {
+                "book": "DraftKings",
+                "frozen": true,
+                "game_id": "401858536",
+                "line": null,
+                "main_line": true,
+                "market": "moneyline",
+                "observed_utc": "2026-11-27T14:15:58Z",
+                "operational_validation": "probation",
+                "period": "full_game",
+                "pre_match": true,
+                "price_provenance": "named_book",
+                "provider": "espn",
+                "selected_decimal_price": 1.5050505050505052,
+                "side_prices": {
+                  "away": 2.6399999999999997,
+                  "home": 1.5050505050505052
+                },
+                "source_modified_utc": null,
+                "source_permission": "unresolved"
+              },
+              "bucket": "OK",
+              "calibrated_probability": 0.803457,
+              "calibration": {
+                "base_rate_brier": 0.180148,
+                "brier_cap": 0.25,
+                "brier_score": 0.16011,
+                "calibration_version": "platt-walkforward-v1",
+                "minimum_samples": 30,
+                "n": 1434,
+                "n_games": 717,
+                "platt": {
+                  "a": 1.242234,
+                  "b": -0.0
+                },
+                "reasons": [],
+                "segment": {
+                  "league": "cfb",
+                  "market": "moneyline",
+                  "period": "full_game",
+                  "source": "empirical_score_v2"
+                },
+                "skill_vs_base_rate": 0.11123,
+                "status": "calibrated",
+                "sufficient_for_accas": true
+              },
+              "calibration_version": "platt-walkforward-v1",
+              "date": "2026-11-27",
+              "eligibility": {
+                "acca_eligible": true,
+                "brier_cap": 0.25,
+                "cold_start_admitted": true,
+                "evidence_state": "walk_forward_calibrated",
+                "model_brier": 0.16010991525723464,
+                "reasons": []
+              },
+              "expected_margin": 10.9355,
+              "expected_total": 48.1128,
+              "forecast_id": "ff563bb2315fb23e1688",
+              "game_id": "401858536",
+              "grade_status": "pending",
+              "home": "Iowa Hawkeyes",
+              "league": "cfb",
+              "line": null,
+              "market": "moneyline",
+              "model": "empirical_score_v2",
+              "outcome": null,
+              "paper_only": true,
+              "period": "full_game",
+              "pick_id": "ff563bb2315fb23e1688",
+              "prediction": {
+                "frozen": true,
+                "model": "empirical_score_v2",
+                "observed_utc": "2026-11-27T14:15:58Z",
+                "provider": "espn"
+              },
+              "price_evidence": {
+                "book": "DraftKings",
+                "observed_utc": "2026-11-27T14:15:58Z",
+                "selected_decimal_price": 1.5050505050505052
+              },
+              "prior_heavy": false,
+              "push_probability": 0.0,
+              "raw_probability": 0.75648,
+              "residual_games": 0,
+              "role": null,
+              "scheduled_utc": "2026-11-27T17:08:00Z",
+              "selection": "home",
+              "source": "empirical_score_v2",
+              "training_games": 1434
+            },
+            {
+              "alternative_probabilities": {
+                "away": 0.383732,
+                "home": 0.616268
+              },
+              "away": "Tulsa Golden Hurricane",
+              "book": {
+                "book": "DraftKings",
+                "frozen": true,
+                "game_id": "401862840",
+                "line": null,
+                "main_line": true,
+                "market": "moneyline",
+                "observed_utc": "2026-11-27T14:15:58Z",
+                "operational_validation": "probation",
+                "period": "full_game",
+                "pre_match": true,
+                "price_provenance": "named_book",
+                "provider": "espn",
+                "selected_decimal_price": 2.02,
+                "side_prices": {
+                  "away": 1.819672131147541,
+                  "home": 2.02
+                },
+                "source_modified_utc": null,
+                "source_permission": "unresolved"
+              },
+              "bucket": "OK",
+              "calibrated_probability": 0.64302,
+              "calibration": {
+                "base_rate_brier": 0.180148,
+                "brier_cap": 0.25,
+                "brier_score": 0.16011,
+                "calibration_version": "platt-walkforward-v1",
+                "minimum_samples": 30,
+                "n": 1434,
+                "n_games": 717,
+                "platt": {
+                  "a": 1.242234,
+                  "b": -0.0
+                },
+                "reasons": [],
+                "segment": {
+                  "league": "cfb",
+                  "market": "moneyline",
+                  "period": "full_game",
+                  "source": "empirical_score_v2"
+                },
+                "skill_vs_base_rate": 0.11123,
+                "status": "calibrated",
+                "sufficient_for_accas": true
+              },
+              "calibration_version": "platt-walkforward-v1",
+              "date": "2026-11-27",
+              "eligibility": {
+                "acca_eligible": true,
+                "brier_cap": 0.25,
+                "cold_start_admitted": true,
+                "evidence_state": "walk_forward_calibrated",
+                "model_brier": 0.16010991525723464,
+                "reasons": []
+              },
+              "expected_margin": 4.6525,
+              "expected_total": 45.8228,
+              "forecast_id": "42252a9100101bdba409",
+              "game_id": "401862840",
+              "grade_status": "pending",
+              "home": "UTSA Roadrunners",
+              "league": "cfb",
+              "line": null,
+              "market": "moneyline",
+              "model": "empirical_score_v2",
+              "outcome": null,
+              "paper_only": true,
+              "period": "full_game",
+              "pick_id": "42252a9100101bdba409",
+              "prediction": {
+                "frozen": true,
+                "model": "empirical_score_v2",
+                "observed_utc": "2026-11-27T14:15:58Z",
+                "provider": "espn"
+              },
+              "price_evidence": {
+                "book": "DraftKings",
+                "observed_utc": "2026-11-27T14:15:58Z",
+                "selected_decimal_price": 2.02
+              },
+              "prior_heavy": false,
+              "push_probability": 0.0,
+              "raw_probability": 0.616268,
+              "residual_games": 0,
+              "role": null,
+              "scheduled_utc": "2026-11-27T17:00:00Z",
+              "selection": "home",
+              "source": "empirical_score_v2",
+              "training_games": 1434
+            }
+          ],
+          "paper_only": true,
+          "profit_units": null,
+          "provisional_leg_count": 0,
+          "provisional_sample_gate_bypassed": false,
+          "publication_index": 1,
+          "push_legs": 0,
+          "ranking_status": "paper_only_strict_gates_passed",
+          "stake_units": 1.0,
+          "ticket_id": "6f1e9e155b0c588893ed",
+          "ticket_type": "acca",
+          "unresolved_legs": 2
+        },
+        {
+          "bookmakers": [
+            "DraftKings"
+          ],
+          "combined_decimal_odds": 3.1915,
+          "effective_decimal_odds": 3.1915,
+          "estimated_joint_win_probability": 0.51018076,
+          "grade_status": "pending",
+          "leg_count": 2,
+          "leg_outcomes": [
+            null,
+            null
+          ],
+          "legs": [
+            {
+              "alternative_probabilities": {
+                "away": 0.142679,
+                "home": 0.857321
+              },
+              "away": "Air Force Falcons",
+              "book": {
+                "book": "DraftKings",
+                "frozen": true,
+                "game_id": "401864546",
+                "line": null,
+                "main_line": true,
+                "market": "moneyline",
+                "observed_utc": "2026-11-27T06:15:19Z",
+                "operational_validation": "probation",
+                "period": "full_game",
+                "pre_match": true,
+                "price_provenance": "named_book",
+                "provider": "espn",
+                "selected_decimal_price": 1.3875968992248062,
+                "side_prices": {
+                  "away": 3.1,
+                  "home": 1.3875968992248062
+                },
+                "source_modified_utc": null,
+                "source_permission": "unresolved"
+              },
+              "bucket": "OK",
+              "calibrated_probability": 0.9027,
+              "calibration": {
+                "base_rate_brier": 0.180148,
+                "brier_cap": 0.25,
+                "brier_score": 0.16011,
+                "calibration_version": "platt-walkforward-v1",
+                "minimum_samples": 30,
+                "n": 1434,
+                "n_games": 717,
+                "platt": {
+                  "a": 1.242234,
+                  "b": -0.0
+                },
+                "reasons": [],
+                "segment": {
+                  "league": "cfb",
+                  "market": "moneyline",
+                  "period": "full_game",
+                  "source": "empirical_score_v2"
+                },
+                "skill_vs_base_rate": 0.11123,
+                "status": "calibrated",
+                "sufficient_for_accas": true
+              },
+              "calibration_version": "platt-walkforward-v1",
+              "date": "2026-11-27",
+              "eligibility": {
+                "acca_eligible": true,
+                "brier_cap": 0.25,
+                "cold_start_admitted": true,
+                "evidence_state": "walk_forward_calibrated",
+                "model_brier": 0.16010991525723464,
+                "reasons": []
+              },
+              "expected_margin": 16.8096,
+              "expected_total": 52.3491,
+              "forecast_id": "df5ab315729e078c76d0",
+              "game_id": "401864546",
+              "grade_status": "pending",
+              "home": "New Mexico Lobos",
+              "league": "cfb",
+              "line": null,
+              "market": "moneyline",
+              "model": "empirical_score_v2",
+              "outcome": null,
+              "paper_only": true,
+              "period": "full_game",
+              "pick_id": "df5ab315729e078c76d0",
+              "prediction": {
+                "frozen": true,
+                "model": "empirical_score_v2",
+                "observed_utc": "2026-11-27T06:15:19Z",
+                "provider": "espn"
+              },
+              "price_evidence": {
+                "book": "DraftKings",
+                "observed_utc": "2026-11-27T06:15:19Z",
+                "selected_decimal_price": 1.3875968992248062
+              },
+              "prior_heavy": false,
+              "push_probability": 0.0,
+              "raw_probability": 0.857321,
+              "residual_games": 0,
+              "role": null,
+              "scheduled_utc": "2026-11-27T21:30:00Z",
+              "selection": "home",
+              "source": "empirical_score_v2",
+              "training_games": 1434
+            },
+            {
+              "alternative_probabilities": {
+                "away": 0.447431,
+                "home": 0.552569
+              },
+              "away": "Toledo Rockets",
+              "book": {
+                "book": "DraftKings",
+                "frozen": true,
+                "game_id": "401866473",
+                "line": null,
+                "main_line": true,
+                "market": "moneyline",
+                "observed_utc": "2026-11-27T14:15:58Z",
+                "operational_validation": "probation",
+                "period": "full_game",
+                "pre_match": true,
+                "price_provenance": "named_book",
+                "provider": "espn",
+                "selected_decimal_price": 2.3,
+                "side_prices": {
+                  "away": 1.6451612903225805,
+                  "home": 2.3
+                },
+                "source_modified_utc": null,
+                "source_permission": "unresolved"
+              },
+              "bucket": "OK",
+              "calibrated_probability": 0.565172,
+              "calibration": {
+                "base_rate_brier": 0.180148,
+                "brier_cap": 0.25,
+                "brier_score": 0.16011,
+                "calibration_version": "platt-walkforward-v1",
+                "minimum_samples": 30,
+                "n": 1434,
+                "n_games": 717,
+                "platt": {
+                  "a": 1.242234,
+                  "b": -0.0
+                },
+                "reasons": [],
+                "segment": {
+                  "league": "cfb",
+                  "market": "moneyline",
+                  "period": "full_game",
+                  "source": "empirical_score_v2"
+                },
+                "skill_vs_base_rate": 0.11123,
+                "status": "calibrated",
+                "sufficient_for_accas": true
+              },
+              "calibration_version": "platt-walkforward-v1",
+              "date": "2026-11-27",
+              "eligibility": {
+                "acca_eligible": true,
+                "brier_cap": 0.25,
+                "cold_start_admitted": true,
+                "evidence_state": "walk_forward_calibrated",
+                "model_brier": 0.16010991525723464,
+                "reasons": []
+              },
+              "expected_margin": 2.0793,
+              "expected_total": 63.6413,
+              "forecast_id": "2b93cc57d1282b18c374",
+              "game_id": "401866473",
+              "grade_status": "pending",
+              "home": "Ohio Bobcats",
+              "league": "cfb",
+              "line": null,
+              "market": "moneyline",
+              "model": "empirical_score_v2",
+              "outcome": null,
+              "paper_only": true,
+              "period": "full_game",
+              "pick_id": "2b93cc57d1282b18c374",
+              "prediction": {
+                "frozen": true,
+                "model": "empirical_score_v2",
+                "observed_utc": "2026-11-27T14:15:58Z",
+                "provider": "espn"
+              },
+              "price_evidence": {
+                "book": "DraftKings",
+                "observed_utc": "2026-11-27T14:15:58Z",
+                "selected_decimal_price": 2.3
+              },
+              "prior_heavy": false,
+              "push_probability": 0.0,
+              "raw_probability": 0.552569,
+              "residual_games": 0,
+              "role": null,
+              "scheduled_utc": "2026-11-27T17:00:00Z",
+              "selection": "home",
+              "source": "empirical_score_v2",
+              "training_games": 1434
+            }
+          ],
+          "paper_only": true,
+          "profit_units": null,
+          "provisional_leg_count": 0,
+          "provisional_sample_gate_bypassed": false,
+          "publication_index": 2,
+          "push_legs": 0,
+          "ranking_status": "paper_only_strict_gates_passed",
+          "stake_units": 1.0,
+          "ticket_id": "03a4fd29acc3b95c854b",
+          "ticket_type": "acca",
+          "unresolved_legs": 2
+        }
+      ],
+      "status": "frozen"
+    }
+  ],
+  "hit_rate": null,
+  "league": "CFB",
+  "losses": 0,
+  "low_sample_flag": true,
+  "low_sample_note": "[LOW SAMPLE: n < 30] no profit, edge, or readiness claim is supported",
+  "pending_positions": 2,
+  "profit_units": 0,
+  "pushes": 0,
+  "roi": null,
+  "schema_version": "magolide.paper_ticket_performance",
+  "settled_positions": 0,
+  "settled_stake_units": 0,
+  "stake_policy": "flat_one_paper_unit_per_position_no_refill_no_real_money",
+  "wins": 0
+}

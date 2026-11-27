@@ -1,0 +1,13 @@
+BULLION PAPER CARD — CFB — 2026-11-27
+frozen Fri 2026-11-27 16:15 SAST · paper only · stake 1.00u/position
+
+[ACCA] @3.04 · joint p=0.517 · 2 legs
+  - Fri 2026-11-27 19:08 SAST | Nebraska Cornhuskers @ Iowa Hawkeyes | MONEYLINE  -> HOME @1.51 (DraftKings) p=0.803
+  - Fri 2026-11-27 19:00 SAST | Tulsa Golden Hurricane @ UTSA Roadrunners | MONEYLINE  -> HOME @2.02 (DraftKings) p=0.643
+
+[ACCA] @3.19 · joint p=0.510 · 2 legs
+  - Fri 2026-11-27 23:30 SAST | Air Force Falcons @ New Mexico Lobos | MONEYLINE  -> HOME @1.39 (DraftKings) p=0.903
+  - Fri 2026-11-27 19:00 SAST | Toledo Rockets @ Ohio Bobcats | MONEYLINE  -> HOME @2.30 (DraftKings) p=0.565
+
+gates: named-book pre-tip only · calibrated n>=30 · brier<=0.25 · legs 1.2-3.0 · limit 3
+No profit, edge, or readiness claim is made from an unsettled paper card.

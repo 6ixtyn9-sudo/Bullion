@@ -1,0 +1,685 @@
+{
+  "candidate_pool": [
+    {
+      "alternative_probabilities": {
+        "away": 0.611797,
+        "home": 0.388203
+      },
+      "away": "Denver Broncos",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873083",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-27T06:15:18Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.05,
+        "side_prices": {
+          "away": 1.403225806451613,
+          "home": 3.05
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.406148,
+      "calibration": {
+        "base_rate_brier": 0.248985,
+        "brier_cap": 0.25,
+        "brier_score": 0.234521,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 1444,
+        "n_games": 722,
+        "platt": {
+          "a": 0.835209,
+          "b": 0.0
+        },
+        "reasons": [],
+        "segment": {
+          "league": "nfl",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "empirical_score_v2"
+        },
+        "skill_vs_base_rate": 0.058094,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.2345206012466666,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_not_positive"
+        ]
+      },
+      "expected_margin": -3.391,
+      "expected_total": 41.5337,
+      "forecast_id": "85525b8a8beee3de2f88",
+      "game_id": "401873083",
+      "grade_status": "pending",
+      "home": "Pittsburgh Steelers",
+      "league": "nfl",
+      "line": null,
+      "market": "moneyline",
+      "model": "empirical_score_v2",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "85525b8a8beee3de2f88",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v2",
+        "observed_utc": "2026-11-27T06:15:18Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T06:15:18Z",
+        "selected_decimal_price": 3.05
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.388203,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T20:00:00Z",
+      "selection": "home",
+      "source": "empirical_score_v2",
+      "training_games": 1444
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.611797,
+        "home": 0.388203
+      },
+      "away": "Denver Broncos",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873083",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-27T14:15:57Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.4081632653061225,
+        "side_prices": {
+          "away": 1.4081632653061225,
+          "home": 3.02
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.593852,
+      "calibration": {
+        "base_rate_brier": 0.248985,
+        "brier_cap": 0.25,
+        "brier_score": 0.234521,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 1444,
+        "n_games": 722,
+        "platt": {
+          "a": 0.835209,
+          "b": 0.0
+        },
+        "reasons": [],
+        "segment": {
+          "league": "nfl",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "empirical_score_v2"
+        },
+        "skill_vs_base_rate": 0.058094,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.2345206012466666,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_not_positive"
+        ]
+      },
+      "expected_margin": -3.391,
+      "expected_total": 41.5337,
+      "forecast_id": "daa65e167c3864c7b8a3",
+      "game_id": "401873083",
+      "grade_status": "pending",
+      "home": "Pittsburgh Steelers",
+      "league": "nfl",
+      "line": null,
+      "market": "moneyline",
+      "model": "empirical_score_v2",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "daa65e167c3864c7b8a3",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v2",
+        "observed_utc": "2026-11-27T14:15:57Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T14:15:57Z",
+        "selected_decimal_price": 1.4081632653061225
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.611797,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T20:00:00Z",
+      "selection": "away",
+      "source": "empirical_score_v2",
+      "training_games": 1444
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.621234,
+        "under": 0.378766
+      },
+      "away": "Denver Broncos",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873083",
+        "line": 37.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-27T14:15:57Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.99009900990099,
+        "side_prices": {
+          "over": 1.99009900990099,
+          "under": 1.8403361344537816
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.621234,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "total",
+          "period": "full_game",
+          "source": "empirical_score_v2"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_not_positive"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 41.5337,
+      "forecast_id": "d51e177da9897ac5c6a1",
+      "game_id": "401873083",
+      "grade_status": "pending",
+      "home": "Pittsburgh Steelers",
+      "league": "nfl",
+      "line": 37.5,
+      "market": "total",
+      "model": "empirical_score_v2",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "d51e177da9897ac5c6a1",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v2",
+        "observed_utc": "2026-11-27T14:15:57Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T14:15:57Z",
+        "selected_decimal_price": 1.99009900990099
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.621234,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T20:00:00Z",
+      "selection": "over",
+      "source": "empirical_score_v2",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.621234,
+        "under": 0.378766
+      },
+      "away": "Denver Broncos",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873083",
+        "line": 37.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-27T14:15:57Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8403361344537816,
+        "side_prices": {
+          "over": 1.99009900990099,
+          "under": 1.8403361344537816
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.378766,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "total",
+          "period": "full_game",
+          "source": "empirical_score_v2"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_not_positive"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 41.5337,
+      "forecast_id": "8764a839b6946c754685",
+      "game_id": "401873083",
+      "grade_status": "pending",
+      "home": "Pittsburgh Steelers",
+      "league": "nfl",
+      "line": 37.5,
+      "market": "total",
+      "model": "empirical_score_v2",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "8764a839b6946c754685",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v2",
+        "observed_utc": "2026-11-27T14:15:57Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T14:15:57Z",
+        "selected_decimal_price": 1.8403361344537816
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.378766,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T20:00:00Z",
+      "selection": "under",
+      "source": "empirical_score_v2",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.463,
+        "home": 0.537
+      },
+      "away": "Denver Broncos",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873083",
+        "line": 4.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-27T14:15:57Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.0,
+        "side_prices": {
+          "away": 1.8333333333333335,
+          "home": 2.0
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.537,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "spread",
+          "period": "full_game",
+          "source": "empirical_score_v2"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_not_positive"
+        ]
+      },
+      "expected_margin": -3.391,
+      "expected_total": null,
+      "forecast_id": "58c3f2be407c9afda796",
+      "game_id": "401873083",
+      "grade_status": "pending",
+      "home": "Pittsburgh Steelers",
+      "league": "nfl",
+      "line": 4.5,
+      "market": "spread",
+      "model": "empirical_score_v2",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "58c3f2be407c9afda796",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v2",
+        "observed_utc": "2026-11-27T14:15:57Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T14:15:57Z",
+        "selected_decimal_price": 2.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.537,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T20:00:00Z",
+      "selection": "home",
+      "source": "empirical_score_v2",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.463,
+        "home": 0.537
+      },
+      "away": "Denver Broncos",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401873083",
+        "line": 4.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-27T06:15:18Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.847457627118644,
+        "side_prices": {
+          "away": 1.847457627118644,
+          "home": 1.9803921568627452
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.463,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "nfl",
+          "market": "spread",
+          "period": "full_game",
+          "source": "empirical_score_v2"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-27",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "cold_start_admitted": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_not_positive"
+        ]
+      },
+      "expected_margin": -3.391,
+      "expected_total": null,
+      "forecast_id": "cbfd8a71c0c5266f2394",
+      "game_id": "401873083",
+      "grade_status": "pending",
+      "home": "Pittsburgh Steelers",
+      "league": "nfl",
+      "line": 4.5,
+      "market": "spread",
+      "model": "empirical_score_v2",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "cbfd8a71c0c5266f2394",
+      "prediction": {
+        "frozen": true,
+        "model": "empirical_score_v2",
+        "observed_utc": "2026-11-27T06:15:18Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-27T06:15:18Z",
+        "selected_decimal_price": 1.847457627118644
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.463,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-27T20:00:00Z",
+      "selection": "away",
+      "source": "empirical_score_v2",
+      "training_games": 0
+    }
+  ],
+  "captured_at": "2026-11-27T14:15:57Z",
+  "date": "2026-11-27",
+  "decision_id": "1c5f4593fe99ca4d6fa7",
+  "frozen_at": "2026-11-27T14:15:57Z",
+  "league": "NFL",
+  "paper_only": true,
+  "positions": [],
+  "reason": "no_qualifying_pre_tip_ticket_at_decision_cutoff",
+  "schema_version": "magolide.no_bet_decision",
+  "selection_policy": {
+    "allow_provisional": false,
+    "brier_cap": 0.25,
+    "brier_cap_three_way": 0.22,
+    "brier_cap_two_way": 0.25,
+    "cap_vs_base_rate": true,
+    "forbid_conflicting_game_sides": true,
+    "lane_permission": "probe_covered",
+    "limit": 3,
+    "max_combined_odds": 4.5,
+    "max_leg_odds": 3.0,
+    "min_combined_odds": 3.0,
+    "min_games": 30,
+    "min_leg_odds": 1.2,
+    "min_samples": 30,
+    "paper_only": true,
+    "price_weight": 0.15,
+    "probe_captured_utc": "2026-11-27T09:21:09Z",
+    "probe_market_evidence": {
+      "moneyline": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "moneyline_draw": {
+        "event_coverage": 0.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "spread": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "total": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      }
+    },
+    "probe_report_used": true,
+    "requested_legs": 2,
+    "require_disjoint_legs": true,
+    "stake_units_per_acca": 1.0,
+    "surface_resolution": "brier_tiebreak_empirical_score_v2",
+    "ticket_markets": [
+      "moneyline",
+      "spread",
+      "total"
+    ]
+  },
+  "status": "frozen_no_bet",
+  "target_date": "2026-11-27",
+  "ticket_decision": {
+    "candidate_count": 6,
+    "captured_utc": "2026-11-27T14:15:57Z",
+    "eligible_count": 0,
+    "permission": "probe_covered",
+    "planned_cutoff_utc": "2026-11-27T14:00:00Z",
+    "probe_captured_utc": "2026-11-27T09:21:09Z",
+    "status": "frozen_no_bet"
+  }
+}

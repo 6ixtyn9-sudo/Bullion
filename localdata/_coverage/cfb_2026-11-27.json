@@ -7,13 +7,13 @@
     "min_roi_samples": 5,
     "require_named_book": true
   },
-  "generated_utc": "2026-11-27T10:15:19Z",
+  "generated_utc": "2026-11-27T14:16:01Z",
   "run": {
-    "candidate_pool": 100,
+    "candidate_pool": 66,
     "cutoff_utc": "2026-11-27T14:00:00Z",
     "day": "2026-11-27",
-    "eligible_legs": 0,
-    "forecasts": 100,
+    "eligible_legs": 5,
+    "forecasts": 110,
     "games": 14,
     "gaps": [
       {
@@ -24,16 +24,16 @@
       }
     ],
     "lane": "cfb",
-    "reason": "decision cutoff 2026-11-27T14:00:00Z not reached; scan only",
-    "receipt_path": null,
+    "reason": "",
+    "receipt_path": "/home/runner/work/Bullion/Bullion/localdata/cfb/auto_tickets_2026-11-27_decision.json",
     "refreshed_finals": 0,
-    "status": "pre_cutoff_scan",
+    "status": "frozen_ticket",
     "ticket_markets": [
       "moneyline",
       "spread",
       "total"
     ],
-    "tickets": 0
+    "tickets": 2
   },
   "schema_version": "bullion.lane_run"
 }

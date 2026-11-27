@@ -7,12 +7,12 @@
     "min_roi_samples": 5,
     "require_named_book": true
   },
-  "generated_utc": "2026-11-27T10:15:20Z",
+  "generated_utc": "2026-11-27T14:16:04Z",
   "run": {
     "candidate_pool": 7,
     "cutoff_utc": "2026-11-27T10:00:00Z",
     "day": "2026-11-27",
-    "eligible_legs": 0,
+    "eligible_legs": 1,
     "forecasts": 7,
     "games": 1,
     "gaps": [],
