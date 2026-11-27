@@ -1,0 +1,100 @@
+# COPY THIS FILE to .github/workflows/diagnose_engines.yml
+#
+# Manual, read-only diagnostic of the rating fitter against the cached
+# warehouse. It restores `bullion-db-v1-*` with `actions/cache/restore@v4` and
+# NEVER saves the cache, never commits, never pushes, and never writes to
+# SQLite (`scripts/diagnose_engines.py` opens the file `mode=ro` with
+# `query_only`). Nothing in the repository changes; the memo lands in the job
+# log and the step summary.
+#
+# Deliberately NOT in the `bullion-commits` concurrency group: a read-only
+# restore cannot collide with the scheduled tick's commit, so the diagnostic
+# must never queue behind — or delay — a live run.
+
+name: diagnose-engines
+
+on:
+  workflow_dispatch:
+    inputs:
+      lanes:
+        description: "Space-separated lanes (empty = all 8 seeded lanes)."
+        required: false
+        default: ""
+      fast:
+        description: "Skip the tuning grid (faster, less informative)."
+        required: false
+        type: boolean
+        default: false
+      max_days:
+        description: "Cap NHL matchdays (empty = all). Smoke runs only."
+        required: false
+        default: ""
+      stride:
+        description: "Score every n-th matchday (1 = exact but ~5x slower)."
+        required: false
+        default: "2"
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Restore SQLite warehouse (read-only, never saved)
+        id: warehouse
+        uses: actions/cache/restore@v4
+        with:
+          path: localdata/bullion.db
+          key: bullion-db-v1-${{ github.run_id }}
+          restore-keys: |
+            bullion-db-v1-
+          fail-on-cache-miss: false
+
+      - name: Fail clearly when the cache is empty
+        run: |
+          if [ ! -f localdata/bullion.db ]; then
+            echo "::error::no bullion-db-v1-* cache found; nothing to diagnose"
+            exit 1
+          fi
+          ls -lh localdata/bullion.db
+          echo "warehouse_matched=${{ steps.warehouse.outputs.cache-matched-key }}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run the diagnostic (read-only)
+        env:
+          LANES: ${{ inputs.lanes }}
+          FAST: ${{ inputs.fast }}
+          MAX_DAYS: ${{ inputs.max_days }}
+          STRIDE: ${{ inputs.stride }}
+        run: |
+          ARGS=(--db localdata/bullion.db)
+          if [ -n "${LANES}" ]; then ARGS+=(--lanes ${LANES}); fi
+          if [ "${FAST}" = "true" ]; then ARGS+=(--fast); fi
+          if [ -n "${MAX_DAYS}" ]; then ARGS+=(--max-days "${MAX_DAYS}"); fi
+          if [ -n "${STRIDE}" ]; then ARGS+=(--stride "${STRIDE}"); fi
+          python3 scripts/diagnose_engines.py "${ARGS[@]}" | tee /tmp/memo.md
+          {
+            echo "## Engine diagnostic memo"
+            echo
+            cat /tmp/memo.md
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Prove nothing was modified
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::the diagnostic modified the tree; it must be read-only"
+            git status --porcelain
+            exit 1
+          fi
+          echo "working tree clean: no localdata, cache or code was written"

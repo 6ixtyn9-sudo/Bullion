@@ -11,6 +11,7 @@ script imports disappears, this fails here rather than in Actions.
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 
 import pytest
@@ -22,6 +23,10 @@ SCRIPTS = sorted((ROOT / "scripts").glob("*.py"))
 def _load(path: Path):
     spec = importlib.util.spec_from_file_location(f"bullion_script_{path.stem}", path)
     module = importlib.util.module_from_spec(spec)
+    # Register before executing: dataclasses resolve ``cls.__module__`` through
+    # ``sys.modules``, so a module that declares one cannot be imported by a
+    # loader that skips this step — which is what a real import does anyway.
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
