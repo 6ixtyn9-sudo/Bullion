@@ -1,0 +1,212 @@
+{
+  "generated_utc": "2026-11-27T06:15:24Z",
+  "probe_report_used": true,
+  "rehydrated": {
+    "files": 1,
+    "restored": 0,
+    "rows": 24,
+    "skipped": 0
+  },
+  "runs": [
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": "2026-11-27T14:00:00Z",
+      "day": "2026-11-27",
+      "eligible_legs": 0,
+      "forecasts": 66,
+      "games": 15,
+      "gaps": [],
+      "lane": "nhl",
+      "reason": "decision cutoff 2026-11-27T14:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 6,
+      "cutoff_utc": "2026-11-27T14:00:00Z",
+      "day": "2026-11-27",
+      "eligible_legs": 0,
+      "forecasts": 10,
+      "games": 4,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401873081",
+          "league": "nfl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401873080",
+          "league": "nfl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401873082",
+          "league": "nfl",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "nfl",
+      "reason": "decision cutoff 2026-11-27T14:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 100,
+      "cutoff_utc": "2026-11-27T14:00:00Z",
+      "day": "2026-11-27",
+      "eligible_legs": 0,
+      "forecasts": 100,
+      "games": 14,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401856879",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "cfb",
+      "reason": "decision cutoff 2026-11-27T14:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 7,
+      "cutoff_utc": "2026-11-27T10:00:00Z",
+      "day": "2026-11-27",
+      "eligible_legs": 0,
+      "forecasts": 7,
+      "games": 1,
+      "gaps": [],
+      "lane": "eng.1",
+      "reason": "decision cutoff 2026-11-27T10:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 7,
+      "cutoff_utc": "2026-11-27T10:00:00Z",
+      "day": "2026-11-27",
+      "eligible_legs": 0,
+      "forecasts": 7,
+      "games": 1,
+      "gaps": [],
+      "lane": "esp.1",
+      "reason": "decision cutoff 2026-11-27T10:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 7,
+      "cutoff_utc": "2026-11-27T10:00:00Z",
+      "day": "2026-11-27",
+      "eligible_legs": 0,
+      "forecasts": 7,
+      "games": 1,
+      "gaps": [],
+      "lane": "ger.1",
+      "reason": "decision cutoff 2026-11-27T10:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 7,
+      "cutoff_utc": "2026-11-27T10:00:00Z",
+      "day": "2026-11-27",
+      "eligible_legs": 0,
+      "forecasts": 7,
+      "games": 1,
+      "gaps": [],
+      "lane": "ita.1",
+      "reason": "decision cutoff 2026-11-27T10:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 7,
+      "cutoff_utc": "2026-11-27T10:00:00Z",
+      "day": "2026-11-27",
+      "eligible_legs": 0,
+      "forecasts": 7,
+      "games": 1,
+      "gaps": [],
+      "lane": "fra.1",
+      "reason": "decision cutoff 2026-11-27T10:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-27",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 0,
+      "gaps": [],
+      "lane": "uefa.champions",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "no_slate",
+      "ticket_markets": [],
+      "tickets": 0
+    }
+  ],
+  "sast_day": "2026-11-27",
+  "schema_version": "bullion.daily_run"
+}

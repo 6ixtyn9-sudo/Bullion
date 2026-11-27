@@ -1,7 +1,32 @@
 {
   "history": [
     {
-      "candidate_pool_outcomes": {},
+      "candidate_pool_outcomes": {
+        "0860ef5a8d65e193696a": "loss",
+        "0e73e200a60814823549": "win",
+        "190cad3528367ea8cb8d": "win",
+        "1bcc28c18afdf45cda05": "win",
+        "26949f0aa8b681ec0ff1": "loss",
+        "30d58cd215be4a483645": "win",
+        "343181a6db5d62dfd0cc": "win",
+        "425e948efdeff26c06d1": "loss",
+        "5d8c84aa20f4d814cf1e": "loss",
+        "5f2f93ce386120338049": "win",
+        "63f6eec6438f2b4307cd": "win",
+        "6ed31eb5359836d7cb21": "loss",
+        "8dc7f9ab3c99c5c25e56": "loss",
+        "928cb0e08f5f42c7828d": "loss",
+        "a5dffed9e164b7274477": "win",
+        "ac566ee3d127e142eb9b": "win",
+        "cf93a16bb80aa3888ec2": "loss",
+        "dc7ff4c95f10a9b4ffec": "win",
+        "dc913bf9c6e5e4a7f42c": "win",
+        "ec1b619f7d761a65adf8": "loss",
+        "fb701f1198858f788579": "win",
+        "fed2806b37b0bec5e28d": "loss",
+        "ffa231698f426277fe13": "loss",
+        "ffcf9df6f733a9495be5": "loss"
+      },
       "date": "2026-11-26",
       "decision_id": "9cec1a09bcfddcc4f7d7",
       "frozen_at": "2026-11-26T14:15:17Z",

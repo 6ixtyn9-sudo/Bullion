@@ -1,0 +1,39 @@
+{
+  "gate": {
+    "brier_cap": 0.25,
+    "brier_cap_three_way": 0.22,
+    "max_leg_odds": 3.0,
+    "min_leg_odds": 1.2,
+    "min_roi_samples": 5,
+    "require_named_book": true
+  },
+  "generated_utc": "2026-11-27T06:15:22Z",
+  "run": {
+    "candidate_pool": 100,
+    "cutoff_utc": "2026-11-27T14:00:00Z",
+    "day": "2026-11-27",
+    "eligible_legs": 0,
+    "forecasts": 100,
+    "games": 14,
+    "gaps": [
+      {
+        "field": "pickcenter",
+        "game_id": "401856879",
+        "league": "cfb",
+        "reason": "no odds offers on event"
+      }
+    ],
+    "lane": "cfb",
+    "reason": "decision cutoff 2026-11-27T14:00:00Z not reached; scan only",
+    "receipt_path": null,
+    "refreshed_finals": 0,
+    "status": "pre_cutoff_scan",
+    "ticket_markets": [
+      "moneyline",
+      "spread",
+      "total"
+    ],
+    "tickets": 0
+  },
+  "schema_version": "bullion.lane_run"
+}
