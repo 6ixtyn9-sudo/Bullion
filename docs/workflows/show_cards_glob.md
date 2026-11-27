@@ -6,7 +6,11 @@ The dated card moved from `localdata/<lane>/cards/auto_tickets_<day>.txt` to
 globs the old directory, so it matches nothing and the run log stops printing the
 cards.
 
-I cannot apply this: pushing `.github/workflows/` is refused for this GitHub App
+The whole file with the change already applied is **`docs/workflows/bullion_daily.yml`** —
+paste that over the live file and you are done; the snippet below is just the
+diff, for review.
+
+I cannot apply it directly: pushing `.github/workflows/` is refused for this GitHub App
 (`refusing to allow a GitHub App to create or update workflow
 .github/workflows/bullion_daily.yml without workflows permission`). Paste the
 block below over the current step.
