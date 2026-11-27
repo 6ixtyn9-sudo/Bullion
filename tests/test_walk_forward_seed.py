@@ -121,7 +121,7 @@ def test_seed_produces_provenanced_moneyline_rows_and_is_idempotent(backfill, tm
         rows = [dict(row) for row in _seeded_rows(store)]
         assert len(rows) == 6
         assert {row["market"] for row in rows} == {"moneyline"}
-        assert {row["source"] for row in rows} == {"empirical_score_v2"}
+        assert {row["source"] for row in rows} == {"empirical_score"}
         assert {row["observed_day"] for row in rows} == {"2026-10-04"}
         for row in rows:
             assert row["provenance"] == "walk_forward_seed"
@@ -152,7 +152,7 @@ def test_seed_never_displaces_a_live_pre_tip_snapshot(backfill, tmp_path):
                     market="moneyline",
                     selection="home",
                     raw_probability=0.9,
-                    source="empirical_score_v2",
+                    source="empirical_score",
                 )
             ],
             observed_day="2026-10-04",
@@ -283,10 +283,10 @@ def test_seed_covers_nhl_uniformly_and_soccer_three_way(backfill, tmp_path):
             if row["league"] == "eng.1"
         }
         assert nhl_rows, "NHL is seeded like every other lane — the gate, not the seeder, rejects it"
-        assert {row["source"] for row in nhl_rows.values()} == {"nhl_poisson_v2"}
+        assert {row["source"] for row in nhl_rows.values()} == {"nhl_poisson"}
         assert {row["selection"] for row in nhl_rows.values()} == {"home", "away"}
         assert soccer_rows, "soccer rows exist"
-        assert {row["source"] for row in soccer_rows.values()} == {"dixon_coles_v2"}
+        assert {row["source"] for row in soccer_rows.values()} == {"dixon_coles"}
         assert {row["selection"] for row in soccer_rows.values()} == {"home", "draw", "away"}
         assert summary["lanes"]["nhl"]["inserted"] == 2
         assert summary["lanes"]["eng.1"]["inserted"] == 3

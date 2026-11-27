@@ -86,7 +86,7 @@ def _frozen_row(game_id: str = "401") -> dict:
         "league": "nhl",
         "market": "moneyline",
         "period": "full_game",
-        "source": "nhl_poisson_v2",
+        "source": "nhl_poisson",
         "selection": "home",
         "line": None,
         "raw_probability": 0.62,
