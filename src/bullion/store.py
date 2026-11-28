@@ -13,9 +13,11 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 from .models import (
+    LEAGUES,
     ActualResult,
     BookQuote,
     Game,
+    Sport,
     Status,
     now_utc,
     to_utc_z,
@@ -126,11 +128,13 @@ class Store:
         self.conn.commit()
 
     def _migrate(self) -> None:
-        """Add columns introduced after a cached database was first created.
+        """Bring a cached database up to the current schema and arithmetic.
 
         ``CREATE TABLE IF NOT EXISTS`` never alters an existing table, and the
         workflow restores ``bullion.db`` from a cache that predates any new
-        column. Each entry is idempotent and additive only.
+        column. Each entry is idempotent: columns are additive only, and the
+        arithmetic cleanup is self-terminating (see
+        :meth:`_drop_superseded_seed_rows`).
         """
         additions = {
             "predictor_snapshots": {
@@ -154,6 +158,61 @@ class Store:
                 if column in existing:
                     continue
                 self.conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {sql_type}")
+        self._drop_superseded_seed_rows()
+
+    def _drop_superseded_seed_rows(self) -> int:
+        """One-shot: retire basketball seed rows from the pre-F4 arithmetic.
+
+        ``scripts/backfill.py`` writes one moneyline row per side per final under
+        the lane's surface tag. When that tag was briefly suffixed (``_v2``) both
+        generations landed in the warehouse, and ``forecast_id`` — the wager
+        identity, which deliberately does not include the tag — means a plain
+        relabel would collide on the primary key and the reseed would vanish into
+        ``INSERT OR IGNORE``. So both generations are *deleted* and replayed.
+
+        Self-terminating: the guard looks for a ``_v2`` **seed** row, and the
+        delete removes every seed row of either generation. Nothing writes
+        ``_v2`` again, so the guard can never re-fire — and after the replay there
+        is no ``_v2`` row left to find. Live observations are never touched: both
+        statements filter ``provenance = 'walk_forward_seed'``, so a tick's own
+        pre-tip snapshot survives this and stays authoritative for its game.
+
+        Returns the number of rows dropped (0 on every run after the first).
+        """
+        lanes = tuple(
+            sorted(key for key, league in LEAGUES.items() if league.sport is Sport.BASKETBALL)
+        )
+        if not lanes:
+            return 0
+        placeholders = ",".join("?" * len(lanes))
+        try:
+            superseded = self.conn.execute(
+                f"""
+                SELECT 1 FROM forecast_snapshots
+                WHERE league IN ({placeholders})
+                  AND provenance = 'walk_forward_seed'
+                  AND source = 'empirical_score_v2'
+                LIMIT 1
+                """,
+                lanes,
+            ).fetchone()
+        except sqlite3.OperationalError:
+            # A warehouse old enough to predate ``provenance`` cannot hold the
+            # suffixed rows either; nothing to retire.
+            return 0
+        if superseded is None:
+            return 0
+        cursor = self.conn.execute(
+            f"""
+            DELETE FROM forecast_snapshots
+            WHERE league IN ({placeholders})
+              AND provenance = 'walk_forward_seed'
+              AND source IN ('empirical_score', 'empirical_score_v2')
+            """,
+            lanes,
+        )
+        self.conn.commit()
+        return max(cursor.rowcount, 0)
 
     # -- lifecycle ---------------------------------------------------------
     def close(self) -> None:
