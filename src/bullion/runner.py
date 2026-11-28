@@ -20,6 +20,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from . import engines
 from .calibration import CalibrationBook
+from .engines import basketball as basketball_engine
 from .engines import football as football_engine
 from .engines import nhl as nhl_engine
 from .engines import soccer as soccer_engine
@@ -101,8 +102,24 @@ def select_leagues(selector: str) -> List[League]:
     selector = (selector or "all").strip().lower()
     if selector == "all":
         return list(LEAGUES.values())
+    if "," in selector:
+        # A comma list is how the scheduler names the cold lanes it just
+        # detected; expanding it here keeps every caller on one selector rule.
+        selected: List[League] = []
+        for item in selector.split(","):
+            item = item.strip()
+            if not item:
+                continue
+            for league in select_leagues(item):
+                if league not in selected:
+                    selected.append(league)
+        if not selected:
+            raise ValueError(f"unknown league selector {selector!r}")
+        return selected
     if selector == "soccer":
         return [league for league in LEAGUES.values() if league.sport is Sport.SOCCER]
+    if selector == "basketball":
+        return [league for league in LEAGUES.values() if league.sport is Sport.BASKETBALL]
     if selector not in LEAGUES:
         raise ValueError(f"unknown league selector {selector!r}")
     return [LEAGUES[selector]]
@@ -188,7 +205,10 @@ def _reports(
 #: so the gap cannot widen. ``REFRESH_MAX_GAMES`` bounds one run's work, and a
 #: larger backlog is reported rather than silently dropped.
 REFRESH_AFTER_HOURS = 2.0
-REFRESH_MAX_GAMES = 40
+#: 120, not 40: an NCAA Saturday plus a Sunday rollover can leave 80+ finals
+#: unseen by the scoreboard scan, and a cap of 40 turns that into a backlog that
+#: never drains (each run re-checks the same oldest 40 and reports the rest).
+REFRESH_MAX_GAMES = 120
 
 
 def _scoring_quotes(
@@ -331,6 +351,7 @@ def _forecasts_for_game(
         return soccer_engine.forecast(
             game, quotes, results=results, reference_day=reference_day
         )
+    engine = basketball_engine if league.sport is Sport.BASKETBALL else football_engine
     predictor = None
     try:
         payload = client.predictor(league, game.game_id)
@@ -339,7 +360,7 @@ def _forecasts_for_game(
             game_id=game.game_id,
             league=league.key,
             provider="espn",
-            model="espn_fpi",
+            model=engine.BPI_SOURCE if engine is basketball_engine else "espn_fpi",
             observed_utc=observed_utc,
             prob_home=predictor.prob_home,
             expected_home=predictor.expected_home,
@@ -348,21 +369,21 @@ def _forecasts_for_game(
         )
     except (EspnFetchError, EspnIdentityError, EspnParseError, ValueError) as exc:
         gaps.append(CoverageGap(league.key, "predictor", str(exc), game.game_id))
-    forecasts = football_engine.forecast(
+    forecasts = engine.forecast(
         game,
         quotes,
         results=results,
         reference_day=reference_day,
-        surface=football_engine.EMPIRICAL_SOURCE,
+        surface=engine.EMPIRICAL_SOURCE,
     )
     if predictor is not None:
         forecasts.extend(
-            football_engine.forecast(
+            engine.forecast(
                 game,
                 quotes,
                 results=results,
                 reference_day=reference_day,
-                surface=football_engine.FPI_SOURCE,
+                surface=engine.BPI_SOURCE if engine is basketball_engine else engine.FPI_SOURCE,
                 predictor=predictor,
             )
         )
@@ -476,19 +497,25 @@ def run_lane(
     book = _calibration_book(store, league, as_of)
     reports = _reports(book, league, ticket_forecasts, day, policy)
     surface_resolution = "single_surface"
-    if league.sport is Sport.FOOTBALL:
+    # Any lane with a provider predictor runs two surfaces and has to pick one
+    # per lane: leaving both in the pool lets a single ticket mix an FPI leg and
+    # an empirical leg on the same market, which is a selection nobody measured.
+    if league.predictor:
+        surface_mod = (
+            basketball_engine if league.sport is Sport.BASKETBALL else football_engine
+        )
         brier_by_source = {
             source: reports[(league.key, "moneyline", "full_game", source)].brier
             for source in {forecast.source for forecast in ticket_forecasts}
             if (league.key, "moneyline", "full_game", source) in reports
         }
-        winner = football_engine.resolve_surface(brier_by_source)
+        winner = surface_mod.resolve_surface(brier_by_source)
         if winner is None:
             # "Undecided" must still mean one surface. Leaving both in the pool
             # lets a ticket mix FPI and empirical legs on the same market, which
             # is a selection nobody measured; pick deterministically instead and
             # say so in the receipt.
-            winner = football_engine.tiebreak_surface(brier_by_source)
+            winner = surface_mod.tiebreak_surface(brier_by_source)
             surface_resolution = (
                 f"brier_tiebreak_{winner}" if winner else "no_surface_evidence"
             )

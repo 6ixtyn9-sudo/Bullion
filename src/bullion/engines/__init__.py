@@ -253,6 +253,55 @@ def normal_cdf(value: float) -> float:
     return 0.5 * (1.0 + math.erf(value / math.sqrt(2.0)))
 
 
+def normal_ppf(probability: float) -> float:
+    """Inverse standard-normal CDF via bisection (no scipy dependency)."""
+    p = min(max(probability, 1e-6), 1.0 - 1e-6)
+    low, high = -8.0, 8.0
+    for _ in range(80):
+        mid = (low + high) / 2.0
+        if normal_cdf(mid) < p:
+            low = mid
+        else:
+            high = mid
+    return (low + high) / 2.0
+
+
+def residual_sigmas(
+    results: Sequence[Result],
+    ratings: dict,
+    *,
+    reference_day: str,
+    half_life_days: float = 120.0,
+) -> Tuple[float, float]:
+    """Weighted residual std of margin and total, from fitted results.
+
+    Shared by the football and basketball engines: both compare a normal
+    approximation against fitted scoring means, so the sigma estimate has to be
+    the same object. ``half_life_days`` stays a parameter so a lane with a
+    faster schedule cycle can measure its own dispersion without forking the
+    estimator; the football default keeps that lane byte-identical.
+    """
+    rows = [row for row in results if row.day < reference_day]
+    if len(rows) < 20:
+        return 0.0, 0.0
+    margin_residuals: List[float] = []
+    total_residuals: List[float] = []
+    weights: List[float] = []
+    for row in rows:
+        home_rate, away_rate = rates_for(
+            ratings, row.home_id, row.away_id
+        )
+        weights.append(decay_weight(row.day, reference_day, half_life_days))
+        margin_residuals.append(row.margin - (home_rate - away_rate))
+        total_residuals.append(row.total - (home_rate + away_rate))
+    weight_sum = sum(weights)
+    mean_margin = sum(w * r for w, r in zip(weights, margin_residuals)) / weight_sum
+    mean_total = sum(w * r for w, r in zip(weights, total_residuals)) / weight_sum
+    var_margin = sum(w * (r - mean_margin) ** 2 for w, r in zip(weights, margin_residuals)) / weight_sum
+    var_total = sum(w * (r - mean_total) ** 2 for w, r in zip(weights, total_residuals)) / weight_sum
+    return math.sqrt(max(var_margin, 1.0)), math.sqrt(max(var_total, 1.0))
+
+
 def normal_line_probs(mean: float, sigma: float, line: float, side: str) -> Tuple[float, float]:
     """(conditional win probability, push probability) for a quoted line.
 

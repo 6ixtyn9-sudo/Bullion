@@ -96,6 +96,21 @@ CREATE TABLE IF NOT EXISTS forecast_snapshots (
     provenance TEXT NOT NULL DEFAULT 'live'
 );
 CREATE INDEX IF NOT EXISTS forecast_league ON forecast_snapshots (league, observed_day);
+
+-- Which (lane, ET day) scoreboard sweeps are complete. This lives HERE, not in
+-- a committed JSON manifest, because it is resume state for THIS database: the
+-- warehouse is gitignored and restored from an Actions cache, so a manifest in
+-- Git would outlive the DB it describes. A cache eviction would then leave a
+-- fresh empty DB next to a manifest claiming 400 days were already captured,
+-- and the backfill would skip all of them forever while the lane sat at 0
+-- finals. Keeping the two in one file makes them fail together, recoverably.
+CREATE TABLE IF NOT EXISTS scoreboard_backfill_days (
+    league TEXT NOT NULL,
+    et_date TEXT NOT NULL,
+    finals INTEGER NOT NULL DEFAULT 0,
+    captured_utc TEXT NOT NULL,
+    PRIMARY KEY (league, et_date)
+);
 """
 
 
@@ -149,6 +164,48 @@ class Store:
 
     def __exit__(self, *exc: Any) -> None:
         self.close()
+
+    # -- scoreboard backfill resume state ----------------------------------
+    def record_scoreboard_day(self, league: str, et_date: str, finals: int) -> None:
+        """Mark one ``(lane, ET day)`` scoreboard sweep complete.
+
+        Captured ET days are immutable (a final does not un-settle), so this is
+        only ever written for a day strictly before today; today's slate stays
+        refetchable because it is still tipping.
+        """
+        self.conn.execute(
+            """
+            INSERT INTO scoreboard_backfill_days (league, et_date, finals, captured_utc)
+            VALUES (?,?,?,?)
+            ON CONFLICT(league, et_date) DO UPDATE SET
+                finals=excluded.finals,
+                captured_utc=excluded.captured_utc
+            """,
+            (league, et_date, int(finals), now_utc()),
+        )
+        self.conn.commit()
+
+    def scoreboard_day_done(self, league: str, et_date: str) -> bool:
+        row = self.conn.execute(
+            "SELECT 1 FROM scoreboard_backfill_days WHERE league=? AND et_date=?",
+            (league, et_date),
+        ).fetchone()
+        return row is not None
+
+    def scoreboard_days_captured(self, league: str, *, before: str) -> int:
+        """Completed ET days strictly before ``before`` (``YYYYMMDD``)."""
+        row = self.conn.execute(
+            "SELECT COUNT(*) FROM scoreboard_backfill_days WHERE league=? AND et_date<?",
+            (league, before),
+        ).fetchone()
+        return int(row[0]) if row else 0
+
+    def scoreboard_finals_captured(self, league: str) -> int:
+        row = self.conn.execute(
+            "SELECT COALESCE(SUM(finals), 0) FROM scoreboard_backfill_days WHERE league=?",
+            (league,),
+        ).fetchone()
+        return int(row[0]) if row else 0
 
     # -- games -------------------------------------------------------------
     def upsert_game(self, game: Game) -> None:

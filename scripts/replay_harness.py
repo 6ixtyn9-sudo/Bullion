@@ -107,7 +107,13 @@ def parse_variant(raw: Optional[str], base: ReplaySpec) -> ReplaySpec:
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--localdata", default="localdata")
-    parser.add_argument("--lane", default=None, help="comma list of lanes to include")
+    parser.add_argument(
+        "--lane",
+        "--lanes",
+        dest="lane",
+        default=None,
+        help="comma list of lanes to include (e.g. 'nba,ncaa_m,ncaa_w,wnba')",
+    )
     parser.add_argument("--since", default=None)
     parser.add_argument("--until", default=None)
     parser.add_argument("--mode", choices=["per-league", "cross-league"], default="per-league")

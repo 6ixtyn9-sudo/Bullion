@@ -54,6 +54,40 @@ def load_probe(path: Optional[str]) -> Optional[Dict[str, Any]]:
     return json.loads(candidate.read_text(encoding="utf-8"))
 
 
+def _merge_previous_run(path: Path, summary: Dict[str, Any]) -> Dict[str, Any]:
+    """Keep lanes this invocation did not run in ``daily_{day}.json``.
+
+    Two ticks a day with different ``--league`` values (the basketball lanes run
+    on a different cadence) must both survive: overwriting the file would erase
+    the other lanes' tickets for that day, and the day receipt is the only
+    record of what was published. Lanes run now replace their own entry in
+    place; untouched lanes keep their previous entry and position.
+    """
+    if not path.exists():
+        return summary
+    try:
+        previous = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return summary
+    if not isinstance(previous, dict):
+        return summary
+    previous_runs = [
+        run for run in (previous.get("runs") or []) if isinstance(run, dict) and run.get("lane")
+    ]
+    if not previous_runs:
+        return summary
+    fresh = {run["lane"]: run for run in summary.get("runs") or [] if run.get("lane")}
+    merged_runs = [fresh.get(run["lane"], run) for run in previous_runs]
+    seen = {run["lane"] for run in merged_runs}
+    merged_runs.extend(run for run in summary.get("runs") or [] if run.get("lane") not in seen)
+    carried = sorted({run["lane"] for run in previous_runs} - set(fresh))
+    summary["runs"] = merged_runs
+    if carried:
+        summary["carried_over_lanes"] = carried
+        summary["carried_over_generated_utc"] = previous.get("generated_utc")
+    return summary
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--league", default="all", help="lane key, 'soccer', or 'all'")
@@ -199,6 +233,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     }
     out_dir = localdata / "_runs"
     out_dir.mkdir(parents=True, exist_ok=True)
+    summary = _merge_previous_run(out_dir / f"daily_{day}.json", summary)
     (out_dir / f"daily_{day}.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )

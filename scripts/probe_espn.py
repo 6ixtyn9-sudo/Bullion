@@ -55,7 +55,13 @@ from bullion.espn import (  # noqa: E402
     season_events_url,
     summary_url,
 )
-from bullion.models import LEAGUES, Sport, sast_day, to_utc_z  # noqa: E402
+from bullion.models import (  # noqa: E402
+    LEAGUES,
+    Sport,
+    espn_season_keys,
+    sast_day,
+    to_utc_z,
+)
 
 MAX_PATHS = 120
 MARKETS = ("moneyline", "moneyline_draw", "spread", "total")
@@ -462,7 +468,11 @@ def probe_league(
 
 def probe_backfill(client: EspnClient, league, season: int) -> Dict[str, Any]:
     url = season_events_url(league, season, 1)
-    report: Dict[str, Any] = {"url": url, "season": season}
+    report: Dict[str, Any] = {
+        "url": url,
+        "season": season,
+        "season_key_source": "bullion.models.espn_season_keys",
+    }
     try:
         payload = client.get(url)
     except Exception as exc:
@@ -481,6 +491,45 @@ def probe_backfill(client: EspnClient, league, season: int) -> Dict[str, Any]:
         }
     )
     return report
+
+
+def _merge_previous_report(
+    path: Path, report: Dict[str, Any], *, probed: List[str]
+) -> Dict[str, Any]:
+    """Fold this run's lanes into the previous report instead of replacing it.
+
+    Probing a subset (``--leagues basketball``) used to overwrite the file and
+    erase every other lane's captured coverage, which would silently drop those
+    lanes back to ``research_only`` on the next daily run — a coverage file that
+    forgets evidence is worse than no coverage file. Lanes probed now win; every
+    other lane keeps its last captured block verbatim, and the receipt says
+    which lanes came from when.
+    """
+    if not path.exists():
+        report["probed_lanes"] = probed
+        return report
+    try:
+        previous = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        report["probed_lanes"] = probed
+        return report
+    if not isinstance(previous, dict):
+        report["probed_lanes"] = probed
+        return report
+    merged = dict(previous)
+    merged.update(report)
+    merged_leagues = dict(previous.get("leagues") or {})
+    merged_leagues.update(report.get("leagues") or {})
+    merged["leagues"] = merged_leagues
+    merged_backfill = dict(previous.get("backfill") or {})
+    merged_backfill.update(report.get("backfill") or {})
+    merged["backfill"] = merged_backfill
+    merged["probed_lanes"] = probed
+    carried = sorted(set(merged_leagues) - set(probed))
+    if carried:
+        merged["carried_over_lanes"] = carried
+        merged["carried_over_from_utc"] = (previous.get("captured_utc") or previous.get("generated_utc"))
+    return merged
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -509,6 +558,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         leagues = list(LEAGUES.values())
     elif selector == "soccer":
         leagues = [league for league in LEAGUES.values() if league.sport is Sport.SOCCER]
+    elif selector == "basketball":
+        leagues = [league for league in LEAGUES.values() if league.sport is Sport.BASKETBALL]
     else:
         leagues = [LEAGUES[key.strip()] for key in selector.split(",") if key.strip()]
 
@@ -536,7 +587,15 @@ def main(argv: Optional[List[str]] = None) -> int:
             summary_samples=args.summary_samples,
             predictor_samples=args.predictor_samples,
         )
-    report["backfill"] = {league.key: probe_backfill(client, league, season) for league in leagues}
+    # Ask for the season a lane is actually playing: ESPN numbers a straddling
+    # basketball season by the year it ends in, so a raw 2026 in November 2026
+    # probes the finished 2025-26 season and reports on history no lane prices.
+    report["backfill"] = {
+        league.key: probe_backfill(
+            client, league, espn_season_keys(league, [season])[0]
+        )
+        for league in leagues
+    }
     report["warnings"] = [
         "A scoreboard route that resolves does not imply a predictor or pickcenter contract.",
         "Coverage is measured over the probed SAST window only; re-run before enabling a lane.",
@@ -547,6 +606,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     if not out.is_absolute():
         out = ROOT / out
     out.parent.mkdir(parents=True, exist_ok=True)
+    report = _merge_previous_report(out, report, probed=[league.key for league in leagues])
     out.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"wrote {out}")
     return 0

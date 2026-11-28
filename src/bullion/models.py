@@ -12,7 +12,7 @@ import math
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 from zoneinfo import ZoneInfo
 
 SAST = ZoneInfo("Africa/Johannesburg")
@@ -94,6 +94,7 @@ class Sport(str, Enum):
     HOCKEY = "hockey"
     FOOTBALL = "football"
     SOCCER = "soccer"
+    BASKETBALL = "basketball"
 
 
 class Status(str, Enum):
@@ -114,11 +115,25 @@ class League:
     cutoff_hour_sast: int
     requires_named_book: bool = True
     research_only: bool = False
-    #: Whether ESPN exposes a ``/predictor`` (FPI) route for this lane.
+    #: Whether ESPN exposes a ``/predictor`` (FPI/BPI) route for this lane.
     #: LIVE_VERIFIED 2026-11-26: NFL and CFB return a payload; hockey and every
     #: soccer league return ``HTTP 400 Bad Request``, so asking is a wasted
-    #: request and a fake coverage gap.
+    #: request and a fake coverage gap. Basketball routes return a BPI payload;
+    #: whether it carries both sides or one is not assumed (see parse_predictor).
     predictor: bool = False
+    #: Regulation periods when the sport default is wrong for a lane: NCAA men's
+    #: basketball is two 20-minute halves, not four quarters.
+    regulation_periods_override: Optional[int] = None
+    #: ESPN's own numeric league id, used only as a fail-closed identity check
+    #: against a scoreboard payload's ``leagues[]`` block.
+    espn_league_id: Optional[str] = None
+    #: ESPN's ``groups=`` selector. NCAA basketball needs ``50`` (D1) or the
+    #: scoreboard returns every division's games under one league id.
+    scoreboard_groups: Optional[int] = None
+    #: True for leagues whose ESPN season year is the calendar year that starts
+    #: the season (WNBA). False for the straddling US college/pro seasons, whose
+    #: ESPN ``season.year`` is the calendar year the season ENDS in.
+    calendar_year_season: bool = False
 
     @property
     def lane(self) -> str:
@@ -130,7 +145,14 @@ class League:
 
     @property
     def regulation_periods(self) -> int:
-        return {Sport.HOCKEY: 3, Sport.FOOTBALL: 4, Sport.SOCCER: 2}[self.sport]
+        if self.regulation_periods_override is not None:
+            return self.regulation_periods_override
+        return {
+            Sport.HOCKEY: 3,
+            Sport.FOOTBALL: 4,
+            Sport.SOCCER: 2,
+            Sport.BASKETBALL: 4,
+        }[self.sport]
 
     @property
     def has_draw(self) -> bool:
@@ -159,10 +181,81 @@ LEAGUES: Dict[str, League] = {
         League("fra.1", "Ligue 1", Sport.SOCCER, "soccer/fra.1", cutoff_hour_sast=12),
         League("uefa.champions", "UEFA Champions League", Sport.SOCCER, "soccer/uefa.champions",
                cutoff_hour_sast=12),
+        # US basketball. Tips are 19:00-20:00 ET, i.e. 02:00-03:00 SAST on the
+        # SAST day the card belongs to, so the 20:00 SAST cutoff is only ever
+        # pulled *earlier* by the tip-minus-two-hours rule.
+        League(
+            "nba",
+            "NBA",
+            Sport.BASKETBALL,
+            "basketball/nba",
+            cutoff_hour_sast=20,
+            predictor=True,
+            espn_league_id="46",
+        ),
+        League(
+            "ncaa_m",
+            "NCAA Men D1",
+            Sport.BASKETBALL,
+            "basketball/mens-college-basketball",
+            cutoff_hour_sast=20,
+            predictor=True,
+            espn_league_id="41",
+            scoreboard_groups=50,
+            regulation_periods_override=2,
+        ),
+        League(
+            "ncaa_w",
+            "NCAA Women D1",
+            Sport.BASKETBALL,
+            "basketball/womens-college-basketball",
+            cutoff_hour_sast=20,
+            predictor=True,
+            #: Women's D1 is id 54. 42 is the men's NIT-era id some older
+            #: references still carry; using it here would silently probe the
+            #: wrong competition and the identity guard would never fire.
+            espn_league_id="54",
+            scoreboard_groups=50,
+        ),
+        League(
+            "wnba",
+            "WNBA",
+            Sport.BASKETBALL,
+            "basketball/wnba",
+            cutoff_hour_sast=20,
+            predictor=True,
+            espn_league_id="59",
+            calendar_year_season=True,
+        ),
     )
 }
 
 SOCCER_LEAGUES = tuple(key for key, item in LEAGUES.items() if item.sport is Sport.SOCCER)
+BASKETBALL_LEAGUES = tuple(
+    key for key, item in LEAGUES.items() if item.sport is Sport.BASKETBALL
+)
+
+
+def espn_season_keys(league: League, requested) -> List[int]:
+    """ESPN season years to ask for, newest first.
+
+    ESPN numbers a straddling US season by the calendar year it *ends* in, so
+    asking for 2026 in November 2026 returns the 2025-26 season that already
+    finished. Basketball therefore expands each requested year to ``{y, y+1}``
+    so the live season is included; the WNBA and every other lane keep the plain
+    request, because their ``season.year`` is the year they play in.
+
+    Lives here rather than in a script because the backfill and the probe both
+    need it, and a probe that asks for the finished season reports on a season
+    that no lane will price.
+    """
+    years = {int(year) for year in requested}
+    if league.sport is not Sport.BASKETBALL or league.calendar_year_season:
+        return sorted(years, reverse=True)
+    expanded: set = set()
+    for year in years:
+        expanded.update({year, year + 1})
+    return sorted(expanded, reverse=True)
 
 
 def get_league(key: str) -> League:

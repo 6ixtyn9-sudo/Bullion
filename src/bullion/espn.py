@@ -90,8 +90,16 @@ def scoreboard_url(league: League, et_date: str) -> str:
     stamped ``2026-11-06T02:00Z``. Callers must not treat ``dates=`` as UTC.
     """
     sport, slug = league.espn_path.split("/", 1)
-    limit = 500 if league.sport is Sport.FOOTBALL else 100
-    return f"{SITE_BASE}/{sport}/{slug}/scoreboard?dates={et_date}&limit={limit}"
+    # A Saturday NCAA slate is 100+ fixtures across two ET days; the default
+    # 100-event window silently drops the tail, and a dropped fixture is a
+    # missed pre-tip price rather than a visible error.
+    limit = 500 if league.sport in (Sport.FOOTBALL, Sport.BASKETBALL) else 100
+    url = f"{SITE_BASE}/{sport}/{slug}/scoreboard?dates={et_date}&limit={limit}"
+    if league.scoreboard_groups is not None:
+        # NCAA basketball needs groups=50 (D1); without it the same league id
+        # serves every division's games.
+        url += f"&groups={int(league.scoreboard_groups)}"
+    return url
 
 
 def summary_url(league: League, event_id: str) -> str:
@@ -243,6 +251,31 @@ def _state(competition: Dict[str, Any]) -> str:
     return str(nested(competition, "status", "type", "state") or "")
 
 
+def _verify_league_identity(payload: Dict[str, Any], league: League) -> None:
+    """Refuse a payload whose ``leagues[]`` block names a different league.
+
+    A scoreboard URL can resolve to a payload for another competition (ESPN
+    serves ``basketball/womens-college-basketball`` and men's D1 from sibling
+    ids, and a mistyped ``groups=`` returns the wrong division). The check is
+    deliberately contradiction-only: an absent or empty ``leagues[]`` block is
+    not evidence of anything, so it does not raise. Failing on field absence
+    would quarantine every payload that omits an optional block.
+    """
+    expected = league.espn_league_id
+    if expected is None:
+        return
+    identified = {
+        str(entry.get("id"))
+        for entry in (payload.get("leagues") or [])
+        if isinstance(entry, dict) and entry.get("id") is not None
+    }
+    if identified and expected not in identified:
+        raise EspnIdentityError(
+            f"{league.key}: scoreboard payload identifies leagues "
+            f"{sorted(identified)}, expected {expected!r}"
+        )
+
+
 _STATUS = {"pre": Status.SCHEDULED, "in": Status.LIVE, "post": Status.FINAL}
 
 _TEAM_REF_RE = re.compile(r"/teams/(\d+)")
@@ -304,6 +337,7 @@ def parse_scoreboard(
     payload: Dict[str, Any], league: League, observed_utc: str
 ) -> Scoreboard:
     """Parse one scoreboard payload into games plus pre-tip named-book quotes."""
+    _verify_league_identity(payload, league)
     observed = to_utc_z(observed_utc)
     result = Scoreboard()
     seen_events: set[str] = set()
@@ -334,6 +368,85 @@ def parse_scoreboard(
         result.quotes.extend(quotes)
         result.gaps.extend(gaps)
     return result
+
+
+def scoreboard_finals(
+    payload: Dict[str, Any], league: League
+) -> Tuple[List[Game], List[CoverageGap]]:
+    """Official finals straight off a scoreboard payload — nothing else.
+
+    The summary route costs one request per game; a 130-fixture NCAA Saturday
+    needs ~130 of them to learn scores the scoreboard already published. This
+    parser reads the same payload the live scan already fetched and returns
+    **only** ``post`` events: a ``pre``/``in`` event is skipped silently, never
+    returned as a scheduled game, so a caller cannot mistake a fixture for a
+    final.
+
+    Missing ``linescores`` do not disqualify a final. Plenty of ESPN mid-major
+    and small-conference scoreboards publish an official final score with no
+    period breakdown, and discarding those would throw away most of the
+    history the rating fit needs. Period *contradictions* are different: if a
+    non-empty breakdown does not add up to the final, the periods are dropped
+    and a gap is recorded so ``/summary`` can repair it later.
+    """
+    _verify_league_identity(payload, league)
+    games: List[Game] = []
+    gaps: List[CoverageGap] = []
+    seen_events: set[str] = set()
+    for event in payload.get("events") or []:
+        if not isinstance(event, dict) or not event.get("id"):
+            continue
+        event_id = str(event["id"])
+        if event_id in seen_events:
+            continue
+        try:
+            competition = _competition(event)
+        except EspnParseError as exc:
+            gaps.append(CoverageGap(league.key, "competition", str(exc), event_id))
+            continue
+        if _state(competition) != "post":
+            # Pre-tip or in-progress: this function's contract is finals only.
+            continue
+        if is_placeholder(competition):
+            gaps.append(
+                CoverageGap(league.key, "competitor", "unresolved bracket placeholder", event_id)
+            )
+            continue
+        try:
+            game = _game_from_event(event, competition, league)
+            home, away = sides(competition)
+            home_score = _score(home, event_id)
+            away_score = _score(away, event_id)
+        except (EspnIdentityError, EspnParseError, ValueError) as exc:
+            gaps.append(CoverageGap(league.key, "game", str(exc), event_id))
+            continue
+        periods, period_gap = _periods(home, away, league, event_id)
+        if period_gap:
+            gaps.append(period_gap)
+        if periods and (
+            abs(sum(home_period for home_period, _ in periods) - home_score) > 0.5
+            or abs(sum(away_period for _, away_period in periods) - away_score) > 0.5
+        ):
+            gaps.append(
+                CoverageGap(
+                    league.key,
+                    "scoreboard_finals.linescore_mismatch",
+                    "period sum contradicts final score; periods dropped",
+                    event_id,
+                )
+            )
+            periods = ()
+        overtime = max(len(periods) - league.regulation_periods, 0) if periods else 0
+        seen_events.add(event_id)
+        game.status = Status.FINAL
+        game.actual = ActualResult(
+            home_score=home_score,
+            away_score=away_score,
+            periods=periods,
+            overtime_periods=overtime,
+        )
+        games.append(game)
+    return games, gaps
 
 
 def _game_from_event(
@@ -378,6 +491,7 @@ def _quotes_from_event(
     pre_match = game.status is Status.SCHEDULED and (
         parse_utc(observed_utc) < parse_utc(game.scheduled_utc)
     )
+    declared_flags: List[Optional[bool]] = []
     for offer in offers:
         provider = offer.get("provider") or {}
         book = canonical_book(
@@ -395,9 +509,13 @@ def _quotes_from_event(
             "provider": "espn",
             "pre_match": pre_match,
         }
-        market_quotes, market_gaps = _book_market_quotes(offer, common, game.league)
+        market_quotes, market_gaps, market_declared = _book_market_quotes(
+            offer, common, game.league
+        )
         quotes.extend(market_quotes)
         gaps.extend(market_gaps)
+        declared_flags.extend(market_declared)
+    _normalize_main_lines(quotes, declared_flags)
     return quotes, gaps
 
 
@@ -532,18 +650,105 @@ def _is_split_line(line: Optional[float]) -> bool:
     return round(value * 4) % 2 != 0
 
 
+def _declared_main(entry: Dict[str, Any], market: str, sides_wanted: Tuple[str, ...]) -> Optional[bool]:
+    """A provider's own "this is the main line" flag, if it published one.
+
+    ESPN has carried ``main``/``mainLine`` at both the market and the side/phase
+    level across sports. Every shape is read defensively; an absent flag stays
+    absent (``None``) so :func:`_normalize_main_lines` can choose deterministically
+    instead of guessing which of two published lines the provider meant.
+    """
+    if market == "moneyline":
+        return True
+    containers = [entry.get(market)]
+    for container in list(containers):
+        if not isinstance(container, dict):
+            continue
+        for side in sides_wanted:
+            side_block = container.get(side)
+            if not isinstance(side_block, dict):
+                continue
+            containers.append(side_block)
+            for phase in ("close", "open"):
+                phase_block = side_block.get(phase)
+                if isinstance(phase_block, dict):
+                    containers.append(phase_block)
+    for container in containers:
+        if not isinstance(container, dict):
+            continue
+        for key in ("main", "mainLine", "isMain"):
+            if key in container:
+                return bool(container.get(key))
+    return None
+
+
+def _normalize_main_lines(
+    quotes: List["BookQuote"], offers_main_flags: Optional[List[Optional[bool]]] = None
+) -> None:
+    """Exactly one ``main_line=True`` per ``(game, market, book)``.
+
+    Downstream, ``main_line`` decides which single line a college spread/total
+    mean is anchored to, and which line a card shows as the headline price. Two
+    main lines in one group would make that choice depend on payload order.
+
+    Order of preference inside a group: the provider's own declaration, else a
+    deterministic rule (closest handicap to zero for spreads, the middle line
+    for totals). Moneyline quotes carry no line, so every one of them is main.
+    """
+    flags = offers_main_flags or [None] * len(quotes)
+    groups: Dict[Tuple[str, str, str], List[int]] = {}
+    for index, quote in enumerate(quotes):
+        groups.setdefault((quote.game_id, quote.market, quote.book), []).append(index)
+    for (_game_id, market, _book), indexes in groups.items():
+        if market == "moneyline":
+            for index in indexes:
+                quotes[index].main_line = True
+            continue
+        declared = [
+            index
+            for index in indexes
+            if index < len(flags) and flags[index]
+        ]
+        if declared:
+            chosen = declared[0]
+        else:
+            with_lines = [index for index in indexes if quotes[index].line is not None]
+            if not with_lines:
+                for index in indexes:
+                    quotes[index].main_line = False
+                continue
+            if market == "spread":
+                chosen = min(
+                    with_lines,
+                    key=lambda index: (abs(float(quotes[index].line)), float(quotes[index].line)),
+                )
+            else:
+                ordered = sorted(float(quotes[i].line) for i in with_lines)
+                middle = ordered[len(ordered) // 2]
+                chosen = min(
+                    with_lines,
+                    key=lambda index: (abs(float(quotes[index].line) - middle), float(quotes[index].line)),
+                )
+        for index in indexes:
+            quotes[index].main_line = index == chosen
+
+
 def _book_market_quotes(
     entry: Dict[str, Any],
     common: Dict[str, Any],
     league_key: str,
-) -> Tuple[List["BookQuote"], List["CoverageGap"]]:
+) -> Tuple[List["BookQuote"], List["CoverageGap"], List[Optional[bool]]]:
     """Every recognised market in one book entry, under the fail-closed rules.
 
     Shared by the scoreboard ``odds`` path and the summary ``pickcenter`` path
-    so a rule cannot hold on one and silently not on the other.
+    so a rule cannot hold on one and silently not on the other. The third
+    element is the provider's own main-line declaration per emitted quote
+    (``None`` when it published none); callers pass it to
+    :func:`_normalize_main_lines` once the whole payload is parsed.
     """
     quotes: List["BookQuote"] = []
     gaps: List["CoverageGap"] = []
+    declared: List[Optional[bool]] = []
     game_id = str(common.get("game_id") or "")
     three_way = _is_soccer(league_key)
 
@@ -565,7 +770,15 @@ def _book_market_quotes(
     # A soccer moneyline without its draw price is a 2-way (draw-no-bet) price.
     # Grading it as 1X2 would settle level games as losses, so it is not quoted.
     if {"home", "away"} <= set(prices) and not (three_way and "draw" not in prices):
-        quotes.append(BookQuote(**common, market="moneyline", side_prices=prices))
+        quotes.append(
+            BookQuote(
+                **common,
+                market="moneyline",
+                side_prices=prices,
+                main_line=True,
+            )
+        )
+        declared.append(_declared_main(entry, "moneyline", ("home", "away")))
 
     spread_prices, spread_phase = _phased_prices(entry, "pointSpread", ("home", "away"))
     spread_line = _spread_line(entry, spread_phase)
@@ -585,6 +798,7 @@ def _book_market_quotes(
             quotes.append(
                 BookQuote(**common, market="spread", line=spread_line, side_prices=spread_prices)
             )
+            declared.append(_declared_main(entry, "pointSpread", ("home", "away")))
 
     total_prices, total_phase = _phased_prices(entry, "total", ("over", "under"))
     total_line = _total_line(entry, total_phase)
@@ -602,7 +816,8 @@ def _book_market_quotes(
             quotes.append(
                 BookQuote(**common, market="total", line=total_line, side_prices=total_prices)
             )
-    return quotes, gaps
+            declared.append(_declared_main(entry, "total", ("over", "under")))
+    return quotes, gaps, declared
 
 
 def quote_market_presence(quotes: Any) -> set:
@@ -1108,6 +1323,7 @@ def parse_pickcenter(
         return result
     pre_match = state == "pre" and parse_utc(observed_utc) < parse_utc(game.scheduled_utc)
     seen_keys: set[str] = set()
+    declared_flags: List[Optional[bool]] = []
     for entry in entries:
         if not isinstance(entry, dict):
             continue
@@ -1131,9 +1347,15 @@ def parse_pickcenter(
             "provider": "espn",
             "pre_match": pre_match,
         }
-        market_quotes, market_gaps = _book_market_quotes(entry, common, game.league)
+        market_quotes, market_gaps, market_declared = _book_market_quotes(
+            entry, common, game.league
+        )
         result.quotes.extend(market_quotes)
         result.gaps.extend(market_gaps)
+        declared_flags.extend(market_declared)
+    # Normalise across the whole payload, not per entry: two entries for the
+    # same book and market must not both claim to be the main line.
+    _normalize_main_lines(result.quotes, declared_flags)
     result.observed_entry_keys = sorted(seen_keys)
     if not result.quotes:
         result.gaps.append(
