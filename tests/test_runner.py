@@ -530,7 +530,12 @@ def test_pickcenter_only_quotes_reach_scoring_and_price_the_pool(tmp_path):
 
 
 def test_no_slate_run_refreshes_yesterdays_final_and_settles_its_receipt(tmp_path):
-    """Bug 2: the 06:15Z grade cron returned on ``no_slate`` before settling."""
+    """Bug 2: the 06:15Z grade cron returned early before settling.
+
+    The stale game is on the SAST card day and has already tipped, so the run
+    now also records the missed freeze window as a terminal no-bet lock (F3)
+    instead of pretending the day was empty — settlement still happens first.
+    """
     _pending_receipt(tmp_path)
     with Store(tmp_path / "db.sqlite") as store:
         _stale_game(store)
@@ -544,7 +549,10 @@ def test_no_slate_run_refreshes_yesterdays_final_and_settles_its_receipt(tmp_pat
             probe_report=_probe_report(),
         )
         refreshed = store.get_game(STALE_ID)
-    assert run.status == "no_slate"
+    assert run.status == "frozen_no_bet"
+    assert run.reason == "missed_freeze_window"
+    assert any(gap.field == "slate.missed_freeze_window" for gap in run.gaps)
+    assert (tmp_path / "nhl" / f"auto_tickets_{DAY}_no_bet.json").exists()
     assert run.refreshed_finals == 1
     assert refreshed is not None and refreshed.status is Status.FINAL
     assert refreshed.actual is not None and refreshed.actual.home_score == 4.0

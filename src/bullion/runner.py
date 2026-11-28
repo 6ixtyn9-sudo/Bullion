@@ -13,6 +13,7 @@ candidates or a terminal no-bet lock. Neither is ever rotated.
 from __future__ import annotations
 
 import json
+import time
 from dataclasses import dataclass, field, replace
 from datetime import timedelta
 from pathlib import Path
@@ -40,6 +41,7 @@ from .espn import (
 )
 from .models import (
     LEAGUES,
+    ActualResult,
     BookQuote,
     CoverageGap,
     Forecast,
@@ -128,17 +130,31 @@ def select_leagues(selector: str) -> List[League]:
 
 
 def _results(store: Store, league: League, as_of_utc: str) -> List[engines.Result]:
+    """Settled finals with their schedule day, instant and quoted main lines.
+
+    ``day`` and the forecast's ``reference_day`` must use the SAME timezone
+    (``League.schedule_day``), or a Friday-night ET final filed under ET day D
+    reads as "same day" against a Saturday card whose reference day is SAST
+    D+1 — and a night-game back-to-back silently escapes the fatigue penalty.
+    The market lines make the anchored sigma measurable on historical anchored
+    residuals instead of a closed form.
+    """
+    main_lines = store.latest_pre_tip_main_lines(league.key)
     results: List[engines.Result] = []
     for game in store.settled_results(league.key, as_of_utc):
         if game.actual is None:
             continue
+        lines = main_lines.get(game.game_id) or {}
         results.append(
             engines.Result(
                 home_id=game.home_team_id,
                 away_id=game.away_team_id,
                 home_score=game.actual.home_score,
                 away_score=game.actual.away_score,
-                day=sast_day(game.scheduled_utc),
+                day=league.schedule_day(game.scheduled_utc),
+                scheduled_utc=to_utc_z(game.scheduled_utc),
+                market_spread=lines.get("spread"),
+                market_total=lines.get("total"),
             )
         )
     return results
@@ -147,12 +163,30 @@ def _results(store: Store, league: League, as_of_utc: str) -> List[engines.Resul
 def _calibration_book(store: Store, league: League, as_of_utc: str) -> CalibrationBook:
     book = CalibrationBook()
     for row in store.calibration_observations(league.key, as_of_utc):
+        home_score = float(row["home_score"])
+        away_score = float(row["away_score"])
+        overtime_periods = int(row["overtime_periods"] or 0)
+        if league.has_draw and overtime_periods > 0:
+            # Calibration must grade a 3-way market on regulation, exactly as
+            # settlement does; an ET-inclusive score would teach the model a
+            # draw probability it never had the chance to price.
+            periods = tuple(tuple(pair) for pair in json.loads(row["periods_json"] or "[]"))
+            actual = ActualResult(
+                home_score=home_score,
+                away_score=away_score,
+                periods=periods,
+                overtime_periods=overtime_periods,
+            )
+            regulation = actual.regulation_scores()
+            if regulation is None:
+                continue  # fail closed: never calibrate on ET-inclusive scores
+            home_score, away_score = regulation
         outcome = resolve_outcome(
             str(row["market"]),
             str(row["selection"]),
             row["line"],
-            float(row["home_score"]),
-            float(row["away_score"]),
+            home_score,
+            away_score,
             has_draw=league.has_draw,
         )
         if outcome is None:
@@ -278,6 +312,7 @@ def _refresh_recent_finals(
     league: League,
     as_of_utc: str,
     gaps: List[CoverageGap],
+    deadline: Optional[float] = None,
 ) -> int:
     """Re-check recently tipped, still-unsettled games and store their outcome.
 
@@ -319,6 +354,17 @@ def _refresh_recent_finals(
         )
     refreshed = 0
     for game in stale[:REFRESH_MAX_GAMES]:
+        if deadline is not None and time.monotonic() >= deadline:
+            # The queue is newest-first and persists terminal states, so
+            # stopping early only delays the tail; it never corrupts it.
+            gaps.append(
+                CoverageGap(
+                    league.key,
+                    "runner.budget",
+                    "wall-clock deadline reached during finals refresh",
+                )
+            )
+            break
         try:
             payload = client.summary(league, game.game_id)
         except (EspnFetchError, EspnParseError, ValueError) as exc:
@@ -359,7 +405,6 @@ def _forecasts_for_game(
     league: League,
     game: Game,
     results: Sequence[engines.Result],
-    reference_day: str,
     observed_utc: str,
     gaps: List[CoverageGap],
 ) -> List[Forecast]:
@@ -388,6 +433,9 @@ def _forecasts_for_game(
             CoverageGap(league.key, "pickcenter", "no pre-tip quote for forecast", game.game_id)
         )
         return []
+    # Aligned with ``Result.day`` (same timezone per sport), so walk-forward
+    # filters and the fatigue question agree with the ratings fit.
+    reference_day = league.schedule_day(game.scheduled_utc)
     if league.sport is Sport.HOCKEY:
         return nhl_engine.forecast(game, quotes, results=results, reference_day=reference_day)
     if league.sport is Sport.SOCCER:
@@ -451,6 +499,7 @@ def run_lane(
     max_combined_odds: Optional[float] = DEFAULT_MAX_COMBINED_ODDS,
     ranking_metric: str = RANKING_METRIC_KELLY,
     forbid_alt_line_reuse: bool = True,
+    deadline: Optional[float] = None,
 ) -> LaneRun:
     """Run one lane for one SAST day. Freezes only at/after the lane cutoff."""
     as_of = to_utc_z(as_of_utc or now_utc())
@@ -467,7 +516,12 @@ def run_lane(
         raise ValueError("min_legs/max_legs must satisfy 2 <= min <= max <= 6")
     run = LaneRun(lane=league.key, day=day, status="started")
     gaps = run.gaps
-    permission: LanePermission = lane_permission(probe_report, league)
+
+    def _budget_ok() -> bool:
+        """True while wall-clock budget remains (``None`` deadline = unlimited)."""
+        return deadline is None or time.monotonic() < deadline
+
+    permission: LanePermission = lane_permission(probe_report, league, as_of_utc=as_of)
     run.ticket_markets = sorted(permission.ticket_markets)
 
     def finish() -> LaneRun:
@@ -510,7 +564,9 @@ def run_lane(
         store.upsert_game(final_game)
 
     # Yesterday's late finals, refreshed before anything reads ``status='final'``.
-    run.refreshed_finals = _refresh_recent_finals(store, client, league, as_of, gaps)
+    run.refreshed_finals = _refresh_recent_finals(
+        store, client, league, as_of, gaps, deadline=deadline
+    )
 
     results = _results(store, league, as_of)
     scheduled = [
@@ -518,8 +574,20 @@ def run_lane(
         for game in store.games_for_league(league.key, day)
         if game.status is Status.SCHEDULED and parse_utc(game.scheduled_utc) > parse_utc(as_of)
     ]
+    # Today's card as the day itself sees it (an off fixture is not a game that
+    # "tipped"), so a missed freeze window can be told apart from an empty day.
+    day_games = [
+        game
+        for game in store.games_for_league(league.key, day)
+        if game.status not in {Status.CANCELLED, Status.POSTPONED}
+    ]
+    tipped = [game for game in day_games if parse_utc(game.scheduled_utc) <= parse_utc(as_of)]
     forecasts: List[Forecast] = []
+    breached = False
     for game in scheduled:
+        if not _budget_ok():
+            breached = True
+            break
         forecasts.extend(
             _forecasts_for_game(
                 store,
@@ -527,13 +595,26 @@ def run_lane(
                 league,
                 game,
                 results,
-                reference_day=day,
                 observed_utc=as_of,
                 gaps=gaps,
             )
         )
     run.forecasts = len(forecasts)
     store.record_forecasts(forecasts, day)
+    if breached:
+        # Freeze nothing new: a half-forecasted pool must never reach the
+        # cutoff freeze. Settlement still runs in ``finish()`` so yesterday's
+        # positions grade and today's partial evidence is persisted.
+        run.status = "budget_breached"
+        run.reason = "wall-clock deadline reached"
+        gaps.append(
+            CoverageGap(
+                league.key,
+                "runner.budget",
+                "wall-clock deadline reached during forecasting; freezing nothing this tick",
+            )
+        )
+        return finish()
 
     permission_markets = permission.ticket_markets
     ticket_forecasts = [f for f in forecasts if f.market in permission_markets]
@@ -565,6 +646,38 @@ def run_lane(
         else:
             surface_resolution = winner
         if winner is not None:
+            have = {f.market for f in ticket_forecasts if f.source == winner}
+            missing = permission_markets - have
+            if missing:
+                # A surface that wins the ML Brier can still be structurally
+                # unable to price a probe-permitted market (live ncaa_m: BPI
+                # ships prob_home with no expected scores, so it has no total
+                # market at all). Never delete a permitted market silently and
+                # never mix surfaces: demote to the surface that covers more of
+                # the permitted markets, deterministically.
+                alt = (
+                    surface_mod.EMPIRICAL_SOURCE
+                    if winner != surface_mod.EMPIRICAL_SOURCE
+                    else getattr(
+                        surface_mod,
+                        "BPI_SOURCE",
+                        getattr(surface_mod, "FPI_SOURCE", None),
+                    )
+                )
+                alt_have = (
+                    {f.market for f in ticket_forecasts if f.source == alt} if alt else set()
+                )
+                if alt and len(alt_have & permission_markets) > len(have & permission_markets):
+                    gaps.append(
+                        CoverageGap(
+                            league.key,
+                            "surface.market_coverage",
+                            f"{winner} cannot price permitted markets "
+                            f"{sorted(missing)}; demoted to {alt}",
+                        )
+                    )
+                    winner = alt
+                    surface_resolution = f"coverage_demoted_{alt}"
             ticket_forecasts = [f for f in ticket_forecasts if f.source == winner]
     prior_roi = roi_band(settled_pick_history(localdata, league), as_of_day=day)
     scored = score_forecasts(
@@ -603,6 +716,38 @@ def run_lane(
     cutoff = decision_cutoff(league, day, tips)
     run.cutoff_utc = cutoff
     if cutoff is None:
+        decision_path = localdata / league.lane / f"auto_tickets_{day}_decision.json"
+        no_bet_path = localdata / league.lane / f"auto_tickets_{day}_no_bet.json"
+        if day_games and tipped and not decision_path.exists() and not no_bet_path.exists():
+            # The freeze window was missed entirely (a weekend tick gap). A
+            # partial card must never freeze silently, and the day must not
+            # vanish as "no_slate" either: freeze a terminal no-bet lock, which
+            # still contributes its graded pool to prior_roi evidence.
+            gaps.append(
+                CoverageGap(
+                    league.key,
+                    "slate.missed_freeze_window",
+                    f"{len(tipped)} of {len(day_games)} day games tipped before any "
+                    "scan reached the cutoff; freezing a terminal no-bet lock",
+                )
+            )
+            freeze_receipt(
+                localdata,
+                league=league,
+                day=day,
+                captured_utc=as_of,
+                candidate_pool=[],
+                accas=[],
+                decision_state={
+                    "status": "frozen_no_bet",
+                    "captured_utc": as_of,
+                    "reason": "missed_freeze_window",
+                },
+                reason="missed_freeze_window",
+            )
+            run.status = "frozen_no_bet"
+            run.reason = "missed_freeze_window"
+            return finish()
         run.status = "no_slate"
         run.reason = "no scheduled fixtures on the requested day"
         return finish()
@@ -610,6 +755,18 @@ def run_lane(
         run.status = "pre_cutoff_scan"
         run.reason = f"decision cutoff {cutoff} not reached; scan only"
         return finish()
+
+    if scheduled and tipped:
+        # Part of today's card tipped before this scan reached the cutoff, so
+        # those games' lines are unusable post-tip. Do not nuke the rest of the
+        # live slate — make the shortfall visible instead.
+        gaps.append(
+            CoverageGap(
+                league.key,
+                "slate.tipped_before_freeze",
+                f"{len(tipped)} of {len(day_games)} day games tipped before freeze",
+            )
+        )
 
     selection_policy = {
         "requested_legs": eff_max_legs,
@@ -643,6 +800,10 @@ def run_lane(
         "paper_only": True,
         "stake_units_per_acca": 1.0,
     }
+    if basketball_engine.POSTED_LINE_MODEL_WEIGHTS.get(league.key) is not None:
+        # Recorded on the receipt so a later reader can tell which dispersion
+        # estimator priced this ladder; parity ignores unknown policy keys.
+        selection_policy["sigma_model"] = "anchored_orthogonal_v1"
     decision_state = {
         "status": "frozen" if tickets else "frozen_no_bet",
         "planned_cutoff_utc": cutoff,

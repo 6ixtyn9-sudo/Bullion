@@ -43,6 +43,7 @@ import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
+from datetime import timedelta
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from .models import (
@@ -178,7 +179,20 @@ def http_fetch(url: str, *, timeout: float = 20.0, retries: int = 3) -> Any:
         except RETRYABLE_FETCH_ERRORS as exc:
             last_error = exc
             if attempt < retries:
-                time.sleep(1.5 * (attempt + 1))
+                delay = 1.5 * (attempt + 1)
+                if isinstance(exc, urllib.error.HTTPError) and exc.code == 429:
+                    # A 429 carries its own pacing. Honour it (clamped) instead of
+                    # blindly sleeping 1.5s and making the throttle worse.
+                    try:
+                        retry_after = exc.headers.get("Retry-After")
+                    except AttributeError:
+                        retry_after = None
+                    try:
+                        delay = min(max(float(retry_after), 1.0), 30.0)
+                    except (TypeError, ValueError):
+                        delay = 30.0
+                    exc.close()
+                time.sleep(delay)
     raise EspnFetchError(f"{url}: {last_error}") from last_error
 
 
@@ -202,6 +216,20 @@ class EspnClient:
 
     def predictor(self, league: League, event_id: str) -> Dict[str, Any]:
         return self.get(predictor_url(league, event_id))
+
+    @classmethod
+    def live(cls, *, timeout: float = 12.0, retries: int = 2) -> "EspnClient":
+        """Client for a scheduled tick: a tighter budget than the backfill.
+
+        Worst case per dead call is ``12s*3 + 1.5s + 3s ~= 40s`` (vs ~80s at the
+        backfill defaults), which keeps a degraded-ESPN day inside the job's
+        wall clock instead of losing the cache save and the commit.
+        """
+
+        def fetch(url: str) -> Any:
+            return http_fetch(url, timeout=timeout, retries=retries)
+
+        return cls(fetch=fetch)
 
 
 # ---------------------------------------------------------------------------
@@ -1438,6 +1466,10 @@ def parse_pickcenter(
 
 PROBE_SCHEMA = "bullion.espn_probe"
 PROBE_MIN_COVERAGE = 0.5
+#: A probe older than this stops granting ticketing permission (fail closed).
+#: The probe workflow refreshes it Mon/Thu, so a healthy lane never trips this;
+#: a lane whose evidence lapsed stops ticketing instead of quoting week-old books.
+PROBE_MAX_AGE_HOURS = 168.0
 #: Minimum pre-match events behind a coverage number before it may gate tickets.
 PROBE_MIN_SAMPLE = 3
 
@@ -1472,7 +1504,13 @@ def _coverage_status(entry: Dict[str, Any]) -> Tuple[Optional[float], str]:
     return float(coverage), "ok"
 
 
-def lane_permission(report: Optional[Dict[str, Any]], league: League) -> LanePermission:
+def lane_permission(
+    report: Optional[Dict[str, Any]],
+    league: League,
+    *,
+    as_of_utc: Optional[str] = None,
+    max_age_hours: float = PROBE_MAX_AGE_HOURS,
+) -> LanePermission:
     """Fail closed unless a real probe report proves named-book coverage.
 
     A lane with no captured probe is not "probably fine" -- it is unverified,
@@ -1492,10 +1530,29 @@ def lane_permission(report: Optional[Dict[str, Any]], league: League) -> LanePer
         return LanePermission(frozenset(), True, "espn_probe_schema_mismatch")
     if report.get("mode") != "live":
         return LanePermission(frozenset(), True, "espn_probe_not_live")
-    entry = (report.get("leagues") or {}).get(league.key)
-    if not isinstance(entry, dict):
+    raw_entry = (report.get("leagues") or {}).get(league.key)
+    entry = raw_entry if isinstance(raw_entry, dict) else {}
+    # Per-league timestamp WINS, with the file stamp only as fallback. Never take
+    # max(report, entry): a subset probe for ncaa_w would otherwise mask a stale
+    # nhl entry whose own captured_utc is two weeks old.
+    captured = str(entry.get("captured_utc") or report.get("captured_utc") or "")
+    if as_of_utc is not None:
+        stale = True
+        if captured:
+            try:
+                age = parse_utc(as_of_utc) - parse_utc(captured)
+                # A future stamp is a corrupt stamp, not fresh evidence.
+                stale = age > timedelta(hours=max_age_hours) or age.total_seconds() < 0
+            except (ValueError, TypeError, OverflowError):
+                stale = True  # unparseable stamp: fail closed
+        if stale:
+            return LanePermission(
+                frozenset(), True, "espn_probe_stale", captured_utc=captured
+            )
+    # ``as_of_utc is None`` (offline tests and fixtures): no age check, so a
+    # committed historical probe never time-bombs in a future month.
+    if not isinstance(raw_entry, dict):
         return LanePermission(frozenset(), True, "espn_probe_league_missing")
-    captured = str(report.get("captured_utc") or "")
     coverage = (entry.get("coverage") or {}).get("named_book_pre_tip") or {}
     markets: set[str] = set()
     evidence: Dict[str, Any] = {}
