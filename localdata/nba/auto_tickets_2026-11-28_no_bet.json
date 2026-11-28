@@ -1,0 +1,20 @@
+{
+  "candidate_pool": [],
+  "captured_at": "2026-11-28T10:45:58Z",
+  "date": "2026-11-28",
+  "decision_id": "4c18f5c78f3bf25ae217",
+  "frozen_at": "2026-11-28T10:45:58Z",
+  "league": "NBA",
+  "paper_only": true,
+  "positions": [],
+  "reason": "missed_freeze_window",
+  "schema_version": "magolide.no_bet_decision",
+  "selection_policy": {},
+  "status": "frozen_no_bet",
+  "target_date": "2026-11-28",
+  "ticket_decision": {
+    "captured_utc": "2026-11-28T10:45:58Z",
+    "reason": "missed_freeze_window",
+    "status": "frozen_no_bet"
+  }
+}

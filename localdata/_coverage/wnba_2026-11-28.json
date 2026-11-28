@@ -9,7 +9,7 @@
     "min_roi_samples": 5,
     "require_named_book": true
   },
-  "generated_utc": "2026-11-28T10:16:21Z",
+  "generated_utc": "2026-11-28T10:47:01Z",
   "run": {
     "candidate_pool": 0,
     "cutoff_utc": null,

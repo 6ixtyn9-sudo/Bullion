@@ -1,10 +1,23 @@
 {
-  "generated_utc": "2026-11-28T10:16:21Z",
+  "carried_over_generated_utc": "2026-11-28T10:16:21Z",
+  "carried_over_lanes": [
+    "cfb",
+    "eng.1",
+    "esp.1",
+    "fra.1",
+    "ger.1",
+    "ita.1",
+    "nfl",
+    "nhl",
+    "uefa.champions"
+  ],
+  "generated_utc": "2026-11-28T10:47:01Z",
+  "max_seconds": 2400.0,
   "probe_report_used": true,
   "rehydrated": {
-    "files": 9,
+    "files": 14,
     "restored": 0,
-    "rows": 199,
+    "rows": 332,
     "skipped": 0
   },
   "runs": [
@@ -481,13 +494,19 @@
           "game_id": "401909336",
           "league": "nba",
           "reason": "no odds offers on event"
+        },
+        {
+          "field": "slate.missed_freeze_window",
+          "game_id": "",
+          "league": "nba",
+          "reason": "11 of 11 day games tipped before any scan reached the cutoff; freezing a terminal no-bet lock"
         }
       ],
       "lane": "nba",
-      "reason": "no scheduled fixtures on the requested day",
+      "reason": "missed_freeze_window",
       "receipt_path": null,
       "refreshed_finals": 0,
-      "status": "no_slate",
+      "status": "frozen_no_bet",
       "ticket_markets": [
         "moneyline",
         "spread",
@@ -2677,11 +2696,11 @@
   "sast_day": "2026-11-28",
   "schema_version": "bullion.daily_run",
   "seeded_ml": {
-    "fit_seconds": 0.0,
+    "fit_seconds": 7.18,
     "lanes": {
       "cfb": {
         "inserted": 0,
-        "matchdays_below_min_history": 6,
+        "matchdays_below_min_history": 4,
         "matchdays_scored": 0,
         "refit_cadence_days": 1,
         "refit_days_sample": [],
@@ -2734,31 +2753,58 @@
         "rows": 0
       },
       "nba": {
-        "inserted": 0,
+        "inserted": 3290,
         "matchdays_below_min_history": 2,
-        "matchdays_scored": 0,
+        "matchdays_scored": 259,
         "refit_cadence_days": 7,
-        "refit_days_sample": [],
-        "refits": 0,
-        "rows": 0
+        "refit_days_sample": [
+          "2025-10-26",
+          "2025-10-31",
+          "2025-11-07",
+          "2025-11-14",
+          "2025-11-21",
+          "2025-11-29",
+          "2025-12-06",
+          "2025-12-13"
+        ],
+        "refits": 38,
+        "rows": 3290
       },
       "ncaa_m": {
-        "inserted": 0,
-        "matchdays_below_min_history": 2,
-        "matchdays_scored": 0,
+        "inserted": 15314,
+        "matchdays_below_min_history": 1,
+        "matchdays_scored": 173,
         "refit_cadence_days": 7,
-        "refit_days_sample": [],
-        "refits": 0,
-        "rows": 0
+        "refit_days_sample": [
+          "2025-11-04",
+          "2025-11-10",
+          "2025-11-17",
+          "2025-11-24",
+          "2025-12-01",
+          "2025-12-08",
+          "2025-12-15",
+          "2025-12-22"
+        ],
+        "refits": 25,
+        "rows": 15314
       },
       "ncaa_w": {
-        "inserted": 0,
+        "inserted": 14730,
         "matchdays_below_min_history": 1,
-        "matchdays_scored": 0,
+        "matchdays_scored": 172,
         "refit_cadence_days": 7,
-        "refit_days_sample": [],
-        "refits": 0,
-        "rows": 0
+        "refit_days_sample": [
+          "2025-11-04",
+          "2025-11-10",
+          "2025-11-17",
+          "2025-11-24",
+          "2025-12-01",
+          "2025-12-08",
+          "2025-12-15",
+          "2025-12-22"
+        ],
+        "refits": 25,
+        "rows": 14730
       },
       "nfl": {
         "inserted": 0,
@@ -2779,15 +2825,24 @@
         "rows": 0
       },
       "wnba": {
-        "inserted": 0,
+        "inserted": 712,
         "matchdays_below_min_history": 8,
-        "matchdays_scored": 0,
+        "matchdays_scored": 128,
         "refit_cadence_days": 7,
-        "refit_days_sample": [],
-        "refits": 0,
-        "rows": 0
+        "refit_days_sample": [
+          "2026-05-08",
+          "2026-05-15",
+          "2026-05-23",
+          "2026-05-31",
+          "2026-06-07",
+          "2026-06-14",
+          "2026-06-21",
+          "2026-06-28"
+        ],
+        "refits": 19,
+        "rows": 712
       }
     },
-    "seconds": 0.32
+    "seconds": 8.01
   }
 }

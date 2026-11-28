@@ -9,7 +9,7 @@
     "min_roi_samples": 5,
     "require_named_book": true
   },
-  "generated_utc": "2026-11-28T10:15:33Z",
+  "generated_utc": "2026-11-28T10:46:00Z",
   "run": {
     "candidate_pool": 0,
     "cutoff_utc": null,
@@ -83,13 +83,19 @@
         "game_id": "401909336",
         "league": "nba",
         "reason": "no odds offers on event"
+      },
+      {
+        "field": "slate.missed_freeze_window",
+        "game_id": "",
+        "league": "nba",
+        "reason": "11 of 11 day games tipped before any scan reached the cutoff; freezing a terminal no-bet lock"
       }
     ],
     "lane": "nba",
-    "reason": "no scheduled fixtures on the requested day",
+    "reason": "missed_freeze_window",
     "receipt_path": null,
     "refreshed_finals": 0,
-    "status": "no_slate",
+    "status": "frozen_no_bet",
     "ticket_markets": [
       "moneyline",
       "spread",
