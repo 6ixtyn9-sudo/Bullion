@@ -1,20 +1,14 @@
-# Copy this whole file to .github/workflows/probe_espn.yml
+# Live ESPN probe workflow for Bullion.
 #
-# Arena's GitHub App token cannot push workflow files, so this copy lives in
-# docs/workflows/. Paste it into .github/workflows/probe_espn.yml on GitHub.
-#
-# Purpose: capture REAL live ESPN payload facts for NHL, NFL, CFB and the Top-6
-# soccer lanes, then commit them so parsers are checked against evidence instead
-# of assumptions. Run this FIRST, inspect the JSON, then enable daily.
-#
-# What it records per lane: the ET dates requested, event state histogram,
-# scoreboard odds offers/books, summary `pickcenter` parses, coverage with an
-# explicit sample size and status, /predictor payload shape (captured even when
-# the parser rejects it), and the core season-index ref ids.
+# Purpose: capture REAL live ESPN payload facts for all lanes (NHL, NFL, CFB,
+# Top-6 soccer, and US basketball: NBA, NCAA M, NCAA W, WNBA), then commit them
+# so parsers and lane permissions are backed by evidence instead of assumptions.
+# Subset runs (e.g. `leagues: basketball`) merge into espn_probe_latest.json
+# without erasing other lanes' captured coverage.
 #
 # Deliberately NOT here: any claim that a route resolving means a market is
 # priced. A window with no upcoming fixture reports status "no_pre_match_events"
-# and leaves every lane in research_only.
+# and leaves that lane in research_only.
 
 name: probe-espn
 
@@ -30,7 +24,7 @@ on:
         required: false
         default: "2"
       leagues:
-        description: "Lane keys comma list, 'soccer', or 'all'."
+        description: "Lane keys comma list, 'soccer', 'basketball', or 'all'."
         required: false
         default: "all"
       season:
@@ -89,6 +83,11 @@ jobs:
           report = json.load(open("localdata/_probes/espn_probe_latest.json"))
           print("captured_utc:", report.get("captured_utc"))
           print("sast_days:   ", report.get("sast_days") or report.get("sast_day"))
+          if report.get("probed_lanes"):
+              print("probed_lanes:", report.get("probed_lanes"))
+          if report.get("carried_over_lanes"):
+              print("carried_over:", report.get("carried_over_lanes"),
+                    "from", report.get("carried_over_from_utc"))
           print()
           for key, entry in report["leagues"].items():
               parts = []
@@ -109,7 +108,10 @@ jobs:
                         "predictor=" + str(sum(1 for row in fp if row["has_predictor"])),
                         "| predictor attempts=" + str(entry["predictor"]["attempts"]))
           print()
-          print("backfill:", {k: v.get("count") for k, v in report.get("backfill", {}).items()})
+          print("backfill:", {
+              f"{k}({v.get('season')})": v.get("count")
+              for k, v in report.get("backfill", {}).items()
+          })
           print()
           print("A percentage only means something when status is 'ok' and pre >= 3.")
           print("status 'no_pre_match_events' means: re-probe with a fixture window.")
@@ -125,11 +127,17 @@ jobs:
             exit 0
           fi
           git commit -m "probe: live ESPN evidence $(date -u +%Y-%m-%dT%H:%MZ)"
+          pushed=0
           for attempt in 1 2 3; do
             git pull --rebase origin main
             if git push; then
+              pushed=1
               break
             fi
             echo "push rejected; rebasing and retrying (attempt ${attempt})"
             sleep 10
           done
+          if [ "${pushed}" -ne 1 ]; then
+            echo "::error::probe push failed after 3 attempts"
+            exit 1
+          fi
