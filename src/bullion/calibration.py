@@ -12,7 +12,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
-CALIBRATION_VERSION = "platt-walkforward-v1"
+CALIBRATION_VERSION = "platt-walkforward"
 DEFAULT_MIN_SAMPLES = 30
 DEFAULT_BRIER_CAP_2WAY = 0.25
 DEFAULT_BRIER_CAP_3WAY = 0.22
