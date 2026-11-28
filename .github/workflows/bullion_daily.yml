@@ -3,15 +3,16 @@
 # or silently drops scheduled ticks. Instead, an external scheduler posts a
 # `repository_dispatch` event with `event_type: "bullion-scheduled-tick"`.
 #
-# Recommended external trigger times (UTC / SAST = UTC+2):
-#   06:15Z = 08:15 SAST -> overnight US finals refresh + grading
-#   10:05Z = 12:05 SAST -> after 12:00 SAST Top-6 Soccer cutoff
-#   14:15Z = 16:15 SAST -> after 16:00 SAST NFL/CFB/NHL cutoff
-#   15:10Z = 17:10 SAST -> basketball noon ET matinees (12:00 EST / 13:00 EDT)
-#   21:15Z = 23:15 SAST -> EU soccer grading + basketball D+1 early ET (17:00-18:15 EST / 18:00-19:15 EDT)
-#   22:15Z = 00:15 SAST -> basketball prime ET slate (18:30-19:15 EST / 19:30-20:15 EDT)
-#   23:15Z = 01:15 SAST -> basketball late ET slate (19:30-20:15 EST / 20:30-21:15 EDT)
-# Optional: 18:15Z = 20:15 SAST -> weekend 15:00-16:30 EST NCAA afternoon matinees
+# External scheduler (cron-job.org, Africa/Johannesburg SAST = UTC+2):
+#   00:15 SAST (22:15Z) -> basketball prime ET slate (18:30-19:15 EST / 19:30-20:15 EDT)
+#   01:15 SAST (23:15Z) -> basketball late ET slate (19:30-20:15 EST / 20:30-21:15 EDT)
+#   08:15 SAST (06:15Z) -> overnight US finals refresh + grading
+#   12:15 SAST (10:15Z) -> after 12:00 SAST Top-6 Soccer cutoff
+#   16:15 SAST (14:15Z) -> after 16:00 SAST NFL/CFB/NHL cutoff
+#   17:15 SAST (15:15Z) -> basketball noon ET matinees (12:00 EST / 13:00 EDT)
+#   19:15 SAST (17:15Z) -> weekend 13:00-14:30 EST matinees (closes 20:00 SAST drop window)
+#   21:15 SAST (19:15Z) -> weekend 15:00-16:30 EST matinees + early basketball D+1 pre-cutoff
+#   23:15 SAST (21:15Z) -> EU soccer grading + basketball D+1 early ET (17:00-18:15 EST)
 # (Runs are idempotent and write-once at cutoff.)
 
 name: bullion-daily
@@ -58,7 +59,7 @@ jobs:
           python-version: "3.11"
 
       - name: Restore SQLite warehouse
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: localdata/bullion.db
           key: bullion-db-v1-${{ github.run_id }}
@@ -71,44 +72,55 @@ jobs:
           python3 -m pip install -e ".[dev]"
 
       - name: Probe evidence status
+        env:
+          AS_OF: ${{ github.event.client_payload.as_of || inputs.as_of }}
         run: |
           python3 - <<'PY'
           import json
+          import os
           import pathlib
           from bullion.espn import lane_permission
-          from bullion.models import LEAGUES
+          from bullion.models import LEAGUES, now_utc
 
           path = pathlib.Path("localdata/_probes/espn_probe_latest.json")
           if not path.exists():
               print("::warning::no committed probe report: every lane is research_only")
               raise SystemExit(0)
           report = json.loads(path.read_text())
+          as_of = os.environ.get("AS_OF") or now_utc()
           print("probe captured:", report.get("captured_utc"),
+                "| as_of:", as_of,
                 "| window:", report.get("sast_days") or report.get("sast_day"))
           for key, league in LEAGUES.items():
-              permission = lane_permission(report, league)
+              permission = lane_permission(report, league, as_of_utc=as_of)
               mode = "research_only" if permission.research_only else "tickets"
               markets = ",".join(sorted(permission.ticket_markets)) or "-"
-              print(key.ljust(16), mode.ljust(14), permission.reason, "markets=" + markets)
+              print(key.ljust(16), mode.ljust(14), permission.reason,
+                    "captured=" + (permission.captured_utc or "-"),
+                    "markets=" + markets)
           PY
 
       - name: Bounded backfill (only when the warehouse is cold)
+        id: cold_backfill
         env:
-          LEAGUE: ${{ inputs.league }}
+          LEAGUE: ${{ github.event.client_payload.league || inputs.league }}
         run: |
           if [ -f localdata/bullion.db ]; then
             echo "Warehouse restored from cache; skipping backfill."
+            echo "ran=false" >> "$GITHUB_OUTPUT"
           else
             python3 scripts/backfill.py \
               --league "${LEAGUE:-all}" \
               --seasons 2024,2025,2026 \
               --max-events 250 \
               --max-seconds 1200
+            echo "ran=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Basketball scoreboard backfill (cold lanes only)
+        id: bball_backfill
         env:
-          LEAGUE: ${{ inputs.league }}
+          LEAGUE: ${{ github.event.client_payload.league || inputs.league }}
         run: |
           LANES=$(LEAGUE="${LEAGUE:-all}" python3 - <<'PY'
           import importlib.util
@@ -139,27 +151,58 @@ jobs:
           )
           if [ -z "${LANES}" ]; then
             echo "all requested basketball lanes are warm or fully swept; nothing to backfill"
+            echo "ran=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           echo "cold basketball lanes: ${LANES}"
           python3 scripts/backfill.py --league "${LANES}" --days-back 400 --max-seconds 600
+          echo "ran=true" >> "$GITHUB_OUTPUT"
+
+      - name: Warehouse integrity gate (post-backfill)
+        if: always() && (steps.cold_backfill.outputs.ran == 'true' || steps.bball_backfill.outputs.ran == 'true')
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, shutil, sqlite3
+          p = pathlib.Path("localdata/bullion.db")
+          if not p.exists():
+              print("no warehouse present; nothing to gate")
+              raise SystemExit(0)
+          try:
+              con = sqlite3.connect(f"file:{p}?mode=ro", uri=True)
+              ok = con.execute("PRAGMA quick_check").fetchone()[0]
+              con.close()
+          except sqlite3.DatabaseError as exc:
+              ok = f"unopenable: {exc}"
+          print("quick_check:", ok)
+          if ok != "ok":
+              shutil.move(str(p), f"/tmp/bullion.db.corrupt-{os.environ.get('GITHUB_RUN_ID', 'unknown')}")
+              print("::warning::corrupt warehouse quarantined to /tmp; next run cold-rebuilds")
+          raise SystemExit(0)
+          PY
+
+      - name: Save warehouse checkpoint (post-backfill, cold runs only)
+        if: always() && (steps.cold_backfill.outputs.ran == 'true' || steps.bball_backfill.outputs.ran == 'true') && hashFiles('localdata/bullion.db') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: localdata/bullion.db
+          key: bullion-db-v1-${{ github.run_id }}-backfill
 
       - name: Run daily lanes
         env:
-          LEAGUE: ${{ inputs.league }}
-          DAY: ${{ inputs.date }}
-          AS_OF: ${{ inputs.as_of }}
+          LEAGUE: ${{ github.event.client_payload.league || inputs.league }}
+          DAY: ${{ github.event.client_payload.date || inputs.date }}
+          AS_OF: ${{ github.event.client_payload.as_of || inputs.as_of }}
         run: |
-          ARGS=(--league "${LEAGUE:-all}")
+          ARGS=(--league "${LEAGUE:-all}" --max-seconds 2400)
           if [ -n "${DAY}" ]; then ARGS+=(--date "${DAY}"); fi
           if [ -n "${AS_OF}" ]; then ARGS+=(--as-of "${AS_OF}"); fi
           python3 scripts/daily.py "${ARGS[@]}"
 
       - name: Run basketball lanes for the next SAST day
-        if: ${{ inputs.date == '' }}
+        if: ${{ (github.event.client_payload.date || inputs.date) == '' }}
         env:
-          LEAGUE: ${{ inputs.league }}
-          AS_OF: ${{ inputs.as_of }}
+          LEAGUE: ${{ github.event.client_payload.league || inputs.league }}
+          AS_OF: ${{ github.event.client_payload.as_of || inputs.as_of }}
         run: |
           # Early ET evening tips (17:00-18:15 EST / 18:00-19:15 EDT) fall on
           # the NEXT SAST day (00:00-01:15 SAST D+1) while their tip-120m cutoff
@@ -199,7 +242,7 @@ jobs:
             echo "outside pre-midnight SAST next-day window; skipping duplicate next-day run"
             exit 0
           fi
-          ARGS=(--league "${BASKETBALL_LANES}" --date "${TARGET}")
+          ARGS=(--league "${BASKETBALL_LANES}" --date "${TARGET}" --max-seconds 1200)
           if [ -n "${AS_OF}" ]; then ARGS+=(--as-of "${AS_OF}"); fi
           python3 scripts/daily.py "${ARGS[@]}"
 
@@ -213,6 +256,35 @@ jobs:
 
       - name: Replay parity gate (exits 1 on a frozen-price mismatch)
         run: python3 scripts/replay_harness.py --parity
+
+      - name: Warehouse integrity gate (final)
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, shutil, sqlite3
+          p = pathlib.Path("localdata/bullion.db")
+          if not p.exists():
+              print("no warehouse present; nothing to gate")
+              raise SystemExit(0)
+          try:
+              con = sqlite3.connect(f"file:{p}?mode=ro", uri=True)
+              ok = con.execute("PRAGMA quick_check").fetchone()[0]
+              con.close()
+          except sqlite3.DatabaseError as exc:
+              ok = f"unopenable: {exc}"
+          print("quick_check:", ok)
+          if ok != "ok":
+              shutil.move(str(p), f"/tmp/bullion.db.corrupt-{os.environ.get('GITHUB_RUN_ID', 'unknown')}")
+              print("::warning::corrupt warehouse quarantined to /tmp; next run cold-rebuilds")
+          raise SystemExit(0)
+          PY
+
+      - name: Save warehouse (final)
+        if: always() && hashFiles('localdata/bullion.db') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: localdata/bullion.db
+          key: bullion-db-v1-${{ github.run_id }}
 
       - name: Commit localdata artifacts (never the SQLite warehouse)
         run: |
