@@ -1,22 +1,27 @@
 # Bullion
 
-Lean, zero-bloat, ESPN-native quantitative paper-ticket engine for the nine
-non-basketball ESPN sports `Ma_Golide_Satellites` cannot cover, plus the four US
-basketball lanes:
+Lean, zero-bloat, ESPN-native quantitative paper-ticket engine covering **13
+lanes across four sports**: Hockey, American Football, Top-6 Soccer, and US
+Basketball.
 
-| Lane | ESPN path | Markets | Publication cutoff (SAST) |
-|---|---|---|---|
-| `nhl` | `hockey/nhl` | 2-way ML incl. OT/SO, ±1.5 puckline, O/U totals | 16:00, bounded by earliest tip − 120m |
-| `nfl` | `football/nfl` | 2-way ML, spread, total | 16:00, bounded by earliest tip − 120m |
-| `cfb` | `football/college-football` | 2-way ML, spread, total | 16:00, bounded by earliest tip − 120m |
-| `eng.1` `esp.1` `ger.1` `ita.1` `fra.1` `uefa.champions` | `soccer/<slug>` | 3-way 1X2, O/U totals, spreads when quoted | 12:00, bounded by earliest kickoff − 120m |
-| `nba` | `basketball/nba` | 2-way ML, spread, total | 20:00, bounded by earliest tip − 120m |
-| `ncaa_m` | `basketball/mens-college-basketball` (`groups=50`) | 2-way ML, spread, total | 20:00, bounded by earliest tip − 120m |
-| `ncaa_w` | `basketball/womens-college-basketball` (`groups=50`) | 2-way ML, spread, total | 20:00, bounded by earliest tip − 120m |
-| `wnba` | `basketball/wnba` | 2-way ML, spread, total | 20:00, bounded by earliest tip − 120m |
+| Sport | Lane | ESPN path | Markets | Publication cutoff (SAST) |
+|---|---|---|---|---|
+| Hockey | `nhl` | `hockey/nhl` | 2-way ML incl. OT/SO, ±1.5 puckline, O/U totals | 16:00, bounded by earliest tip − 120m |
+| Football | `nfl` | `football/nfl` | 2-way ML, spread, total | 16:00, bounded by earliest tip − 120m |
+| Football | `cfb` | `football/college-football` | 2-way ML, spread, total | 16:00, bounded by earliest tip − 120m |
+| Soccer | `eng.1` `esp.1` `ger.1` `ita.1` `fra.1` `uefa.champions` | `soccer/<slug>` | 3-way 1X2, O/U totals, spreads when quoted | 12:00, bounded by earliest kickoff − 120m |
+| Basketball | `nba` | `basketball/nba` | 2-way ML, spread, total | 20:00, bounded by earliest tip − 120m |
+| Basketball | `ncaa_m` | `basketball/mens-college-basketball` (`groups=50`) | 2-way ML, spread, total | 20:00, bounded by earliest tip − 120m |
+| Basketball | `ncaa_w` | `basketball/womens-college-basketball` (`groups=50`) | 2-way ML, spread, total | 20:00, bounded by earliest tip − 120m |
+| Basketball | `wnba` | `basketball/wnba` | 2-way ML, spread, total | 20:00, bounded by earliest tip − 120m |
 
-The US basketball tips land in the SAST small hours, so `20:00` on the fixture's
-SAST day is the last tick before a normal ET evening slate starts.
+The basketball cutoff has two jobs, because a US slate spans two SAST days.
+Overnight ET evening tips (19:00–22:00 EST = `00:00–05:00 SAST` on the next SAST
+day) are bounded by `earliest tip − 120m`, which lands them at **`20:00Z–23:00Z`
+(`22:00–01:00 SAST`)** — the freeze happens before midnight, on the SAST day the
+fixture is filed under. The `20:00 SAST` cap then bounds ET afternoon matinees
+(12:00–16:30 EST), which do fall on the same SAST day and must not wait for the
+evening window.
 
 Everything is paper-only: 1.00u per position, no real money, no claims of edge
 before 30 settled observations exist per segment.
@@ -28,10 +33,14 @@ before 30 settled observations exist per segment.
 * **No tipster scrapers.** 100% keyless ESPN (`site.api.espn.com`,
   `sports.core.api.espn.com`): schedules, finals, boxscores, predictor, and the
   named-book quotes embedded in scoreboard/summary `odds`/`pickcenter`.
-* **No basketball math on hockey.** NHL is regularised Poisson goals with an
-  explicit OT/SO split and the overtime goal carried into final totals; soccer is
-  time-decayed Dixon-Coles bivariate Poisson; football is ESPN FPI plus an
-  empirical margin/total surface resolved by measured Brier skill.
+* **No basketball math on hockey.** Each sport gets its own likelihood: NHL is
+  regularised Poisson goals with an explicit OT/SO split and the overtime goal
+  carried into final totals; soccer is time-decayed Dixon-Coles bivariate
+  Poisson. Football and basketball each run a **paired surface**: an empirical
+  margin/total fit (`empirical_score`) beside ESPN's own provider numbers
+  (`espn_fpi` / `espn_bpi`), with the lane pricing off whichever surface wins its
+  walk-forward moneyline Brier comparison and a deterministic tiebreak when the
+  two are inside the noise band.
 * **No uncalibrated legs.** A leg needs ≥30 walk-forward settled observations in
   its segment (`league, market, period, source`), a Brier cap, positive calibrated
   EV, a pre-tip named-book price, and a positive prior settled ROI band.
@@ -108,120 +117,135 @@ basketball-specific pieces the sport actually needs:
 
 ## Anti-hallucination contract
 
-This sandbox cannot reach ESPN. Live claims rest only on
-`localdata/_probes/espn_probe_latest.json`, produced by `scripts/probe_espn.py`
-on GitHub Actions:
+This sandbox cannot reach ESPN. Every live claim rests on committed probe
+captures in `localdata/_probes/espn_probe_latest.json`, written by
+`scripts/probe_espn.py` on GitHub Actions:
 
-* The only live capture so far is **`LIVE_VERIFIED 2026-11-26T12:00:17Z`**
-  (`localdata/_probes/espn_probe_latest.json`, frozen extract in
-  `tests/fixtures/espn_probe_2026-11-26T12-00-17Z.json`). Everything else that
-  looks like a payload is `SYNTHETIC_FIXTURE`; the test suite blocks sockets
-  (`tests/conftest.py`).
-* What that capture actually proves is narrow (see below): the ten scoreboard
-  and core-index routes resolve, the summary carries `pickcenter`, and the
-  season event index is pageable — but it contains **zero pre-match events**, so
-  it proves no odds path and no predictor key.
-* Extrapolating the proven basketball adapter (`Ma_Golide_Satellites`,
-  LIVE_VERIFIED 2026-11-06 for NBA/WNBA/NCAA) is **not** verification. Hockey
-  `pointSpread` puckline nesting, soccer three-way `moneyline.draw` /
-  `drawOdds` paths, NFL/CFB `/predictor` statistics keys, hockey shot keys, and
-  per-league pre-kickoff named-book coverage are **unverified** until a probe
-  window contains upcoming fixtures.
-* `scripts/daily.py` refuses to freeze a ticket unless a committed live probe
-  report shows `status: ok`, a sample of ≥3 pre-match events, and ≥50%
-  pre-kickoff named-book coverage for that market. A coverage number without a
-  sample is not evidence: absent/thin probe → `research_only` (forecast and
-  grade, never ticket).
-* Missing/malformed fields fail closed: a machine-readable `coverage_gap`
-  (written under `localdata/_coverage/` and `localdata/_runs/`) or a raised
-  `EspnIdentityError`. No imputed `0.5`, no invented odds, no home/away swap.
+* **A lane may only ticket on measured evidence.** `scripts/daily.py` asks
+  `lane_permission()` for each lane, and that function requires, per market,
+  `status: "ok"`, a sample of **≥ 3 pre-match events**, and **≥ 0.50** named-book
+  pre-tip coverage. Anything less keeps the lane `research_only` — it forecasts
+  and grades, it does not ticket. A coverage number without a sample is not a
+  measurement, and `no_pre_match_events` is an absent measurement rather than a
+  measured zero.
+* **Subset probes merge, never overwrite.** `--leagues basketball` (or any
+  subset) folds its lanes into the existing report: lanes probed now win, every
+  other lane keeps its last captured block **and its own `captured_utc`**, and
+  the file records `probed_lanes` / `carried_over_lanes` /
+  `carried_over_from_utc`. A lane measured yesterday is never re-dated by a probe
+  that did not look at it (legacy reports without per-lane stamps are dated by
+  the previous file timestamp, not by the new run).
+* **Missing or malformed fields fail closed.** An ambiguous side, a half-closed
+  offer, an unknown odds shape, or a league mismatch produces a machine-readable
+  `CoverageGap` (written under `localdata/_coverage/` and `localdata/_runs/`) or
+  raises `EspnIdentityError`. No imputed `0.5`, no invented odds, no home/away
+  swap — a `×` in a table below means the probe did not measure it, not that it
+  was assumed.
+* **A payload is not a contract.** A scoreboard route that resolves does not
+  imply that a book posts lines on it, that `/predictor` exists, or that a
+  summary carries `pickcenter`; each is measured separately, and
+  `League.predictor` gates the predictor request so the probe never invents
+  coverage gaps for a route ESPN does not serve.
 
 ## Live probe evidence
 
-Two captures exist. The first was a window bug; the second is the one that
-matters.
+### `LIVE_VERIFIED 2026-11-28T07:12:44Z` — all 13 lanes, `cca6bfb`
 
-### `LIVE_VERIFIED 2026-11-26T12:13:48Z` — the priced window
+Probed SAST days 2026-11-28/29/30 (ET 2026-11-27..29), summarised directly from
+`localdata/_probes/espn_probe_latest.json`. Coverage is
+`coverage.named_book_pre_tip.<market>`; `events (pre)` counts scoreboard events
+and those still pre-tip at capture time.
 
-Probed SAST days 2026-11-26/27/28 (ET 2026-11-25..27), summarised from
-`localdata/_probes/espn_probe_latest.json` and frozen as a fixture in
-`tests/fixtures/espn_live_2026-11-26T12-13-48Z.json`.
-
-| lane | events (pre) | books | ML / spread / total coverage | draw coverage as captured | backfill |
+| lane | events (pre) | books | ML / spread / total | predictor | season index |
 |---|---|---|---|---|---|
-| cfb | 67 (67) | Draft Kings | 100% / 100% / 100% (8/8 sampled) | n/a (2-way) | 950 |
-| nfl | 5 (4) | Draft Kings | 100% / 100% / 100% (4/4) | n/a (2-way) | 320 |
-| eng.1 | 4 (4) | DraftKings | 100% / 100% / 100% | 0% (label-counted — see below) | 374 |
-| esp.1 | 5 (5) | DraftKings | 100% / 100% / 100% | 0% (label-counted) | 381 |
-| fra.1 | 6 (6) | DraftKings | 100% / 100% / 100% | 0% (label-counted) | 288 |
-| ita.1 | 4 (4) | DraftKings | 100% / 100% / 100% | 0% (label-counted) | 374 |
-| ger.1 | 6 (6) | Bet 365, DraftKings | 83% / 83% / 83% (5/6) | 0% (label-counted) | 297 |
-| nhl | 42 (28) | — | 0% (no lines posted) | n/a | 1,478 |
-| uefa.champions | 9 (0) | — | unmeasured (between matchdays) | n/a | 189 |
+| `nhl` | 36 (21) | DraftKings | 100% / 100% / 100% (8/8) | not requested (HTTP 400) | 2026: 1,478 |
+| `nfl` | 12 (11) | DraftKings | 100% / 100% / 100% (8/8) | 3/3 `prob_home` + `predicted_margin`, tie `push_conditional` | 2026: 320 |
+| `cfb` | 66 (53) | DraftKings | 100% / 100% / 100% (8/8) | 3/3 `prob_home` + `predicted_margin` | 2026: 950 |
+| `eng.1` | 10 (9) | DraftKings | 100% / 100% / 100% (8/8) | not requested (HTTP 400) | 2026: 374 |
+| `esp.1` | 10 (9) | DraftKings | 100% / 100% / 100% (8/8) | not requested (HTTP 400) | 2026: 381 |
+| `ger.1` | 9 (8) | Bet365, DraftKings | 87.5% / 87.5% / 87.5% (7/8) | not requested (HTTP 400) | 2026: 297 |
+| `ita.1` | 10 (9) | DraftKings | 100% / 100% / 100% (8/8) | not requested (HTTP 400) | 2026: 374 |
+| `fra.1` | 9 (8) | DraftKings | 100% / 100% / 100% (8/8) | not requested (HTTP 400) | 2026: 288 |
+| `nba` | 33 (22) | DraftKings | 62.5% / 62.5% / 62.5% (5/8) | 3/3 `prob_home`, `predicted_margin`, `expected_home`/`expected_away` | 2027: 725 |
+| `ncaa_m` | 196 (141) | DraftKings | 75% (6/8) / 87.5% (7/8) / 87.5% (7/8) | 3/3 `prob_home` only | 2027: 390 |
+| `ncaa_w` | 251 (173) | — | 0% / 0% / 0% (0/8) | 3 attempts, 1 × HTTP 400 | 2027: 314 |
+| `wnba` | 0 (0) | — | — (`no_pre_match_events`) | not sampled (no pre-match events) | 2026: 374 |
+| `uefa.champions` | 0 (0) | — | — (`no_pre_match_events`) | route absent (HTTP 400) | 2026: 189 |
 
-Four defects the capture proved, now fixed and tested:
+Running `lane_permission()` over that file yields exactly **10 `tickets` lanes**
+(`nhl`, `nfl`, `cfb`, `eng.1`, `esp.1`, `ger.1`, `ita.1`, `fra.1`, `nba`,
+`ncaa_m`) and **3 `research_only`**:
 
-1. **Draw prices were being counted, not read.** Every sampled soccer
-   `pickcenter[0]` carried `moneyline.draw.close.odds`, `moneyline.draw.open.odds`
-   *and* `drawOdds.moneyLine`, but coverage said `moneyline_draw = 0.00` because
-   the probe counted market *labels* instead of priced *sides*. Coverage is now
-   computed with `quote_market_presence`, and the flat `drawOdds.moneyLine`
-   variant is an extraction fallback. UCL stays unmeasured (no pre-match
-   fixtures until matchday 6).
-2. **NFL FPI failed on tie mass only.** NFL payloads sum to 100 only when
-   `teamChanceTie` is included (`99.6480` without it). The parser now accepts the
-   tie, prices the two-way side conditioned on no tie (`prob_home`), and reports
-   `prob_tie` / `tie_rule: "push_conditional"` rather than hiding the mass. CFB
-   has no tie key and is unchanged (`3/3` samples parsed).
-3. **Book labels differ per sport.** `"Draft Kings"` (NFL/CFB) vs `"DraftKings"`
-   (soccer) vs `"Bet 365"` (Bundesliga) are one book; `canonical_book` normalises
-   them, and the probe keeps the raw labels for audit.
-4. **`/predictor` does not exist outside football.** NHL and every soccer lane
-   return `HTTP 400`; `League.predictor` now gates the request so the probe stops
-   inventing coverage gaps for a route ESPN does not serve.
+* **`ncaa_w`** — `named_book_coverage_below_50pct`: 0% over 8 pre-tip events at
+  `07:12Z` (`02:12 EST`). This is a timing fact, not an absence of women's
+  lines: settled game `401903575` returned a full DraftKings `pickcenter`
+  (`moneyline`, `spread`, `total` all priced, 3 quotes), i.e. DraftKings posts
+  women's lines closer to tip than the overnight probe window. Re-probe in
+  `17:00Z–20:00Z` before drawing any conclusion about this lane.
+* **`wnba`** — `no_pre_match_events` (off-season; the season index still holds
+  `2026: 374` finals for when it returns).
+* **`uefa.champions`** — `no_pre_match_events` (between matchdays).
 
-Still unverified, and therefore still not claimed:
+**Live-verified `/predictor` shapes per sport:**
 
-* NHL prices — 0 offers on this window (US Thanksgiving); re-probe on the next
-  slate. The summary does expose `goalies`, `injuries` and `pickcenter`, and
-  `pickcenter` was present but empty (`0` entries) for all 8 sampled fixtures.
-* the ger.1 fixture whose `pickcenter` was empty and whose `odds[0]` used the
-  flat `homeTeamOdds.odds.value` shape — the probe records
-  `odds.shape_unrecognised` with the observed keys instead of guessing.
-* `teamExpectedPts`/`oppExpectedPts` were never live-confirmed, so FPI expected
-  scores and FPI totals stay `None`; the FPI margin falls back to inverting the
-  win probability. `teamPredPtDiff` is now captured and surfaced as
-  `predicted_margin` only when the two sides reconcile.
+* `nba` — 3/3 samples with `prob_home`, `predicted_margin` and both expected
+  point totals (`teamExpectedPts`/`oppExpectedPts`), so BPI can price a spread
+  *and* a total.
+* `nfl` / `cfb` — 3/3 samples with `prob_home` and `predicted_margin`, no
+  expected points: the FPI spread is priced, the FPI total stays `None` rather
+  than being invented. NFL payloads sum to 100 only with `teamChanceTie`
+  included, so the parser conditions the two-way price on no tie and records
+  `prob_tie` / `tie_rule: "push_conditional"`.
+* `ncaa_m` / `ncaa_w` — `prob_home` only: the margin is inverted through
+  `normal_ppf` and no total is emitted. Small women's matchups can return
+  **HTTP 400** and are skipped, not retried into a fabricated number.
+* `nhl` and every soccer lane — HTTP 400 (no route); skipped via
+  `League.predictor`.
+
+Four defects the captures fixed, each with a test:
+
+1. **Draw prices were counted, not read.** Soccer `pickcenter` carries
+   `moneyline.draw.close|open.odds` *and* `drawOdds.moneyLine`; coverage said
+   `moneyline_draw = 0.00` because the probe counted market labels instead of
+   priced sides. Coverage is now computed by `quote_market_presence`, the flat
+   `drawOdds.moneyLine` variant is an extraction fallback, and every soccer lane
+   below reports draw coverage from priced sides.
+2. **NFL FPI failed on tie mass only** (`99.6480` without `teamChanceTie`) —
+   fixed as above; CFB has no tie key and is unchanged.
+3. **Book labels differ per sport.** `"Draft Kings"` (NFL/CFB/basketball) vs
+   `"DraftKings"` (soccer) vs `"Bet 365"` (Bundesliga) are one book;
+   `canonical_book` normalises them (`ger.1` records
+   `book_normalisation {"Bet 365": "Bet365"}`) and the probe keeps the raw
+   labels for audit.
+4. **`/predictor` does not exist outside football and basketball.**
+
+Still unverified, and therefore not claimed:
+
+* one `ger.1` Bet365 offer still arrives in the flat `homeTeamOdds` /
+  `awayTeamOdds` shape with no nested `moneyline` / `pointSpread` block. The
+  parser records `odds.shape_unrecognised` with the observed keys instead of
+  guessing, which is why `ger.1` measures 7/8 rather than 8/8.
+* pre-tip coverage for `uefa.champions` (between matchdays), `wnba` (off-season)
+  and `ncaa_w` (needs a probe inside the `17:00Z–20:00Z` window above).
 * whether a book pushes or loses a two-way moneyline on a tie. The model prices
   push-conditional because the live NFL quote carries only `home`/`away` sides,
-  and the assumption is recorded in `tie_rule` rather than buried in code.
+  and that assumption is recorded in `tie_rule` rather than buried in code.
+* FPI expected scores for NFL/CFB (absent from the payload), so FPI totals stay
+  `None` for those two lanes only.
 
-### `LIVE_VERIFIED 2026-11-26T12:00:17Z` — the window bug
-
-The first run asked ESPN for ET `D-2/D-1` instead of `D-1/D`, so every probed
-event was already final: 0 pre-match events, empty scoreboard odds, no predictor
-attempt. `et_days_for_sast_day` is fixed and pinned by
-`tests/test_live_probe.py`. Core season-index refs also carry a
-`?lang=en&region=us` suffix that defeated the old `isdigit()` event-id parse;
-`event_id_from_ref` strips it.
-
-### Re-probe before enabling a lane
-
-```
-# Actions -> probe-espn -> Run workflow, or:
-python3 scripts/probe_espn.py --date 2026-11-27 --days-ahead 2 --season 2026
-```
-
-Read `coverage.named_book_pre_tip.<market>`: `status` must be `ok` (sample ≥3
-pre-match events) before any percentage means anything, and `markets_priced`
-inside `summary.field_presence[]` shows which sides each quote actually carried.
+`scripts/probe_espn.py` re-measures all of this; `scripts/daily.py` re-reads the
+committed file on every run, so a lane whose coverage lapses stops ticketing
+without anyone editing code.
 
 ## Layout
 
 ```text
 src/bullion/
-  models.py        sport-aware dataclasses, league registry, UTC/SAST helpers
-  store.py         stdlib sqlite3 warehouse (games, quotes, predictor, forecasts)
+  models.py        sport-aware dataclasses, 13-lane registry, UTC/SAST helpers
+  store.py         stdlib sqlite3 warehouse (games, quotes, predictor, forecasts,
+                   and scoreboard_backfill_days — DB-backed resume state, so
+                   "already swept" is evicted with the finals it describes; no
+                   file manifest)
   espn.py          keyless client + fail-closed parsers + probe-permission contract
   calibration.py   walk-forward Platt scaling, rolling Brier, segment gates
   engines/         nhl.py (Poisson + OT/SO), football.py (FPI vs empirical),
@@ -235,8 +259,35 @@ scripts/
   backfill.py      historical finals (ratings warm-up only; never historical prices)
   daily.py         end-to-end daily runner
   replay_harness.py CLI over bullion.replay
-docs/workflows/    copy-paste GitHub Actions YAML (Arena cannot push workflows)
+tests/             offline suite; sockets are blocked, every payload is synthetic
+                   or a committed capture
+.github/workflows/ (read-only here: the Agent App lacks `workflows` permission)
+  bullion_daily.yml  scheduled ticks: backfill, lanes, cards, parity gate, commit
+  probe_espn.yml     live evidence capture (full or subset), committed to main
 ```
+
+## External schedule
+
+GitHub's `schedule:` cron is deliberately unused (it delays or drops ticks). An
+external scheduler posts a `repository_dispatch` event
+`bullion-scheduled-tick`; `.github/workflows/bullion_daily.yml` documents the
+ticks it expects:
+
+| UTC | SAST | what it is for |
+|---|---|---|
+| `06:15Z` | 08:15 | overnight US finals refresh + grading |
+| `10:05Z` | 12:05 | after the 12:00 SAST Top-6 soccer cutoff |
+| `14:15Z` | 16:15 | after the 16:00 SAST NFL/CFB/NHL cutoff |
+| `15:10Z` | 17:10 | basketball noon-ET matinees (12:00 EST / 13:00 EDT) |
+| `21:15Z` | 23:15 | EU soccer grading + basketball D+1 early-ET tips (17:00-18:15 EST / 18:00-19:15 EDT) |
+| `22:15Z` | 00:15 | basketball prime ET slate (18:30-19:15 EST / 19:30-20:15 EDT) |
+| `23:15Z` | 01:15 | basketball late ET slate (19:30-20:15 EST / 20:30-21:15 EDT) |
+| `18:15Z` *(optional)* | 20:15 | weekend 15:00-16:30 EST NCAA afternoon matinees |
+
+Each run is idempotent and write-once at cutoff, so a missed tick costs a pre-tip
+observation, never a rotated receipt. `.github/workflows/probe_espn.yml` is
+dispatched separately (full sweep, or `leagues` for a subset merge) whenever a
+lane's evidence needs re-measuring.
 
 ## Commands
 
@@ -247,22 +298,25 @@ pytest -q
 
 # 1) capture real ESPN evidence (needs network; run in Actions)
 python3 scripts/probe_espn.py --out localdata/_probes/espn_probe_latest.json
+python3 scripts/probe_espn.py --leagues basketball        # subset: merges, never overwrites
+python3 scripts/probe_espn.py --leagues ncaa_w --date 2026-11-30  # re-probe near tip
 
 # 2) warm the ratings (finals only; newest season first, resumable)
 python3 scripts/backfill.py --league all --seasons 2024,2025,2026 --max-events 400
-python3 scripts/backfill.py --league all --workers 6 --max-seconds 1800  # bounded cold run
+python3 scripts/backfill.py --league all --workers 6 --max-seconds 1200  # bounded cold run
 
 # basketball history is by ET day, one request per day, not per game
-python3 scripts/backfill.py --league basketball --days-back 400
+python3 scripts/backfill.py --league basketball --days-back 400 --max-seconds 600
 python3 scripts/backfill.py --league basketball --detect-cold   # JSON: lanes still short
 
 # 3) daily lane runs (freeze only at/after cutoff, only with a probe report)
 python3 scripts/daily.py --league all --date 2026-11-28
 python3 scripts/daily.py --league basketball --date 2026-11-28  # merges into daily_<day>.json
+python3 scripts/daily.py --league nba,wnba --date 2026-11-28    # comma lists work everywhere
 
 # 4) replay
 python3 scripts/replay_harness.py --parity
-python3 scripts/replay_harness.py --mode cross-league --legs 2 --limit 3
+python3 scripts/replay_harness.py --lanes nba,ncaa_m --mode cross-league --legs 2
 python3 scripts/replay_harness.py --stake-mode kelly --kelly 0.25 --slots 3
 python3 scripts/replay_harness.py --variant legs=3 --against legs=2 --ab
 ```
@@ -270,17 +324,17 @@ python3 scripts/replay_harness.py --variant legs=3 --against legs=2 --ab
 `python3 scripts/replay_harness.py` on a clean checkout prints
 `zero settled bet-days: no profit, edge, or readiness claim is supported`.
 
-The backfill is budgeted and resumable: seasons are processed newest-first (so a
-budget stop never costs the current season), summary fetches run on a bounded
-pool while every SQLite write stays on the main thread, and `--max-seconds`
-(default 1800 = 30 min, deliberately under the workflow's `timeout-minutes`)
-stops cleanly with exit code 0, leaving the manifest and stored
-finals behind for the next run to continue from. The manifest records
-`elapsed_seconds`, `processed_per_second` and `projected_remaining_seconds`, so
-the next budget decision is based on the observed rate rather than a guess.
-Transient CDN failures —
-including chunked-transfer `IncompleteRead`, which is a `HTTPException` and not
-an `OSError` — are retried with gzip-encoded requests before becoming an
+The backfill is budgeted and resumable. Football/hockey/soccer walk the season
+event index newest-first with a bounded summary pool; basketball walks **ET-day
+scoreboards** instead (one request per day, finals only) and records completed
+days in `scoreboard_backfill_days` inside the warehouse, so the resume state is
+evicted with the finals it describes. `--max-seconds` (1200 for the mixed cold
+run, 600 for the basketball step) stops cleanly with exit code 0 and leaves
+stored finals behind for the next run; `elapsed_seconds`,
+`processed_per_second` and `projected_remaining_seconds` make the next budget
+decision observed rather than guessed. Transient CDN failures — including
+chunked-transfer `IncompleteRead`, which is an `HTTPException` and not an
+`OSError` — are retried with gzip-encoded requests before becoming an
 `EspnFetchError`.
 
 ## Receipt contract (`Ma_Golide_Satellites`-compatible)
@@ -419,26 +473,36 @@ integer lines carry a real `push_probability`.
 
 ## Status
 
-* Offline unit tests cover: side resolution from `homeAway`, odds nesting and
-  coverage gaps, `$ref` predictor orientation and contradiction handling,
-  post-tip rejection, summary/OT period parsing, engine probability identities,
-  Dixon-Coles rho behaviour, calibration leakage guards, gate rejection paths,
-  receipt schema/immutability, settlement, 100% replay parity, paired A/B NO-OP
-  refusal, cross-sport acca assembly, and zero-settled-day handling.
+* **250 offline unit tests** (`pytest -q`), sockets blocked. They cover: side
+  resolution from `homeAway`, odds nesting and coverage gaps, `$ref` predictor
+  orientation and contradiction handling, post-tip rejection, summary/OT period
+  parsing, engine probability identities, Dixon-Coles rho behaviour, basketball
+  prior/half-life shrinkage, college line anchoring, calibration leakage guards,
+  gate rejection paths, receipt schema/immutability, settlement, 100% replay
+  parity, paired A/B NO-OP refusal, cross-sport acca assembly, zero-settled-day
+  handling, and the probe's per-league `captured_utc` stamping and
+  non-destructive merge (carried-over lanes never look fresher than their
+  measurement).
 * `scripts/replay_harness.py --parity` rebuilds each frozen receipt and diffs
   ticket id, combined price, and every leg price, not just the selected legs; it
   exits 1 on any mismatch, and reports `vacuous: true` when there is no receipt
-  to check (an empty vault is not a parity proof).
-* Summary `pickcenter` is now a quote source: when a scoreboard `odds` array is
+  to check (an empty vault is not a parity proof). Current vault: **9/9
+  receipts matched, `mismatched: 0`**.
+* Summary `pickcenter` is a quote source: when a scoreboard `odds` array is
   empty, one summary fetch per fixture supplies the freeze, and the discovery
   gap stays in the coverage file so the empty scoreboard array remains visible.
-* **Verified live (2026-11-26T12:13:48Z):** pre-match named-book coverage for
-  CFB (100%), NFL (100%) and five soccer lanes (100%/100%/100%/100%/83%), the
-  soccer draw paths (`moneyline.draw.close|open.odds`, `drawOdds.moneyLine`), the
-  NFL `teamChanceTie` sum, CFB FPI parsing, and the absence of a `/predictor`
-  route for NHL and soccer (HTTP 400).
-* **Still unverified:** NHL prices (no lines posted on the captured day), UCL
-  pre-match coverage (between matchdays), hockey shot keys, FPI expected scores,
-  and whether a two-way moneyline pushes or loses on a tie. Lanes open tickets
-  only where the committed probe shows `status: ok` on ≥3 pre-match events and
-  ≥50% coverage: NHL and UCL remain `research_only`.
+* **Verified live (`LIVE_VERIFIED 2026-11-28T07:12:44Z`, 13 lanes):** all four
+  sports measured in one capture — see the table above. **10 lanes ticket**
+  (`nhl`, `nfl`, `cfb`, `eng.1`, `esp.1`, `ger.1`, `ita.1`, `fra.1`, `nba`,
+  `ncaa_m`); **3 stay `research_only`** (`uefa.champions` and `wnba` on
+  `no_pre_match_events`, `ncaa_w` on 0% pre-tip coverage at `07:12Z` — a
+  DraftKings timing fact that a `17:00Z–20:00Z` probe can settle).
+* **Still unverified:** the `ger.1` Bet365 flat-shape offer, `uefa.champions` /
+  `wnba` / `ncaa_w` pre-tip windows, FPI expected scores for NFL/CFB, and
+  whether a book pushes or loses a two-way moneyline on a tie (priced
+  push-conditional, and labelled as such in `tie_rule`). Lanes open tickets only
+  where the committed probe shows `status: ok` on ≥3 pre-match events and ≥50%
+  coverage.
+* **No edge claim is made anywhere.** The receipts are paper tickets and the
+  ledger is a paper ledger; `prior_roi` and the Brier segments exist to decide
+  whether a lane may ticket at all, not to advertise returns.

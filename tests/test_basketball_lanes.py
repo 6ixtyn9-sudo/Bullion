@@ -751,11 +751,18 @@ def test_probe_subset_merges_into_the_existing_report(tmp_path, probe_script):
     }
     merged = probe_script._merge_previous_report(path, report, probed=["nba"])
     assert sorted(merged["leagues"]) == ["cfb", "nba", "nfl"]
-    assert merged["leagues"]["cfb"] == {"status": "ok"}
+    # A legacy report has no per-lane stamp, so carried lanes inherit the
+    # PREVIOUS file's timestamp — never this run's, which would date old
+    # evidence as new.
+    assert merged["leagues"]["cfb"] == {
+        "status": "ok",
+        "captured_utc": "2026-11-20T00:00:00Z",
+    }
     assert merged["leagues"]["nba"] == {"status": "warn"}
     assert merged["backfill"]["cfb"] == {"events": 10}
     assert merged["probed_lanes"] == ["nba"]
     assert merged["carried_over_lanes"] == ["cfb", "nfl"]
+    assert merged["carried_over_from_utc"] == "2026-11-20T00:00:00Z"
     # A probe of every lane carries nothing over and adds no stale keys.
     full = probe_script._merge_previous_report(
         path,
@@ -1336,3 +1343,108 @@ def test_probe_uses_the_live_season_key(probe_script, monkeypatch):
         assert report["season"] == (2027 if key != "wnba" else 2026), key
         assert str(report["season"]) in report["url"], key
         assert report["season_key_source"] == "bullion.models.espn_season_keys"
+
+
+def test_fresh_probe_stamps_every_probed_lane_with_its_own_capture_time(
+    tmp_path, probe_script, monkeypatch
+):
+    """A lane's timestamp must describe when THAT lane was measured.
+
+    The report-level ``captured_utc`` covers only the lanes probed now; a
+    reader that falls back to it after a subset merge would report stale
+    coverage as fresh.
+    """
+
+    def fake_probe_league(client, league, sast_days, **kwargs):
+        return {"sport": league.sport.value, "coverage": {}}
+
+    def fake_probe_backfill(client, league, season):
+        return {"season": season, "count": 0}
+
+    monkeypatch.setattr(probe_script, "probe_league", fake_probe_league)
+    monkeypatch.setattr(probe_script, "probe_backfill", fake_probe_backfill)
+    monkeypatch.setattr(probe_script, "EspnClient", lambda *a, **k: object())
+    out = tmp_path / "probe.json"
+    code = probe_script.main(
+        ["--out", str(out), "--leagues", "nba,wnba", "--date", "2026-11-28", "--days-ahead", "0"]
+    )
+    assert code == 0
+    report = json.loads(out.read_text(encoding="utf-8"))
+    assert report["probed_lanes"] == ["nba", "wnba"]
+    assert sorted(report["leagues"]) == ["nba", "wnba"]
+    for lane, entry in report["leagues"].items():
+        assert entry["captured_utc"] == report["captured_utc"], lane
+    assert report["captured_utc"].endswith("Z")
+
+
+def test_probe_merge_never_redates_carried_lanes(tmp_path, probe_script):
+    """A subset probe must not touch the age of the lanes it did not measure."""
+    path = tmp_path / "probe.json"
+    path.write_text(
+        json.dumps(
+            {
+                "schema_version": "bullion.espn_probe",
+                "mode": "live",
+                "captured_utc": "2026-11-20T00:00:00Z",
+                "leagues": {
+                    "cfb": {"status": "ok", "captured_utc": "2026-11-18T09:00:00Z"},
+                    "nhl": {"status": "ok"},  # legacy: no per-lane stamp
+                    "nba": {"status": "ok", "captured_utc": "2026-11-20T00:00:00Z"},
+                },
+                "backfill": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    report = {
+        "schema_version": "bullion.espn_probe",
+        "mode": "live",
+        "captured_utc": "2026-11-28T07:12:44Z",
+        "leagues": {"ncaa_w": {"status": "ok", "captured_utc": "2026-11-28T07:12:44Z"}},
+        "backfill": {},
+    }
+    merged = probe_script._merge_previous_report(path, report, probed=["ncaa_w"])
+    assert merged["captured_utc"] == "2026-11-28T07:12:44Z"
+    assert merged["leagues"]["ncaa_w"]["captured_utc"] == "2026-11-28T07:12:44Z"
+    # A lane with its own older stamp keeps it exactly.
+    assert merged["leagues"]["cfb"]["captured_utc"] == "2026-11-18T09:00:00Z"
+    assert merged["leagues"]["nba"]["captured_utc"] == "2026-11-20T00:00:00Z"
+    # A legacy lane is dated by the previous FILE stamp, not by this run.
+    assert merged["leagues"]["nhl"]["captured_utc"] == "2026-11-20T00:00:00Z"
+    assert merged["carried_over_lanes"] == ["cfb", "nba", "nhl"]
+    assert merged["carried_over_from_utc"] == "2026-11-20T00:00:00Z"
+    # And the carried entries are copies, not references into the old file.
+    assert merged["leagues"]["cfb"] is not json.loads(path.read_text())["leagues"]["cfb"]
+
+
+def test_full_probe_clears_stale_carry_over_metadata(tmp_path, probe_script):
+    path = tmp_path / "probe.json"
+    path.write_text(
+        json.dumps(
+            {
+                "schema_version": "bullion.espn_probe",
+                "mode": "live",
+                "captured_utc": "2026-11-20T00:00:00Z",
+                "leagues": {
+                    "cfb": {"status": "ok"},
+                    "nba": {"status": "ok", "captured_utc": "2026-11-27T00:00:00Z"},
+                },
+                "carried_over_lanes": ["nba"],
+                "carried_over_from_utc": "2026-11-19T00:00:00Z",
+            }
+        ),
+        encoding="utf-8",
+    )
+    report = {
+        "schema_version": "bullion.espn_probe",
+        "mode": "live",
+        "captured_utc": "2026-11-28T07:12:44Z",
+        "leagues": {
+            "cfb": {"status": "ok", "captured_utc": "2026-11-28T07:12:44Z"},
+            "nba": {"status": "ok", "captured_utc": "2026-11-28T07:12:44Z"},
+        },
+    }
+    merged = probe_script._merge_previous_report(path, report, probed=["cfb", "nba"])
+    assert "carried_over_lanes" not in merged
+    assert "carried_over_from_utc" not in merged
+    assert merged["probed_lanes"] == ["cfb", "nba"]

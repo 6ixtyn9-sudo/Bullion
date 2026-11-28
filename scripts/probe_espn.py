@@ -385,8 +385,8 @@ def probe_league(
     if not league.predictor:
         entry["predictor"]["skipped"] = True
         entry["predictor"]["note"] = (
-            "no /predictor route for this lane (LIVE_VERIFIED 2026-11-26: HTTP 400 for "
-            "NHL and every soccer league); not requested"
+            "no /predictor route for this lane (LIVE_VERIFIED 2026-11-26, re-confirmed "
+            "2026-11-28: HTTP 400 for NHL and every soccer league); not requested"
         )
         return entry
     predictor_targets = [
@@ -526,9 +526,29 @@ def _merge_previous_report(
     merged["backfill"] = merged_backfill
     merged["probed_lanes"] = probed
     carried = sorted(set(merged_leagues) - set(probed))
+    prev_ts = previous.get("captured_utc") or previous.get("generated_utc")
+    for lane in carried:
+        # Shallow copy: the carried lane must keep its own dict, never a
+        # reference into ``previous`` that a later mutation could rewrite.
+        entry = dict(merged_leagues[lane]) if isinstance(merged_leagues[lane], dict) else None
+        if entry is None:
+            continue
+        # A report written before per-lane stamps existed (e.g. cca6bfb) has no
+        # per-lane ``captured_utc``. Backfill it from the previous FILE stamp —
+        # never from this run's, which would date old evidence as new. An
+        # existing per-lane stamp always wins.
+        if not entry.get("captured_utc") and prev_ts:
+            entry["captured_utc"] = prev_ts
+        merged_leagues[lane] = entry
+    merged["leagues"] = merged_leagues
     if carried:
         merged["carried_over_lanes"] = carried
-        merged["carried_over_from_utc"] = (previous.get("captured_utc") or previous.get("generated_utc"))
+        merged["carried_over_from_utc"] = prev_ts
+    else:
+        # A full probe supersedes every earlier subset merge; leaving the
+        # metadata behind would misreport the file as partly carried over.
+        merged.pop("carried_over_lanes", None)
+        merged.pop("carried_over_from_utc", None)
     return merged
 
 
@@ -538,7 +558,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--date", default=None, help="first SAST day (YYYY-MM-DD); default today")
     parser.add_argument("--days-ahead", type=int, default=2, help="probe this many extra SAST days")
     parser.add_argument(
-        "--leagues", default="all", help="comma list of lane keys, 'soccer', or 'all'"
+        "--leagues",
+        default="all",
+        help="comma list of lane keys, 'soccer', 'basketball', or 'all'",
     )
     parser.add_argument("--season", type=int, default=None, help="season year for backfill probe")
     parser.add_argument("--predictor-samples", type=int, default=3)
@@ -580,13 +602,19 @@ def main(argv: Optional[List[str]] = None) -> int:
     season = args.season or datetime.now(timezone.utc).year
     for league in leagues:
         print(f"[probe] {league.key} {sast_days}", file=sys.stderr)
-        report["leagues"][league.key] = probe_league(
+        entry = probe_league(
             client,
             league,
             sast_days,
             summary_samples=args.summary_samples,
             predictor_samples=args.predictor_samples,
         )
+        # Per-lane measurement time. The report's top-level ``captured_utc``
+        # only describes the lanes probed NOW; a carried-over lane keeps its
+        # own, older stamp, so a subset run can never make stale coverage look
+        # fresh (lane_permission reads the lane, not the file).
+        entry["captured_utc"] = report["captured_utc"]
+        report["leagues"][league.key] = entry
     # Ask for the season a lane is actually playing: ESPN numbers a straddling
     # basketball season by the year it ends in, so a raw 2026 in November 2026
     # probes the finished 2025-26 season and reports on history no lane prices.
