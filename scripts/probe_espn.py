@@ -483,6 +483,45 @@ def probe_backfill(client: EspnClient, league, season: int) -> Dict[str, Any]:
     return report
 
 
+def _merge_previous_report(
+    path: Path, report: Dict[str, Any], *, probed: List[str]
+) -> Dict[str, Any]:
+    """Fold this run's lanes into the previous report instead of replacing it.
+
+    Probing a subset (``--leagues basketball``) used to overwrite the file and
+    erase every other lane's captured coverage, which would silently drop those
+    lanes back to ``research_only`` on the next daily run — a coverage file that
+    forgets evidence is worse than no coverage file. Lanes probed now win; every
+    other lane keeps its last captured block verbatim, and the receipt says
+    which lanes came from when.
+    """
+    if not path.exists():
+        report["probed_lanes"] = probed
+        return report
+    try:
+        previous = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        report["probed_lanes"] = probed
+        return report
+    if not isinstance(previous, dict):
+        report["probed_lanes"] = probed
+        return report
+    merged = dict(previous)
+    merged.update(report)
+    merged_leagues = dict(previous.get("leagues") or {})
+    merged_leagues.update(report.get("leagues") or {})
+    merged["leagues"] = merged_leagues
+    merged_backfill = dict(previous.get("backfill") or {})
+    merged_backfill.update(report.get("backfill") or {})
+    merged["backfill"] = merged_backfill
+    merged["probed_lanes"] = probed
+    carried = sorted(set(merged_leagues) - set(probed))
+    if carried:
+        merged["carried_over_lanes"] = carried
+        merged["carried_over_from_utc"] = (previous.get("captured_utc") or previous.get("generated_utc"))
+    return merged
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", default="localdata/_probes/espn_probe_latest.json")
@@ -509,6 +548,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         leagues = list(LEAGUES.values())
     elif selector == "soccer":
         leagues = [league for league in LEAGUES.values() if league.sport is Sport.SOCCER]
+    elif selector == "basketball":
+        leagues = [league for league in LEAGUES.values() if league.sport is Sport.BASKETBALL]
     else:
         leagues = [LEAGUES[key.strip()] for key in selector.split(",") if key.strip()]
 
@@ -547,6 +588,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     if not out.is_absolute():
         out = ROOT / out
     out.parent.mkdir(parents=True, exist_ok=True)
+    report = _merge_previous_report(out, report, probed=[league.key for league in leagues])
     out.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"wrote {out}")
     return 0

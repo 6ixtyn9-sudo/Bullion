@@ -1,7 +1,8 @@
 # Bullion
 
-Lean, zero-bloat, ESPN-native quantitative paper-ticket engine for the three
-non-basketball ESPN sports `Ma_Golide_Satellites` cannot cover:
+Lean, zero-bloat, ESPN-native quantitative paper-ticket engine for the nine
+non-basketball ESPN sports `Ma_Golide_Satellites` cannot cover, plus the four US
+basketball lanes:
 
 | Lane | ESPN path | Markets | Publication cutoff (SAST) |
 |---|---|---|---|
@@ -9,6 +10,13 @@ non-basketball ESPN sports `Ma_Golide_Satellites` cannot cover:
 | `nfl` | `football/nfl` | 2-way ML, spread, total | 16:00, bounded by earliest tip − 120m |
 | `cfb` | `football/college-football` | 2-way ML, spread, total | 16:00, bounded by earliest tip − 120m |
 | `eng.1` `esp.1` `ger.1` `ita.1` `fra.1` `uefa.champions` | `soccer/<slug>` | 3-way 1X2, O/U totals, spreads when quoted | 12:00, bounded by earliest kickoff − 120m |
+| `nba` | `basketball/nba` | 2-way ML, spread, total | 20:00, bounded by earliest tip − 120m |
+| `ncaa_m` | `basketball/mens-college-basketball` (`groups=50`) | 2-way ML, spread, total | 20:00, bounded by earliest tip − 120m |
+| `ncaa_w` | `basketball/womens-college-basketball` (`groups=50`) | 2-way ML, spread, total | 20:00, bounded by earliest tip − 120m |
+| `wnba` | `basketball/wnba` | 2-way ML, spread, total | 20:00, bounded by earliest tip − 120m |
+
+The US basketball tips land in the SAST small hours, so `20:00` on the fixture's
+SAST day is the last tick before a normal ET evening slate starts.
 
 Everything is paper-only: 1.00u per position, no real money, no claims of edge
 before 30 settled observations exist per segment.
@@ -45,6 +53,49 @@ before 30 settled observations exist per segment.
   `candidate_pool`; replay rebuilds tickets from that pool via the *same*
   `build_accas` the live runner uses, and `--parity` proves it.
 * **No silent assumptions.** See below.
+
+## US basketball: four lanes, one honest surface choice
+
+`nba`, `ncaa_m`, `ncaa_w` and `wnba` are registered as live lanes, not a
+research side-project. They reuse the football lane's shape — two surfaces per
+fixture, resolved per lane by measured walk-forward Brier skill — with the
+basketball-specific pieces the sport actually needs:
+
+* **`espn_bpi` vs `empirical_score`.** The provider surface reads ESPN's own win
+  probability and projected scores from `/predictor`; it emits nothing when the
+  route is absent, and no total at all when the payload carries no expected
+  points (a margin can be priced from a projection, a total cannot). The
+  empirical surface fits per-team scoring rates from settled finals with
+  per-lane shrinkage (`nba` 4.0, college 6.0 pseudo-games), per-lane time decay
+  (90 days pro, 60 college) and a schedule-fatigue multiplier that counts only
+  **strictly past** days (back-to-back ×0.975, third-in-four ×0.99). Whichever
+  surface wins the moneyline Brier comparison prices the whole lane; a tie is
+  broken deterministically and the receipt says so.
+* **Anchor once, at the mean, college only.** An NCAA spread/total mean is
+  `0.20 × model + 0.80 × (−main_line)`; the NBA and WNBA are not anchored at all,
+  and the moneyline is never anchored. The anchor is applied once, then every
+  main and alternate line is scored against that same mean, so a ladder stays
+  monotonic instead of every line becoming its own model.
+* **One main line per `(game, market, book)`.** The provider's own
+  `main`/`mainLine` flag wins when present; otherwise a deterministic rule picks
+  the closest handicap to zero and the middle total. Two mains in one group
+  would make which line anchors the model depend on payload order.
+* **Scoreboard finals, not summary-per-game.** History comes from
+  `scoreboard?dates=…&limit=500[&groups=50]`, one request per ET day, and the
+  parser returns **only** `post` events. A missing `linescores` block is
+  tolerated (many mid-major finals publish none); a non-empty block that
+  contradicts the final is dropped and recorded as a coverage gap.
+* **Seeding refits weekly.** `seed_walk_forward_ml` scores historical matchdays
+  with a frozen fit per 7-day window for basketball only — a per-day fit across
+  a 400-day backfill over ~360 D1 teams is the one cost that does not fit the
+  job budget. Every other lane keeps its per-day cadence, and the seeding
+  summary records `refit_cadence_days`, `refits` and the sampled refit days.
+* **`wnba` stays `research_only` until it is measured.** In the off-season the
+  probe reports `no_pre_match_events`, which is an absent measurement rather
+  than a measured zero, so the lane grades and does not ticket. Nothing about
+  the WNBA is special-cased: it is the same gate every lane passes.
+* **Cross-lane ticketing is still off.** `CROSS_LANE_ENABLED` is not
+  implemented; Phase 2 is a separate change.
 
 ## Anti-hallucination contract
 
@@ -165,6 +216,7 @@ src/bullion/
   espn.py          keyless client + fail-closed parsers + probe-permission contract
   calibration.py   walk-forward Platt scaling, rolling Brier, segment gates
   engines/         nhl.py (Poisson + OT/SO), football.py (FPI vs empirical),
+                   basketball.py (BPI vs empirical, college line anchoring),
                    soccer.py (Dixon-Coles)
   tickets.py       candidate pool, gates, build_accas, immutable receipts, settlement
   replay.py        parity, variants, kelly/daily_pct sizing, paired A/B bootstrap
@@ -191,8 +243,13 @@ python3 scripts/probe_espn.py --out localdata/_probes/espn_probe_latest.json
 python3 scripts/backfill.py --league all --seasons 2024,2025,2026 --max-events 400
 python3 scripts/backfill.py --league all --workers 6 --max-seconds 1800  # bounded cold run
 
+# basketball history is by ET day, one request per day, not per game
+python3 scripts/backfill.py --league basketball --days-back 400
+python3 scripts/backfill.py --league basketball --detect-cold   # JSON: lanes still short
+
 # 3) daily lane runs (freeze only at/after cutoff, only with a probe report)
 python3 scripts/daily.py --league all --date 2026-11-28
+python3 scripts/daily.py --league basketball --date 2026-11-28  # merges into daily_<day>.json
 
 # 4) replay
 python3 scripts/replay_harness.py --parity

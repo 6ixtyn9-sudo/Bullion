@@ -42,8 +42,11 @@ from bullion.espn import (  # noqa: E402
     event_id_from_ref,
     game_from_summary,
     parse_summary,
+    scoreboard_finals,
+    scoreboard_url,
     season_events_url,
 )
+from bullion.engines import basketball as basketball_engine  # noqa: E402
 from bullion.engines import (  # noqa: E402
     DEFAULT_PRIOR_WEIGHT,
     Result,
@@ -55,7 +58,13 @@ from bullion.engines import (  # noqa: E402
 from bullion.engines import nhl as nhl_engine  # noqa: E402
 from bullion.engines import soccer as soccer_engine  # noqa: E402
 from bullion.engines import football as football_engine  # noqa: E402
-from bullion.models import LEAGUES, Sport, forecast_id_for, now_utc, sast_day  # noqa: E402
+from bullion.models import (  # noqa: E402
+    LEAGUES,
+    Sport,
+    forecast_id_for,
+    now_utc,
+    sast_day,
+)
 from bullion.store import Store  # noqa: E402
 
 REINDEX_PAGES = 25
@@ -70,11 +79,45 @@ def select_leagues(selector: str):
     selector = (selector or "all").strip().lower()
     if selector == "all":
         return list(LEAGUES.values())
+    if "," in selector:
+        # Cold-lane detection emits a comma list; expand it rather than making
+        # the scheduler run one process per lane.
+        selected = []
+        for item in selector.split(","):
+            item = item.strip()
+            if not item:
+                continue
+            for league in select_leagues(item):
+                if league not in selected:
+                    selected.append(league)
+        if not selected:
+            raise ValueError(f"unknown league {selector!r}")
+        return selected
     if selector == "soccer":
         return [league for league in LEAGUES.values() if league.sport is Sport.SOCCER]
+    if selector == "basketball":
+        return [league for league in LEAGUES.values() if league.sport is Sport.BASKETBALL]
     if selector not in LEAGUES:
         raise ValueError(f"unknown league {selector!r}")
     return [LEAGUES[selector]]
+
+
+def espn_season_keys(league, requested: Iterable[int]) -> List[int]:
+    """ESPN season years to ask for, newest first.
+
+    ESPN numbers a straddling US season by the calendar year it *ends* in, so
+    asking for 2026 in November 2026 returns the 2025-26 season that already
+    finished. Basketball therefore expands each requested year to ``{y, y+1}``
+    so the live season is included; the WNBA and every other lane keep the plain
+    request, because their ``season.year`` is the year they play in.
+    """
+    years = {int(year) for year in requested}
+    if league.sport is not Sport.BASKETBALL or league.calendar_year_season:
+        return sorted(years, reverse=True)
+    expanded: set = set()
+    for year in years:
+        expanded.update({year, year + 1})
+    return sorted(expanded, reverse=True)
 
 
 def season_event_ids(client: EspnClient, league, season: int) -> List[str]:
@@ -192,6 +235,240 @@ def _concurrent(
     return stopped_early
 
 
+#: One scoreboard request per ET day per lane. A past ET day's finals are
+#: immutable, so a completed sweep can be skipped on resume instead of being
+#: paid for on every tick; ``today_ET`` never can be, because games are still
+#: tipping.
+SCOREBOARD_MANIFEST = "localdata/_backfill/scoreboard_manifest.json"
+SCOREBOARD_BACKFILL_DAYS = 400
+#: Finals a lane needs before it is considered warm for live ticketing.
+COLD_LANE_MIN_FINALS = 50
+
+
+def _today_et() -> str:
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    return datetime.now(ZoneInfo("America/New_York")).strftime("%Y%m%d")
+
+
+def et_days_back(today_et: str, days_back: int) -> List[str]:
+    """``today_et`` and the ``days_back`` ET days before it, newest first."""
+    from datetime import datetime, timedelta
+
+    anchor_day = datetime.strptime(today_et, "%Y%m%d")
+    return [
+        (anchor_day - timedelta(days=offset)).strftime("%Y%m%d")
+        for offset in range(days_back + 1)
+    ]
+
+
+def _load_manifest(path: Path) -> Dict[str, Any]:
+    if path.exists():
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            payload = {}
+        if isinstance(payload, dict) and isinstance(payload.get("days"), dict):
+            return payload
+    return {"schema_version": "bullion.scoreboard_manifest", "days": {}}
+
+
+def _write_manifest(path: Path, manifest: Dict[str, Any]) -> None:
+    """Atomic rewrite: a killed job must never leave a half-written manifest."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    manifest["generated_utc"] = now_utc()
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    tmp.replace(path)
+
+
+def _day_done(manifest: Dict[str, Any], lane: str, et_date: str, today_et: str) -> bool:
+    """Whether one (lane, ET day) pair can be skipped without an HTTP call.
+
+    Only strictly past ET days are skippable. ``today_ET`` always refetches:
+    its slate is still tipping, and caching it as done would freeze an empty
+    result in place for the rest of the day.
+    """
+    if et_date >= today_et:
+        return False
+    entry = manifest["days"].get(f"{lane}|{et_date}")
+    return bool(entry and entry.get("status") == "done")
+
+
+def backfill_scoreboard_days(
+    store: Store,
+    client: EspnClient,
+    league,
+    *,
+    days_back: int = SCOREBOARD_BACKFILL_DAYS,
+    deadline: Optional[float] = None,
+    workers: int = 6,
+    manifest_path: Optional[Path] = None,
+) -> Dict[str, Any]:
+    """Store finals from scoreboards, one request per ET day instead of per game.
+
+    A 130-fixture NCAA Saturday costs one request here and 130 through
+    ``/summary``. Only finals are stored: no scheduled games, no odds, no
+    predictor rows — the same "finals only" rule the season-event path follows,
+    for the same reason (a historical scoreboard's prices are closing prices).
+
+    Resumable through an atomic manifest keyed by ``(lane, ET day)``.
+    """
+    today_et = _today_et()
+    path = Path(manifest_path) if manifest_path else ROOT / SCOREBOARD_MANIFEST
+    if not path.is_absolute():
+        path = ROOT / path
+    manifest = _load_manifest(path)
+    days = et_days_back(today_et, days_back)
+    pending = [day for day in days if not _day_done(manifest, league.key, day, today_et)]
+    counters = {"days": len(days), "skipped": len(days) - len(pending), "stored": 0, "failed": 0}
+    sample_errors: List[Dict[str, str]] = []
+    stopped_early = False
+
+    def _fetch(et_date: str):
+        try:
+            payload = client.get(scoreboard_url(league, et_date))
+            games, gaps = scoreboard_finals(payload, league)
+            return et_date, games, gaps, None
+        except (EspnFetchError, ValueError) as exc:
+            return et_date, [], [], str(exc)
+
+    if workers > 1 and pending:
+        pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="scoreboard")
+        futures = {}
+        try:
+            for et_date in pending:
+                if deadline is not None and time.monotonic() >= deadline:
+                    stopped_early = True
+                    break
+                futures[pool.submit(_fetch, et_date)] = et_date
+            remaining = set(futures)
+            while remaining:
+                wait_timeout = 5.0
+                if deadline is not None:
+                    left = deadline - time.monotonic()
+                    if left <= 0:
+                        stopped_early = True
+                        break
+                    wait_timeout = min(wait_timeout, left)
+                done, remaining = wait(remaining, timeout=wait_timeout, return_when=FIRST_COMPLETED)
+                for future in done:
+                    et_date, games, _gaps, error = future.result()
+                    # Every SQLite write stays on this thread.
+                    for game in games:
+                        store.upsert_game(game)
+                        counters["stored"] += 1
+                    if error:
+                        counters["failed"] += 1
+                        if len(sample_errors) < 3:
+                            sample_errors.append({"et_date": et_date, "error": str(error)})
+                    elif et_date < today_et:
+                        manifest["days"][f"{league.key}|{et_date}"] = {
+                            "status": "done",
+                            "finals": len(games),
+                            "captured_utc": now_utc(),
+                        }
+        finally:
+            for future in futures:
+                future.cancel()
+            pool.shutdown(wait=True)
+    else:
+        for et_date in pending:
+            if deadline is not None and time.monotonic() >= deadline:
+                stopped_early = True
+                break
+            et_date, games, _gaps, error = _fetch(et_date)
+            for game in games:
+                store.upsert_game(game)
+                counters["stored"] += 1
+            if error:
+                counters["failed"] += 1
+                if len(sample_errors) < 3:
+                    sample_errors.append({"et_date": et_date, "error": str(error)})
+            elif et_date < today_et:
+                manifest["days"][f"{league.key}|{et_date}"] = {
+                    "status": "done",
+                    "finals": len(games),
+                    "captured_utc": now_utc(),
+                }
+    _write_manifest(path, manifest)
+    counters.update(
+        {
+            "lane": league.key,
+            "today_et": today_et,
+            "stopped_early": stopped_early,
+            "sample_errors": sample_errors,
+            "manifest": str(path),
+        }
+    )
+    print(
+        f"[backfill] {league.key} scoreboard: days={counters['days']} "
+        f"skipped={counters['skipped']} finals={counters['stored']} "
+        f"failed={counters['failed']}",
+        file=sys.stderr,
+    )
+    return counters
+
+
+def lane_finals_count(store: Store, lane: str) -> int:
+    row = store.conn.execute(
+        "SELECT COUNT(*) FROM games WHERE league=? AND status='final' AND home_score IS NOT NULL",
+        (lane,),
+    ).fetchone()
+    return int(row[0]) if row else 0
+
+
+def cold_lanes(
+    store: Store,
+    *,
+    min_finals: int = 50,
+    manifest_path: Optional[Path] = None,
+) -> List[str]:
+    """Lanes short of ``min_finals`` settled finals, newest-registered first.
+
+    A lane whose full scoreboard sweep has already completed and still has too
+    few finals is genuinely sparse (off-season, or a competition with a short
+    schedule): re-walking its 400 empty days on every tick would burn the whole
+    job budget to relearn the same nothing. It is reported as cold but excluded
+    from the retry list, and the manifest keeps that decision auditable.
+    """
+    path = Path(manifest_path) if manifest_path else ROOT / SCOREBOARD_MANIFEST
+    if not path.is_absolute():
+        path = ROOT / path
+    manifest = _load_manifest(path)
+    today_et = _today_et()
+    cold: List[str] = []
+    for lane in LEAGUES:
+        if lane_finals_count(store, lane) >= min_finals:
+            continue
+        swept = _sweep_complete(manifest, lane, today_et)
+        if swept:
+            print(
+                f"[backfill] {lane} is sparse: full sweep complete, still under "
+                f"{min_finals} finals (off-season or short schedule)",
+                file=sys.stderr,
+            )
+            continue
+        cold.append(lane)
+    return cold
+
+
+#: A sweep counts as complete once this many past ET days are recorded as done.
+SWEEP_COMPLETE_DAYS = 365
+
+
+def _sweep_complete(manifest: Dict[str, Any], lane: str, today_et: str) -> bool:
+    done = sum(
+        1
+        for key, entry in manifest.get("days", {}).items()
+        if key.startswith(f"{lane}|")
+        and entry.get("status") == "done"
+        and key.split("|", 1)[1] < today_et
+    )
+    return done >= SWEEP_COMPLETE_DAYS
+
+
 def rehydrate_forecasts(store: Store, localdata: Path) -> Dict[str, int]:
     """Restore ``forecast_snapshots`` from the receipts committed in ``localdata``.
 
@@ -297,8 +574,22 @@ def rehydrate_forecasts(store: Store, localdata: Path) -> Dict[str, int]:
 # loses its edge (the 2026-11-27 study caught the previous NHL fit doing
 # exactly that: transient pass on small-n noise, Brier 0.2507 > 0.25 at n=734).
 
-SEED_LANES = ("nhl", "nfl", "cfb", "eng.1", "esp.1", "ger.1", "ita.1", "fra.1")
+SEED_LANES = (
+    "nhl",
+    "nfl",
+    "cfb",
+    "eng.1",
+    "esp.1",
+    "ger.1",
+    "ita.1",
+    "fra.1",
+    "nba",
+    "ncaa_m",
+    "ncaa_w",
+    "wnba",
+)
 SOCCER_SEED_LANES = frozenset({"eng.1", "esp.1", "ger.1", "ita.1", "fra.1"})
+BASKETBALL_SEED_LANES = frozenset({"nba", "ncaa_m", "ncaa_w", "wnba"})
 #: Minimum settled finals a matchday must have behind it before the seeder
 #: scores it. Mirrors the study's warmup floor; the production gates stay the
 #: ones that actually decide when a lane unlocks.
@@ -310,6 +601,9 @@ def _score_matchday_moneyline(
     day: str,
     results: List[Result],
     games: List[Dict[str, Any]],
+    *,
+    ratings: Optional[dict] = None,
+    refit_day: Optional[str] = None,
 ) -> List[Tuple[str, str, float]]:
     """Production-exact moneyline probabilities for one SAST matchday.
 
@@ -320,6 +614,31 @@ def _score_matchday_moneyline(
     ``day`` — that is the leak firewall.
     """
     scored: List[Tuple[str, str, float]] = []
+    fit_day = refit_day or day
+    if lane in BASKETBALL_SEED_LANES:
+        # Same fit and the same expectation function the live engine uses; a
+        # frozen ``ratings`` (biweekly refit) is passed in by the caller.
+        ratings = ratings or basketball_engine.fit_lane_ratings(
+            lane, results, reference_day=fit_day
+        )
+        if not ratings.get("n"):
+            return scored
+        for game in games:
+            _margin, _total, _sigma_margin, _sigma_total, prob_home = (
+                basketball_engine.empirical_expectations(
+                    lane,
+                    results,
+                    ratings,
+                    home_id=game["home_team_id"],
+                    away_id=game["away_team_id"],
+                    reference_day=fit_day,
+                    neutral_site=bool(game["neutral_site"]),
+                )
+            )
+            scored.append((game["game_id"], "home", prob_home))
+            scored.append((game["game_id"], "away", 1.0 - prob_home))
+        return scored
+
     if lane in SOCCER_SEED_LANES:
         ratings = soccer_engine.fit_ratings(
             results, reference_day=day, half_life_days=240.0
@@ -424,6 +743,13 @@ def seed_walk_forward_ml(
             "rows": 0,
             "inserted": 0,
             "matchdays_below_min_history": 0,
+            "refits": 0,
+            "refit_days_sample": [],
+            "refit_cadence_days": (
+                basketball_engine.SEED_REFIT_EVERY_DAYS
+                if lane in BASKETBALL_SEED_LANES
+                else 1
+            ),
         }
         summary["lanes"][lane] = lane_stats
         if lane not in LEAGUES:
@@ -442,6 +768,8 @@ def seed_walk_forward_ml(
         source = (
             soccer_engine.SOURCE
             if lane in SOCCER_SEED_LANES
+            else basketball_engine.EMPIRICAL_SOURCE
+            if lane in BASKETBALL_SEED_LANES
             else nhl_engine.SOURCE
             if lane == "nhl"
             else football_engine.EMPIRICAL_SOURCE
@@ -466,8 +794,52 @@ def seed_walk_forward_ml(
         prior_results: List[Result] = []
         seeded_rows: List[Dict[str, Any]] = []
         created = now_utc()
-        for day in sorted(by_day):
+        # Only basketball refits on a cadence: its ratings fit ~600 D1 teams, so
+        # a per-day fit across a 400-day backfill is the single most expensive
+        # thing the seeder does. Every other lane keeps the exact per-day
+        # cadence that produced its current numbers (and its byte-identical
+        # cold-cache DB).
+        refit_every = (
+            basketball_engine.SEED_REFIT_EVERY_DAYS if lane in BASKETBALL_SEED_LANES else 1
+        )
+        lane_days = sorted(by_day)
+        batch_day: Optional[str] = None
+        batch_results: List[Result] = prior_results
+        batch_ratings: Optional[dict] = None
+        batch_fit_done = False
+
+        def _batch_fit(day: str) -> Optional[dict]:
+            """Fit once per refit window, and only when a day actually needs scoring.
+
+            Lazy on purpose: a warm tick finds every day already seeded, and it
+            must pay for zero fits exactly like every other lane.
+            """
+            nonlocal batch_fit_done, batch_ratings
+            if batch_fit_done:
+                return batch_ratings
+            batch_fit_done = True
+            fit_started = time.monotonic()
+            candidate = basketball_engine.fit_lane_ratings(
+                lane, batch_results, reference_day=day
+            )
+            summary["fit_seconds"] += time.monotonic() - fit_started
+            if candidate.get("n"):
+                batch_ratings = candidate
+                lane_stats["refits"] += 1
+                if len(lane_stats["refit_days_sample"]) < 8:
+                    lane_stats["refit_days_sample"].append(day)
+            return batch_ratings
+
+        for position, day in enumerate(lane_days):
             games = by_day[day]
+            if refit_every > 1 and (batch_day is None or position % refit_every == 0):
+                # Snapshot, do not alias: the window must not see finals that
+                # settle inside it, or its last day would be priced with results
+                # that post-date the fit.
+                batch_day = day
+                batch_results = list(prior_results)
+                batch_ratings = None
+                batch_fit_done = False
             if len(prior_results) < MIN_SEED_HISTORY:
                 lane_stats["matchdays_below_min_history"] += 1
             else:
@@ -475,8 +847,17 @@ def seed_walk_forward_ml(
                     game for game in games if (game["game_id"], source) not in have
                 ]
                 if missing:
+                    if refit_every > 1:
+                        _batch_fit(batch_day or day)
                     fit_started = time.monotonic()
-                    scored = _score_matchday_moneyline(lane, day, prior_results, missing)
+                    scored = _score_matchday_moneyline(
+                        lane,
+                        day,
+                        batch_results if refit_every > 1 else prior_results,
+                        missing,
+                        ratings=batch_ratings if refit_every > 1 else None,
+                        refit_day=batch_day if refit_every > 1 else None,
+                    )
                     summary["fit_seconds"] += time.monotonic() - fit_started
                     lane_stats["matchdays_scored"] += 1
                     for game_id, selection, probability in scored:
@@ -536,6 +917,8 @@ def run(
     delay_seconds: float = 0.15,
     workers: int = 6,
     max_seconds: Optional[float] = 1800.0,
+    scoreboard_days: int = SCOREBOARD_BACKFILL_DAYS,
+    scoreboard_manifest: Optional[Path] = None,
 ) -> dict:
     """Backfill finals inside a wall-clock budget, newest season first.
 
@@ -568,6 +951,27 @@ def run(
         ),
     }
     for league in leagues:
+        if league.sport is Sport.BASKETBALL:
+            # Basketball history comes from scoreboards, one request per ET day,
+            # not from a season event index: the index is thousands of ids and
+            # the summary that carries a score costs one request per game.
+            if manifest["stopped_early"]:
+                manifest["leagues"][league.key] = {"status": "skipped_budget_exhausted"}
+                continue
+            counters = backfill_scoreboard_days(
+                store,
+                client,
+                league,
+                days_back=scoreboard_days,
+                deadline=deadline,
+                workers=workers,
+                manifest_path=scoreboard_manifest,
+            )
+            counters["espn_season_keys"] = espn_season_keys(league, ordered_seasons)
+            manifest["leagues"][league.key] = {"scoreboard": counters}
+            if counters["stopped_early"]:
+                manifest["stopped_early"] = True
+            continue
         league_manifest: Dict[str, Any] = {}
         for season in ordered_seasons:
             counters = {"stored": 0, "failed": 0}
@@ -681,6 +1085,31 @@ def main(argv: Optional[List[str]] = None) -> int:
         help="bounded parallel summary fetches (1 = sequential, honours --delay)",
     )
     parser.add_argument(
+        "--days-back",
+        type=int,
+        default=SCOREBOARD_BACKFILL_DAYS,
+        help="ET days of scoreboards to walk per basketball lane (default 400)",
+    )
+    parser.add_argument(
+        "--min-finals",
+        type=int,
+        default=COLD_LANE_MIN_FINALS,
+        help="finals a lane needs before --detect-cold considers it warm",
+    )
+    parser.add_argument(
+        "--detect-cold",
+        action="store_true",
+        help=(
+            "print the basketball lanes short of --min-finals settled finals as JSON "
+            "and exit; lanes whose full sweep is already complete are excluded"
+        ),
+    )
+    parser.add_argument(
+        "--scoreboard-manifest",
+        default=SCOREBOARD_MANIFEST,
+        help="resume manifest for the scoreboard backfill (past ET days only)",
+    )
+    parser.add_argument(
         "--max-seconds",
         type=float,
         default=1800.0,
@@ -707,6 +1136,31 @@ def main(argv: Optional[List[str]] = None) -> int:
     db_path = Path(args.db)
     if not db_path.is_absolute():
         db_path = ROOT / db_path
+    scoreboard_manifest = Path(args.scoreboard_manifest)
+    if not scoreboard_manifest.is_absolute():
+        scoreboard_manifest = ROOT / scoreboard_manifest
+    if args.detect_cold:
+        selected = select_leagues(args.league)
+        allowed = {league.key for league in selected}
+        with Store(db_path) as store:
+            # Only lanes this invocation could act on: naming a lane the caller
+            # did not ask for would make the scheduler punch above its selector.
+            report = {
+                "cold_lanes": [
+                    key
+                    for key in cold_lanes(
+                        store,
+                        min_finals=args.min_finals,
+                        manifest_path=scoreboard_manifest,
+                    )
+                    if key in allowed
+                ],
+                "finals": {lane.key: lane_finals_count(store, lane.key) for lane in selected},
+                "min_finals": args.min_finals,
+                "selector": args.league,
+            }
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     with Store(db_path) as store:
         manifest = run(
             store=store,
@@ -717,6 +1171,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             delay_seconds=args.delay,
             workers=max(1, args.workers),
             max_seconds=args.max_seconds,
+            scoreboard_days=max(1, args.days_back),
+            scoreboard_manifest=scoreboard_manifest,
         )
         # Runs on every invocation, not just a cold cache: it is idempotent, and
         # a partially lost cache heals the same way a fully lost one does.

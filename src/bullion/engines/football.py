@@ -17,7 +17,6 @@ there is enough history.
 
 from __future__ import annotations
 
-import math
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from ..espn import PredictorEvidence
@@ -25,12 +24,13 @@ from ..models import BookQuote, Forecast, Game
 from . import (
     DEFAULT_PRIOR_WEIGHT,
     Result,
-    decay_weight,
     fit_ratings,
     normal_cdf,
     normal_line_probs,
+    normal_ppf,
     quoted_lines,
     rates_for,
+    residual_sigmas,
     rest_adjustment,
 )
 
@@ -43,44 +43,6 @@ EMPIRICAL_SOURCE = "empirical_score"
 #: every other football lane stays on ``DEFAULT_PRIOR_WEIGHT``.
 PRIOR_WEIGHTS = {"cfb": 2.0}
 SIGMA_PRIORS = {"nfl": (13.5, 13.5), "cfb": (16.0, 14.5)}
-
-
-def normal_ppf(probability: float) -> float:
-    """Inverse standard-normal CDF via bisection (no scipy dependency)."""
-    p = min(max(probability, 1e-6), 1.0 - 1e-6)
-    low, high = -8.0, 8.0
-    for _ in range(80):
-        mid = (low + high) / 2.0
-        if normal_cdf(mid) < p:
-            low = mid
-        else:
-            high = mid
-    return (low + high) / 2.0
-
-
-def residual_sigmas(
-    results: Sequence[Result], ratings: dict, *, reference_day: str
-) -> Tuple[float, float]:
-    """Weighted residual std of margin and total, from fitted results."""
-    rows = [row for row in results if row.day < reference_day]
-    if len(rows) < 20:
-        return 0.0, 0.0
-    margin_residuals: List[float] = []
-    total_residuals: List[float] = []
-    weights: List[float] = []
-    for row in rows:
-        home_rate, away_rate = rates_for(
-            ratings, row.home_id, row.away_id
-        )
-        weights.append(decay_weight(row.day, reference_day, 120.0))
-        margin_residuals.append(row.margin - (home_rate - away_rate))
-        total_residuals.append(row.total - (home_rate + away_rate))
-    weight_sum = sum(weights)
-    mean_margin = sum(w * r for w, r in zip(weights, margin_residuals)) / weight_sum
-    mean_total = sum(w * r for w, r in zip(weights, total_residuals)) / weight_sum
-    var_margin = sum(w * (r - mean_margin) ** 2 for w, r in zip(weights, margin_residuals)) / weight_sum
-    var_total = sum(w * (r - mean_total) ** 2 for w, r in zip(weights, total_residuals)) / weight_sum
-    return math.sqrt(max(var_margin, 1.0)), math.sqrt(max(var_total, 1.0))
 
 
 def _sigmas(league: str, results: Sequence[Result], ratings: dict, reference_day: str) -> Tuple[float, float]:
