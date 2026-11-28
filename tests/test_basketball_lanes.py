@@ -654,6 +654,24 @@ def test_basketball_seeded_probability_matches_the_frozen_fit_and_never_sees_its
             "SELECT * FROM games WHERE game_id=?", (rows[0]["game_id"],)
         ).fetchone()
         ratings = real_fit("nba", used["results"], reference_day=used["reference_day"])
+        sigmas = bb.lane_sigmas("nba", used["results"], ratings, used["reference_day"])
+        # Fatigue reads every final strictly before the matchday — including
+        # those that settled inside the refit window — while ratings and sigmas
+        # stay frozen at the window's start.
+        fatigue_visible = [
+            Result(
+                home_id=row["home_team_id"],
+                away_id=row["away_team_id"],
+                home_score=float(row["home_score"]),
+                away_score=float(row["away_score"]),
+                day=sast_day(row["scheduled_utc"]),
+            )
+            for row in store.conn.execute(
+                "SELECT * FROM games WHERE league='nba' AND status='final' "
+                "AND home_score IS NOT NULL ORDER BY scheduled_utc"
+            )
+            if sast_day(row["scheduled_utc"]) < observed_day
+        ]
         _margin, _total, _sigma_margin, _sigma_total, prob_home = bb.empirical_expectations(
             "nba",
             used["results"],
@@ -661,6 +679,10 @@ def test_basketball_seeded_probability_matches_the_frozen_fit_and_never_sees_its
             home_id=target["home_team_id"],
             away_id=target["away_team_id"],
             reference_day=used["reference_day"],
+            sigmas=sigmas,
+            prior_days=bb.prior_days_index(fatigue_visible),
+            # Fatigue is evaluated on the matchday, not on the window's start.
+            fatigue_day=observed_day,
         )
         seeded = {row["selection"]: row["raw_probability"] for row in rows}
         assert seeded["home"] == pytest.approx(prob_home, abs=1e-9)
@@ -784,28 +806,86 @@ def test_daily_subset_run_cannot_erase_other_lanes(tmp_path):
 
 
 def test_cold_lanes_reports_short_lanes_and_skips_completed_sweeps(tmp_path, backfill):
-    manifest = tmp_path / "scoreboard_manifest.json"
+    from datetime import date, timedelta
+
+    today = date.today()
+    past_days = [
+        (today - timedelta(days=offset)).strftime("%Y%m%d")
+        for offset in range(1, backfill.SWEEP_COMPLETE_DAYS + 2)
+    ]
     with Store(tmp_path / "bullion.db") as store:
-        assert backfill.cold_lanes(store, min_finals=50, manifest_path=manifest) == [
-            key for key in LEAGUES
-        ][: len(LEAGUES)]
+        assert backfill.cold_lanes(store, min_finals=50) == list(LEAGUES)
         _seed_nba_history(store, days=30)  # 60 finals clears the bar
-        cold = backfill.cold_lanes(store, min_finals=50, manifest_path=manifest)
+        cold = backfill.cold_lanes(store, min_finals=50)
         assert "nba" not in cold
         assert "wnba" in cold
         # The WNBA is out of season: a completed sweep with too few finals is
         # reported as sparse and excluded, so no tick re-walks 400 empty days.
-        from datetime import date, timedelta
-
-        today = date.today()
-        days = {
-            f"wnba|{(today - timedelta(days=offset)).strftime('%Y%m%d')}": {"status": "done"}
-            for offset in range(1, backfill.SWEEP_COMPLETE_DAYS + 2)
-        }
-        manifest.write_text(json.dumps({"days": days}), encoding="utf-8")
-        cold = backfill.cold_lanes(store, min_finals=50, manifest_path=manifest)
+        for et_date in past_days:
+            store.record_scoreboard_day("wnba", et_date, 0)
+        cold = backfill.cold_lanes(store, min_finals=50)
         assert "wnba" not in cold
         assert "ncaa_m" in cold
+
+
+def test_evicted_warehouse_cannot_inherit_a_completed_sweep(tmp_path, backfill):
+    """Resume state must never outlive the finals it describes.
+
+    The warehouse is gitignored and restored from an Actions cache; anything
+    that records "already swept" outside it (a committed JSON manifest, say)
+    survives a cache eviction and then tells the backfill that 400 past days of
+    an EMPTY database are done. The lane would sit at 0 finals forever. This
+    test simulates exactly that: a full sweep recorded in one DB, then a fresh
+    empty DB, then a backfill that must refetch.
+    """
+    with Store(tmp_path / "evicted.db") as stale:
+        for et_date in backfill.et_days_back("20261101", 30)[1:]:
+            stale.record_scoreboard_day("nba", et_date, 0)
+        for lane in BASKETBALL_LEAGUES:
+            stale.record_scoreboard_day(lane, "20261001", 0)
+        # 30 swept days plus the extra one recorded for every lane below.
+        assert stale.scoreboard_days_captured("nba", before="20261101") == 31
+
+    with Store(tmp_path / "fresh.db") as fresh:
+        # Same lane, brand-new file: nothing is captured, nothing is skipped.
+        assert fresh.scoreboard_days_captured("nba", before="20261101") == 0
+        assert not fresh.scoreboard_day_done("nba", "20261001")
+        assert [key for key in backfill.cold_lanes(fresh, min_finals=50)] == list(LEAGUES)
+        fetched = []
+
+        def fake(url):
+            fetched.append(url)
+            et_date = url.split("dates=")[1][:8]
+            return {
+                "events": [
+                    event(
+                        f"nba-{et_date}-{index}",
+                        state="post",
+                        home_score="110",
+                        away_score="104",
+                        date=f"{et_date[:4]}-{et_date[4:6]}-{et_date[6:]}T23:30:00Z",
+                    )
+                    for index in range(2)
+                ]
+            }
+
+        from bullion.espn import EspnClient
+
+        counters = backfill.backfill_scoreboard_days(
+            fresh, EspnClient(fetch=fake), LEAGUES["nba"], days_back=3, workers=1
+        )
+        assert counters["days"] == 4
+        assert counters["skipped"] == 0, "an empty warehouse must refetch every day"
+        assert counters["stored"] == 8
+        assert len(fetched) == 4
+        assert backfill.lane_finals_count(fresh, "nba") == 8
+        # And a second pass skips exactly the past days, keeping today live.
+        before = len(fetched)
+        again = backfill.backfill_scoreboard_days(
+            fresh, EspnClient(fetch=fake), LEAGUES["nba"], days_back=3, workers=1
+        )
+        assert again["skipped"] == 3
+        assert len(fetched) - before == 1
 
 
 def test_et_days_back_is_inclusive_newest_first(backfill):
@@ -1059,3 +1139,200 @@ def test_wnba_stays_research_only_without_a_probe(tmp_path):
     assert run.status == "frozen_no_bet"
     assert "espn_probe_evidence_missing" in run.reason
     assert not (tmp_path / "wnba" / f"auto_tickets_{DAY}_decision.json").exists()
+
+
+# --------------------------------------------------------------------------
+# seeder cost + fatigue accuracy (regressions found in audit)
+# --------------------------------------------------------------------------
+
+
+def _spy_on_expectations(monkeypatch):
+    """Capture every empirical_expectations call the seeder makes."""
+    calls = []
+    real = bb.empirical_expectations
+
+    def spy(league, results, ratings, **kwargs):
+        calls.append({"results": results, "ratings": ratings, **kwargs})
+        return real(league, results, ratings, **kwargs)
+
+    monkeypatch.setattr(bb, "empirical_expectations", spy)
+    return calls
+
+
+def _seed_sparse_then_consecutive(store: Store) -> tuple:
+    """15 daily finals to clear the warm-up floor, then a long gap, then B2B.
+
+    Lane days are ``2026-10-01 … 2026-10-16`` (16 finals), then a three-week
+    gap, then ``2026-11-05`` and ``2026-11-06``. With a 7-day refit window over
+    lane *positions*, the window containing both November days opened at
+    position 14 (2026-10-15), so the frozen fit's reference day is three weeks
+    before the November games.
+    """
+    import random
+
+    rng = random.Random(9)
+    days = [f"2026-10-{day:02d}" for day in range(1, 17)] + ["2026-11-05", "2026-11-06"]
+    for index, day in enumerate(days):
+        strength = 108 + rng.gauss(0, 4)
+        _basketball_final(
+            store,
+            f"nba-{index}",
+            day,
+            "h1",
+            "a1",
+            round(strength + rng.gauss(0, 8)),
+            round(strength - 2 + rng.gauss(0, 8)),
+        )
+    return days
+
+
+def test_b2b_fatigue_reads_the_matchday_not_the_refit_window(tmp_path, backfill, monkeypatch):
+    """Two ways a stale fatigue day goes wrong, both pinned here.
+
+    With a weekly refit window the frozen fit's reference day can be weeks
+    before the matchday. Pricing fatigue against it (a) invents a back-to-back
+    for a team that has not played in a month, and (b) misses a real one the
+    night before D. Fatigue must be evaluated on D, and the team index must
+    include finals that settled inside the window.
+    """
+    calls = _spy_on_expectations(monkeypatch)
+    nights = ("2026-11-05", "2026-11-06")
+    with Store(tmp_path / "bullion.db") as store:
+        _seed_sparse_then_mostly_rested = _seed_sparse_then_consecutive(store)
+        summary = backfill.seed_walk_forward_ml(store, leagues=("nba",))
+        seeded = {
+            (row["observed_day"], row["selection"]): row["raw_probability"]
+            for row in store.conn.execute(
+                "SELECT observed_day, selection, raw_probability FROM forecast_snapshots "
+                "WHERE league='nba' AND market='moneyline'"
+            )
+        }
+    assert summary["lanes"]["nba"]["matchdays_scored"] == 3
+    assert seeded, "the two November matchdays must have been seeded"
+
+    by_day = {call["fatigue_day"]: call for call in calls}
+    rested, back_to_back = by_day[nights[0]], by_day[nights[1]]
+
+    # (a) No stale penalty: 20 days after the last game, fatigue is neutral...
+    window_start = rested["reference_day"]
+    assert window_start != nights[0], "the window must have opened before D"
+    assert bb.fatigue_multiplier(
+        rested["results"], "h1", window_start, prior_days=rested["prior_days"]
+    ) < 1.0, "the window start sits right after a game, so it would have applied one"
+    assert bb.fatigue_multiplier(
+        rested["results"], "h1", nights[0], prior_days=rested["prior_days"]
+    ) == pytest.approx(1.0)
+
+    # (b) ...while the real back-to-back the night before D is seen, even though
+    # that game settled inside the refit window and is not in the frozen fit.
+    assert nights[0] in back_to_back["prior_days"]["h1"]
+    assert nights[0] not in [row.day for row in back_to_back["results"]], (
+        "the D-1 final belongs to the window, not to the frozen fit"
+    )
+    assert bb.fatigue_multiplier(
+        back_to_back["results"], "h1", nights[1], prior_days=back_to_back["prior_days"]
+    ) == pytest.approx(bb.REST_B2B_PENALTY)
+
+    # Frozen ratings, frozen sigmas: one fit and one sigma scan per window.
+    assert rested["ratings"] is back_to_back["ratings"]
+    assert rested["sigmas"] is back_to_back["sigmas"]
+    assert rested["sigmas"] is not None
+
+
+def test_seeding_scans_sigmas_once_per_window_not_once_per_fixture(
+    tmp_path, backfill, monkeypatch
+):
+    """A full NCAA backfill must stay linear, not quadratic.
+
+    ``residual_sigmas`` is O(results); calling it per fixture is what made a
+    cold NCAA seeding run take minutes. One call per refit window — and none at
+    all for a warm cache — is the contract.
+    """
+    sigma_calls = []
+    real_sigmas = bb.lane_sigmas
+
+    def spy_sigmas(league, results, ratings, reference_day):
+        sigma_calls.append((league, reference_day))
+        return real_sigmas(league, results, ratings, reference_day)
+
+    monkeypatch.setattr(bb, "lane_sigmas", spy_sigmas)
+    with Store(tmp_path / "bullion.db") as store:
+        _seed_nba_history(store, days=40)  # 80 finals, ~25 scored matchdays
+        summary = backfill.seed_walk_forward_ml(store, leagues=("nba",))
+    lane = summary["lanes"]["nba"]
+    assert lane["matchdays_scored"] > 5
+    assert 0 < len(sigma_calls) <= lane["refits"], (
+        f"{len(sigma_calls)} sigma scans for {lane['refits']} windows / "
+        f"{lane['matchdays_scored']} matchdays"
+    )
+    # Warm cache: no fits, no sigma scans.
+    sigma_calls.clear()
+    with Store(tmp_path / "bullion.db") as store:
+        warm = backfill.seed_walk_forward_ml(store, leagues=("nba",))
+    assert warm["lanes"]["nba"]["inserted"] == 0
+    assert sigma_calls == []
+
+
+def test_history_crossing_the_floor_mid_window_is_not_skipped(tmp_path, backfill):
+    """The warm-up floor can be crossed on a non-boundary day.
+
+    The refit window object used to be snapshotted at position 0 (empty, below
+    MIN_SEED_HISTORY) and only refreshed every 7th position, so matchdays
+    3..6 after the floor was reached were scored from an empty fit and silently
+    produced zero rows.
+    """
+    import random
+
+    rng = random.Random(21)
+    with Store(tmp_path / "bullion.db") as store:
+        days = []
+        for index in range(10):  # 3 finals/day: floor (15) crossed on day 4
+            day = f"2026-10-{index + 1:02d}"
+            days.append(day)
+            for game_index in range(3):
+                _basketball_final(
+                    store,
+                    f"nba-{index}-{game_index}",
+                    day,
+                    f"h{game_index}",
+                    f"a{game_index}",
+                    round(105 + rng.gauss(0, 6)),
+                    round(101 + rng.gauss(0, 6)),
+                )
+        summary = backfill.seed_walk_forward_ml(store, leagues=("nba",))
+        lane = summary["lanes"]["nba"]
+        scored_days = {
+            row[0]
+            for row in store.conn.execute(
+                "SELECT DISTINCT observed_day FROM forecast_snapshots WHERE league='nba'"
+            )
+        }
+    # 15 priors are reached after day index 4, so days 5..9 must all be scored.
+    assert lane["matchdays_scored"] == 5, lane
+    assert scored_days == set(days[5:]), sorted(scored_days)
+    # 3 games x 2 selections per scored day.
+    assert lane["rows"] == 5 * 3 * 2
+
+
+def test_probe_uses_the_live_season_key(probe_script, monkeypatch):
+    """A probe of the finished season is a probe of nothing.
+
+    November 2026 must ask ESPN for season 2027 on the three straddling
+    basketball lanes, and 2026 for the WNBA.
+    """
+    from bullion.models import espn_season_keys as model_season_keys
+
+    asked = {}
+
+    class _Client:
+        def get(self, url):
+            asked[url.split("/leagues/")[-1].split("/")[0]] = url
+            return {"count": 0, "pageCount": 0, "items": []}
+
+    for key in ("nba", "ncaa_m", "ncaa_w", "wnba"):
+        league = LEAGUES[key]
+        season = model_season_keys(league, [2026])[0]
+        report = probe_script.probe_backfill(_Client(), league, season)
+        assert report["season"] == (2027 if key != "wnba" else 2026), key
+        assert str(report["season"]) in report["url"], key
+        assert report["season_key_source"] == "bullion.models.espn_season_keys"

@@ -182,6 +182,22 @@ def fit_lane_ratings(league: str, results: Sequence[Result], *, reference_day: s
     )
 
 
+def lane_sigmas(
+    league: str, results: Sequence[Result], ratings: dict, reference_day: str
+) -> Tuple[float, float]:
+    """``(sigma_margin, sigma_total)`` with per-lane priors — public for seeder reuse."""
+    return _sigmas(league, results, ratings, reference_day)
+
+
+def prior_days_index(results: Sequence[Result]) -> Dict[str, List[str]]:
+    """``team -> [day, ...]`` so fatigue does not rescan every result per game."""
+    index: Dict[str, List[str]] = {}
+    for row in results:
+        index.setdefault(row.home_id, []).append(row.day)
+        index.setdefault(row.away_id, []).append(row.day)
+    return index
+
+
 def empirical_expectations(
     league: str,
     results: Sequence[Result],
@@ -191,18 +207,36 @@ def empirical_expectations(
     away_id: str,
     reference_day: str,
     neutral_site: bool = False,
+    sigmas: Optional[Tuple[float, float]] = None,
+    prior_days: Optional[Dict[str, List[str]]] = None,
+    fatigue_day: Optional[str] = None,
 ) -> Tuple[float, float, float, float, float]:
     """``(margin, total, sigma_margin, sigma_total, prob_home)`` for one fixture.
 
     One function for the whole empirical surface so the moneyline, the spread
     ladder and the seeded history can never disagree about the same fixture.
+
+    ``sigmas``/``prior_days``/``fatigue_day`` exist for the walk-forward seeder,
+    which prices a whole refit window from one frozen fit: the residual sigmas
+    are ``O(results)`` and must not be recomputed per fixture, and the fatigue
+    question is "did this team play yesterday **before this matchday**", which
+    is a different day from the frozen fit's reference day whenever the seeder
+    is mid-window. All three are optional, so a live tick keeps the simple call.
     """
+    fatigue_reference = fatigue_day or reference_day
     home_rate, away_rate = rates_for(ratings, home_id, away_id, neutral=neutral_site)
-    home_rate *= fatigue_multiplier(results, home_id, reference_day)
-    away_rate *= fatigue_multiplier(results, away_id, reference_day)
+    home_rate *= fatigue_multiplier(
+        results, home_id, fatigue_reference, prior_days=prior_days
+    )
+    away_rate *= fatigue_multiplier(
+        results, away_id, fatigue_reference, prior_days=prior_days
+    )
     expected_margin = home_rate - away_rate
     expected_total = home_rate + away_rate
-    sigma_margin, sigma_total = _sigmas(league, results, ratings, reference_day)
+    if sigmas is None:
+        sigma_margin, sigma_total = _sigmas(league, results, ratings, reference_day)
+    else:
+        sigma_margin, sigma_total = sigmas
     # ``prob_home`` comes from the same margin the spread uses, so the moneyline
     # and the spread ladder cannot disagree about who is favoured.
     prob_home = 1.0 - normal_cdf((0.0 - expected_margin) / max(sigma_margin, 0.5))

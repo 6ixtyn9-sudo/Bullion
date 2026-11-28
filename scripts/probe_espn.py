@@ -55,7 +55,13 @@ from bullion.espn import (  # noqa: E402
     season_events_url,
     summary_url,
 )
-from bullion.models import LEAGUES, Sport, sast_day, to_utc_z  # noqa: E402
+from bullion.models import (  # noqa: E402
+    LEAGUES,
+    Sport,
+    espn_season_keys,
+    sast_day,
+    to_utc_z,
+)
 
 MAX_PATHS = 120
 MARKETS = ("moneyline", "moneyline_draw", "spread", "total")
@@ -462,7 +468,11 @@ def probe_league(
 
 def probe_backfill(client: EspnClient, league, season: int) -> Dict[str, Any]:
     url = season_events_url(league, season, 1)
-    report: Dict[str, Any] = {"url": url, "season": season}
+    report: Dict[str, Any] = {
+        "url": url,
+        "season": season,
+        "season_key_source": "bullion.models.espn_season_keys",
+    }
     try:
         payload = client.get(url)
     except Exception as exc:
@@ -577,7 +587,15 @@ def main(argv: Optional[List[str]] = None) -> int:
             summary_samples=args.summary_samples,
             predictor_samples=args.predictor_samples,
         )
-    report["backfill"] = {league.key: probe_backfill(client, league, season) for league in leagues}
+    # Ask for the season a lane is actually playing: ESPN numbers a straddling
+    # basketball season by the year it ends in, so a raw 2026 in November 2026
+    # probes the finished 2025-26 season and reports on history no lane prices.
+    report["backfill"] = {
+        league.key: probe_backfill(
+            client, league, espn_season_keys(league, [season])[0]
+        )
+        for league in leagues
+    }
     report["warnings"] = [
         "A scoreboard route that resolves does not imply a predictor or pickcenter contract.",
         "Coverage is measured over the probed SAST window only; re-run before enabling a lane.",

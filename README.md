@@ -84,12 +84,21 @@ basketball-specific pieces the sport actually needs:
   `scoreboard?dates=…&limit=500[&groups=50]`, one request per ET day, and the
   parser returns **only** `post` events. A missing `linescores` block is
   tolerated (many mid-major finals publish none); a non-empty block that
-  contradicts the final is dropped and recorded as a coverage gap.
+  contradicts the final is dropped and recorded as a coverage gap. Resume state
+  lives **inside `bullion.db`** (`scoreboard_backfill_days`, keyed
+  `(lane, ET day)`), never in a committed manifest: the warehouse is gitignored
+  and cache-restored, so a manifest in Git would outlive the database it
+  describes and could declare an empty warehouse already swept. Past ET days are
+  skipped; `today_ET` never is.
 * **Seeding refits weekly.** `seed_walk_forward_ml` scores historical matchdays
   with a frozen fit per 7-day window for basketball only — a per-day fit across
   a 400-day backfill over ~360 D1 teams is the one cost that does not fit the
-  job budget. Every other lane keeps its per-day cadence, and the seeding
-  summary records `refit_cadence_days`, `refits` and the sampled refit days.
+  job budget. The window also computes its residual sigmas and its team→days
+  index **once** (a per-fixture sigma scan made the pass quadratic), while
+  fatigue is still evaluated on each **matchday** against every final strictly
+  before it — including finals that settled inside the window. Every other lane
+  keeps its per-day cadence, and the seeding summary records
+  `refit_cadence_days`, `refits` and the sampled refit days.
 * **`wnba` stays `research_only` until it is measured.** In the off-season the
   probe reports `no_pre_match_events`, which is an absent measurement rather
   than a measured zero, so the lane grades and does not ticket. Nothing about

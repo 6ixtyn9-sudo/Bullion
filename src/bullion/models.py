@@ -12,7 +12,7 @@ import math
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 from zoneinfo import ZoneInfo
 
 SAST = ZoneInfo("Africa/Johannesburg")
@@ -234,6 +234,28 @@ SOCCER_LEAGUES = tuple(key for key, item in LEAGUES.items() if item.sport is Spo
 BASKETBALL_LEAGUES = tuple(
     key for key, item in LEAGUES.items() if item.sport is Sport.BASKETBALL
 )
+
+
+def espn_season_keys(league: League, requested) -> List[int]:
+    """ESPN season years to ask for, newest first.
+
+    ESPN numbers a straddling US season by the calendar year it *ends* in, so
+    asking for 2026 in November 2026 returns the 2025-26 season that already
+    finished. Basketball therefore expands each requested year to ``{y, y+1}``
+    so the live season is included; the WNBA and every other lane keep the plain
+    request, because their ``season.year`` is the year they play in.
+
+    Lives here rather than in a script because the backfill and the probe both
+    need it, and a probe that asks for the finished season reports on a season
+    that no lane will price.
+    """
+    years = {int(year) for year in requested}
+    if league.sport is not Sport.BASKETBALL or league.calendar_year_season:
+        return sorted(years, reverse=True)
+    expanded: set = set()
+    for year in years:
+        expanded.update({year, year + 1})
+    return sorted(expanded, reverse=True)
 
 
 def get_league(key: str) -> League:
