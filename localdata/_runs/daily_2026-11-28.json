@@ -1,5 +1,17 @@
 {
-  "generated_utc": "2026-11-28T06:15:35Z",
+  "carried_over_generated_utc": "2026-11-28T06:15:35Z",
+  "carried_over_lanes": [
+    "cfb",
+    "eng.1",
+    "esp.1",
+    "fra.1",
+    "ger.1",
+    "ita.1",
+    "nfl",
+    "nhl",
+    "uefa.champions"
+  ],
+  "generated_utc": "2026-11-28T08:22:08Z",
   "probe_report_used": true,
   "rehydrated": {
     "files": 9,
@@ -407,62 +419,2387 @@
       "status": "no_slate",
       "ticket_markets": [],
       "tickets": 0
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-28",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 16,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401909326",
+          "league": "nba",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401909327",
+          "league": "nba",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401909328",
+          "league": "nba",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401909329",
+          "league": "nba",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401909330",
+          "league": "nba",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401909331",
+          "league": "nba",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401909332",
+          "league": "nba",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401909333",
+          "league": "nba",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401909334",
+          "league": "nba",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401909335",
+          "league": "nba",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401909336",
+          "league": "nba",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "nba",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "no_slate",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 266,
+      "cutoff_utc": "2026-11-28T15:00:00Z",
+      "day": "2026-11-28",
+      "eligible_legs": 19,
+      "forecasts": 450,
+      "games": 131,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401925703",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920429",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913531",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920535",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921717",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921718",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920534",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401909789",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920533",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921827",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920543",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920544",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401911030",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929288",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920848",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401924810",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921416",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920753",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929407",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929181",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921224",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919786",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401928468",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401924738",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920542",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919021",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401902282",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921417",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920774",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920532",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921818",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401912213",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401911212",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929283",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401924845",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920810",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920382",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927366",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920541",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401933055",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921185",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929284",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926756",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918980",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401912711",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401911380",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929289",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929381",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401928624",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401925829",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401922264",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920737",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401911524",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919033",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926783",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927379",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401925710",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401922241",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401917920",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926734",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401928797",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401922024",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926778",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401911459",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920879",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401928620",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401924724",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401917968",
+          "league": "ncaa_m",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401927379",
+          "league": "ncaa_m",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927379",
+          "league": "ncaa_m",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401925710",
+          "league": "ncaa_m",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401925710",
+          "league": "ncaa_m",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401922241",
+          "league": "ncaa_m",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401922241",
+          "league": "ncaa_m",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401917920",
+          "league": "ncaa_m",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401917920",
+          "league": "ncaa_m",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401926734",
+          "league": "ncaa_m",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926734",
+          "league": "ncaa_m",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401928797",
+          "league": "ncaa_m",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401928797",
+          "league": "ncaa_m",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401922024",
+          "league": "ncaa_m",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401922024",
+          "league": "ncaa_m",
+          "reason": "no pre-tip quote for forecast"
+        }
+      ],
+      "lane": "ncaa_m",
+      "reason": "decision cutoff 2026-11-28T15:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 3
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": "2026-11-28T14:00:00Z",
+      "day": "2026-11-28",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 156,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401906082",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921243",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401912971",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915877",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913719",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927837",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401903575",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919078",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401906095",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401916121",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921394",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921081",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915875",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929165",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927987",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918859",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918544",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401903572",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927959",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915670",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913050",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401906058",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915876",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921211",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913040",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401922844",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919536",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913904",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926029",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918743",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401903573",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920507",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926034",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929206",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927517",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401916156",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915873",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929295",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927985",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927461",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926948",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921580",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921216",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919676",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919669",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918671",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401917726",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920008",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919062",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929189",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926996",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918436",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401917933",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913889",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913836",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401903559",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401931795",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401928049",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921617",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921073",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401930135",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920255",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918728",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401928282",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918785",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401917725",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927024",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920468",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918720",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401903574",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915878",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401906986",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926052",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920500",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915984",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915786",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913030",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920270",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918005",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401930115",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926030",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918545",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915879",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401903576",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915787",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927960",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401925625",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918800",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918532",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913041",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401936135",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921212",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927848",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401925886",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401922328",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921395",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401914494",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913905",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919063",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915880",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401930116",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929184",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927048",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913720",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401903577",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401928202",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927999",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926103",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926035",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920506",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401917727",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913888",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913816",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913670",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401906109",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918852",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921074",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913877",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401906059",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401930137",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927002",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921215",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919712",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919677",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918729",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915881",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926026",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401923334",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918920",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927103",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401917728",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401912510",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401912972",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927040",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918721",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401916087",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401928089",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920501",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919426",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919325",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401930136",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921549",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921213",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915882",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401935613",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929103",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918786",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913750",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401911741",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401923133",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401917729",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401916102",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401906987",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921618",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915985",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921214",
+          "league": "ncaa_w",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401918005",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918005",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401930115",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401930115",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401926030",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926030",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401918545",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918545",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401915879",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915879",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401903576",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401903576",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401915787",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915787",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401927960",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927960",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401925625",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401925625",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401918800",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918800",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401918532",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918532",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401913041",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913041",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401936135",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401936135",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401921212",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921212",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401927848",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927848",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401925886",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401925886",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401922328",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401922328",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401921395",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921395",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401914494",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401914494",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401913905",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913905",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401919063",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919063",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401915880",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915880",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401930116",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401930116",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401929184",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401929184",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401927048",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927048",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401913720",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913720",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401903577",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401903577",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401928202",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401928202",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401927999",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927999",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401926103",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926103",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401926035",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926035",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401920506",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401920506",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401917727",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401917727",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401913888",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913888",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401913816",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913816",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401913670",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913670",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401906109",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401906109",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401918852",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918852",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401921074",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921074",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401913877",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401913877",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401906059",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401906059",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401930137",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401930137",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401927002",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927002",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401921215",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401921215",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401919712",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919712",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401919677",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401919677",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401918729",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918729",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401915881",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401915881",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401926026",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401926026",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401923334",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401923334",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401918920",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918920",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401927103",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927103",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401917728",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401917728",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401912510",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401912510",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401912972",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401912972",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401927040",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401927040",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401918721",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401918721",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        },
+        {
+          "field": "pickcenter.absent",
+          "game_id": "401916087",
+          "league": "ncaa_w",
+          "reason": "no pickcenter/odds entries"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401916087",
+          "league": "ncaa_w",
+          "reason": "no pre-tip quote for forecast"
+        }
+      ],
+      "lane": "ncaa_w",
+      "reason": "decision cutoff 2026-11-28T14:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-28",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 0,
+      "gaps": [],
+      "lane": "wnba",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "no_slate",
+      "ticket_markets": [],
+      "tickets": 0
     }
   ],
   "sast_day": "2026-11-28",
   "schema_version": "bullion.daily_run",
   "seeded_ml": {
-    "fit_seconds": 0.04,
+    "fit_seconds": 0.0,
     "lanes": {
       "cfb": {
-        "inserted": 10,
+        "inserted": 0,
         "matchdays_below_min_history": 6,
-        "matchdays_scored": 1,
-        "rows": 10
+        "matchdays_scored": 0,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 0
       },
       "eng.1": {
         "inserted": 0,
         "matchdays_below_min_history": 9,
         "matchdays_scored": 0,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
         "rows": 0
       },
       "esp.1": {
         "inserted": 0,
         "matchdays_below_min_history": 5,
         "matchdays_scored": 0,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
         "rows": 0
       },
       "fra.1": {
         "inserted": 0,
         "matchdays_below_min_history": 6,
         "matchdays_scored": 0,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
         "rows": 0
       },
       "ger.1": {
         "inserted": 0,
         "matchdays_below_min_history": 4,
         "matchdays_scored": 0,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
         "rows": 0
       },
       "ita.1": {
         "inserted": 0,
         "matchdays_below_min_history": 5,
         "matchdays_scored": 0,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 0
+      },
+      "nba": {
+        "inserted": 0,
+        "matchdays_below_min_history": 2,
+        "matchdays_scored": 0,
+        "refit_cadence_days": 7,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 0
+      },
+      "ncaa_m": {
+        "inserted": 0,
+        "matchdays_below_min_history": 2,
+        "matchdays_scored": 0,
+        "refit_cadence_days": 7,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 0
+      },
+      "ncaa_w": {
+        "inserted": 0,
+        "matchdays_below_min_history": 1,
+        "matchdays_scored": 0,
+        "refit_cadence_days": 7,
+        "refit_days_sample": [],
+        "refits": 0,
         "rows": 0
       },
       "nfl": {
         "inserted": 0,
         "matchdays_below_min_history": 2,
         "matchdays_scored": 0,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
         "rows": 0
       },
       "nhl": {
-        "inserted": 6,
+        "inserted": 0,
         "matchdays_below_min_history": 3,
-        "matchdays_scored": 1,
-        "rows": 6
+        "matchdays_scored": 0,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 0
+      },
+      "wnba": {
+        "inserted": 0,
+        "matchdays_below_min_history": 8,
+        "matchdays_scored": 0,
+        "refit_cadence_days": 7,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 0
       }
     },
-    "seconds": 0.1
+    "seconds": 0.27
   }
 }

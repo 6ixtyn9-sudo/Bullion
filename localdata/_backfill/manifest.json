@@ -1,311 +1,96 @@
 {
   "counts": {
-    "book_snapshots": 0,
-    "forecast_snapshots": 0,
-    "games": 6489,
-    "predictor_snapshots": 0
+    "book_snapshots": 633,
+    "forecast_snapshots": 66156,
+    "games": 24000,
+    "predictor_snapshots": 78
   },
-  "generated_utc": "2026-11-26T12:39:46Z",
+  "elapsed_seconds": 33.17,
+  "generated_utc": "2026-11-28T08:20:41Z",
   "leagues": {
-    "cfb": {
-      "2024": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2025": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2026": {
-        "failed": 1,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "sample_errors": [
-          {
-            "error": "summary state='pre'; refusing to build a fixture",
-            "event_id": "401856879"
-          }
+    "nba": {
+      "scoreboard": {
+        "days": 401,
+        "espn_season_keys": [
+          2027,
+          2026,
+          2025,
+          2024
         ],
-        "skipped_existing": 0,
+        "failed": 0,
+        "lane": "nba",
+        "sample_errors": [],
+        "skipped": 0,
         "stopped_early": false,
-        "stored": 249,
-        "unprocessed": 0
+        "stored": 1662,
+        "today_et": "20261128"
       }
     },
-    "eng.1": {
-      "2024": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2025": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2026": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      }
-    },
-    "esp.1": {
-      "2024": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2025": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2026": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      }
-    },
-    "fra.1": {
-      "2024": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2025": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2026": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      }
-    },
-    "ger.1": {
-      "2024": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2025": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2026": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      }
-    },
-    "ita.1": {
-      "2024": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2025": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2026": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      }
-    },
-    "nfl": {
-      "2024": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2025": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2026": {
-        "failed": 7,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "sample_errors": [
-          {
-            "error": "summary state='pre'; refusing to build a fixture",
-            "event_id": "401873080"
-          },
-          {
-            "error": "summary state='pre'; refusing to build a fixture",
-            "event_id": "401873081"
-          },
-          {
-            "error": "summary state='pre'; refusing to build a fixture",
-            "event_id": "401873082"
-          }
+    "ncaa_m": {
+      "scoreboard": {
+        "days": 401,
+        "espn_season_keys": [
+          2027,
+          2026,
+          2025,
+          2024
         ],
-        "skipped_existing": 0,
+        "failed": 0,
+        "lane": "ncaa_m",
+        "sample_errors": [],
+        "skipped": 0,
         "stopped_early": false,
-        "stored": 243,
-        "unprocessed": 0
+        "stored": 7826,
+        "today_et": "20261128"
       }
     },
-    "nhl": {
-      "2024": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2025": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      },
-      "2026": {
-        "failed": 0,
-        "indexed": 250,
-        "pending_at_start": 250,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 250,
-        "unprocessed": 0
-      }
-    },
-    "uefa.champions": {
-      "2024": {
-        "failed": 0,
-        "indexed": 137,
-        "pending_at_start": 137,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 137,
-        "unprocessed": 0
-      },
-      "2025": {
-        "failed": 0,
-        "indexed": 189,
-        "pending_at_start": 189,
-        "skipped_existing": 0,
-        "stopped_early": false,
-        "stored": 189,
-        "unprocessed": 0
-      },
-      "2026": {
-        "failed": 18,
-        "indexed": 189,
-        "pending_at_start": 189,
-        "sample_errors": [
-          {
-            "error": "summary state='pre'; refusing to build a fixture",
-            "event_id": "401915372"
-          },
-          {
-            "error": "summary state='pre'; refusing to build a fixture",
-            "event_id": "401915289"
-          },
-          {
-            "error": "summary state='pre'; refusing to build a fixture",
-            "event_id": "401915286"
-          }
+    "ncaa_w": {
+      "scoreboard": {
+        "days": 401,
+        "espn_season_keys": [
+          2027,
+          2026,
+          2025,
+          2024
         ],
-        "skipped_existing": 0,
+        "failed": 0,
+        "lane": "ncaa_w",
+        "sample_errors": [],
+        "skipped": 0,
         "stopped_early": false,
-        "stored": 171,
-        "unprocessed": 0
+        "stored": 7511,
+        "today_et": "20261128"
+      }
+    },
+    "wnba": {
+      "scoreboard": {
+        "days": 401,
+        "espn_season_keys": [
+          2026,
+          2025,
+          2024
+        ],
+        "failed": 0,
+        "lane": "wnba",
+        "sample_errors": [],
+        "skipped": 0,
+        "stopped_early": false,
+        "stored": 374,
+        "today_et": "20261128"
       }
     }
   },
-  "max_events_per_season": 250,
-  "max_seconds": 900.0,
+  "max_events_per_season": 400,
+  "max_seconds": 600.0,
   "note": "Finals only. No historical prices are used as ticket or calibration evidence; calibration must accrue from live pre-tip forecasts.",
+  "processed_per_second": 523.757,
+  "projected_remaining_seconds": 0.0,
+  "rehydrated": {
+    "files": 9,
+    "restored": 0,
+    "rows": 199,
+    "skipped": 0
+  },
   "schema_version": "bullion.backfill_manifest",
   "season_order": "newest_first",
   "seasons": [
@@ -313,6 +98,156 @@
     2025,
     2024
   ],
+  "seeded_ml": {
+    "fit_seconds": 7.28,
+    "lanes": {
+      "cfb": {
+        "inserted": 14,
+        "matchdays_below_min_history": 6,
+        "matchdays_scored": 2,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 14
+      },
+      "eng.1": {
+        "inserted": 3,
+        "matchdays_below_min_history": 9,
+        "matchdays_scored": 1,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 3
+      },
+      "esp.1": {
+        "inserted": 3,
+        "matchdays_below_min_history": 5,
+        "matchdays_scored": 1,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 3
+      },
+      "fra.1": {
+        "inserted": 3,
+        "matchdays_below_min_history": 6,
+        "matchdays_scored": 1,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 3
+      },
+      "ger.1": {
+        "inserted": 3,
+        "matchdays_below_min_history": 4,
+        "matchdays_scored": 1,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 3
+      },
+      "ita.1": {
+        "inserted": 3,
+        "matchdays_below_min_history": 5,
+        "matchdays_scored": 1,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 3
+      },
+      "nba": {
+        "inserted": 3286,
+        "matchdays_below_min_history": 2,
+        "matchdays_scored": 260,
+        "refit_cadence_days": 7,
+        "refit_days_sample": [
+          "2025-10-27",
+          "2025-11-01",
+          "2025-11-08",
+          "2025-11-15",
+          "2025-11-22",
+          "2025-11-30",
+          "2025-12-07",
+          "2025-12-14"
+        ],
+        "refits": 38,
+        "rows": 3286
+      },
+      "ncaa_m": {
+        "inserted": 15314,
+        "matchdays_below_min_history": 2,
+        "matchdays_scored": 172,
+        "refit_cadence_days": 7,
+        "refit_days_sample": [
+          "2025-11-05",
+          "2025-11-10",
+          "2025-11-17",
+          "2025-11-24",
+          "2025-12-01",
+          "2025-12-08",
+          "2025-12-15",
+          "2025-12-22"
+        ],
+        "refits": 25,
+        "rows": 15314
+      },
+      "ncaa_w": {
+        "inserted": 14952,
+        "matchdays_below_min_history": 1,
+        "matchdays_scored": 173,
+        "refit_cadence_days": 7,
+        "refit_days_sample": [
+          "2025-11-04",
+          "2025-11-10",
+          "2025-11-17",
+          "2025-11-24",
+          "2025-12-01",
+          "2025-12-08",
+          "2025-12-15",
+          "2025-12-22"
+        ],
+        "refits": 25,
+        "rows": 14952
+      },
+      "nfl": {
+        "inserted": 2,
+        "matchdays_below_min_history": 2,
+        "matchdays_scored": 1,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 2
+      },
+      "nhl": {
+        "inserted": 24,
+        "matchdays_below_min_history": 3,
+        "matchdays_scored": 2,
+        "refit_cadence_days": 1,
+        "refit_days_sample": [],
+        "refits": 0,
+        "rows": 24
+      },
+      "wnba": {
+        "inserted": 716,
+        "matchdays_below_min_history": 8,
+        "matchdays_scored": 130,
+        "refit_cadence_days": 7,
+        "refit_days_sample": [
+          "2026-05-04",
+          "2026-05-15",
+          "2026-05-22",
+          "2026-05-30",
+          "2026-06-07",
+          "2026-06-14",
+          "2026-06-22",
+          "2026-06-29"
+        ],
+        "refits": 19,
+        "rows": 716
+      }
+    },
+    "seconds": 7.9
+  },
   "stopped_early": false,
   "workers": 6
 }
