@@ -35,7 +35,14 @@
       "status": "frozen_no_bet"
     },
     {
-      "candidate_pool_outcomes": {},
+      "candidate_pool_outcomes": {
+        "58c3f2be407c9afda796": "win",
+        "85525b8a8beee3de2f88": "win",
+        "8764a839b6946c754685": "win",
+        "cbfd8a71c0c5266f2394": "loss",
+        "d51e177da9897ac5c6a1": "loss",
+        "daa65e167c3864c7b8a3": "loss"
+      },
       "date": "2026-11-27",
       "decision_id": "1c5f4593fe99ca4d6fa7",
       "frozen_at": "2026-11-27T14:15:57Z",

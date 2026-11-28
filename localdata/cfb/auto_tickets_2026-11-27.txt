@@ -15,7 +15,7 @@ Frozen tickets retain their original decision basis; empty scans do not cancel t
 [PAPER 2-LEG ACCA #2] @3.192 — 1.000000 paper units — DraftKings · ❌ LOSS · net -1.000u
    Published Fri 2026-11-27 16:15 SAST · joint p=51.0%
    New Mexico Lobos vs Air Force Falcons · TIP-OFF Fri 2026-11-27 23:30 SAST
-      MONEYLINE -> HOME @1.388 · p=90.3% · DraftKings · ⏳ PENDING
+      MONEYLINE -> HOME @1.388 · p=90.3% · DraftKings · ✅ WIN · FINAL 42-19
    Ohio Bobcats vs Toledo Rockets · TIP-OFF Fri 2026-11-27 19:00 SAST
       MONEYLINE -> HOME @2.300 · p=56.5% · DraftKings · ❌ LOSS · FINAL 31-34
 

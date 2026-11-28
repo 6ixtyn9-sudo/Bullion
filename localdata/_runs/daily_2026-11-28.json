@@ -1,0 +1,468 @@
+{
+  "generated_utc": "2026-11-28T06:15:35Z",
+  "probe_report_used": true,
+  "rehydrated": {
+    "files": 9,
+    "restored": 0,
+    "rows": 199,
+    "skipped": 0
+  },
+  "runs": [
+    {
+      "candidate_pool": 6,
+      "cutoff_utc": "2026-11-28T14:00:00Z",
+      "day": "2026-11-28",
+      "eligible_legs": 0,
+      "forecasts": 6,
+      "games": 28,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401892795",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892796",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892797",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892798",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892799",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892800",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892801",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892802",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892803",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892804",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892805",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892806",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892807",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892808",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401892809",
+          "league": "nhl",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "nhl",
+      "reason": "decision cutoff 2026-11-28T14:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-28",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 1,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401873083",
+          "league": "nfl",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "nfl",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "no_slate",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 156,
+      "cutoff_utc": "2026-11-28T14:00:00Z",
+      "day": "2026-11-28",
+      "eligible_legs": 0,
+      "forecasts": 390,
+      "games": 66,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401856880",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401856756",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401858536",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401856759",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401856762",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401862840",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401866472",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401866473",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401869930",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401862838",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401864549",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401864546",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401858544",
+          "league": "cfb",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "cfb",
+      "reason": "decision cutoff 2026-11-28T14:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 21,
+      "cutoff_utc": "2026-11-28T10:00:00Z",
+      "day": "2026-11-28",
+      "eligible_legs": 0,
+      "forecasts": 21,
+      "games": 4,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401879225",
+          "league": "eng.1",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "eng.1",
+      "reason": "decision cutoff 2026-11-28T10:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 28,
+      "cutoff_utc": "2026-11-28T10:00:00Z",
+      "day": "2026-11-28",
+      "eligible_legs": 0,
+      "forecasts": 28,
+      "games": 5,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401882791",
+          "league": "esp.1",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "esp.1",
+      "reason": "decision cutoff 2026-11-28T10:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 28,
+      "cutoff_utc": "2026-11-28T10:00:00Z",
+      "day": "2026-11-28",
+      "eligible_legs": 2,
+      "forecasts": 28,
+      "games": 6,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401884720",
+          "league": "ger.1",
+          "reason": "no odds offers on event"
+        },
+        {
+          "field": "odds.shape_unrecognised",
+          "game_id": "401884722",
+          "league": "ger.1",
+          "reason": "no recognised price path in awayTeamOdds, bettingOdds, drawOdds, homeTeamOdds, links, provider"
+        },
+        {
+          "field": "pickcenter",
+          "game_id": "401884722",
+          "league": "ger.1",
+          "reason": "no pre-tip quote for forecast"
+        }
+      ],
+      "lane": "ger.1",
+      "reason": "decision cutoff 2026-11-28T10:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 1
+    },
+    {
+      "candidate_pool": 21,
+      "cutoff_utc": "2026-11-28T10:00:00Z",
+      "day": "2026-11-28",
+      "eligible_legs": 0,
+      "forecasts": 21,
+      "games": 4,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401875004",
+          "league": "ita.1",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "ita.1",
+      "reason": "decision cutoff 2026-11-28T10:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 0
+    },
+    {
+      "candidate_pool": 35,
+      "cutoff_utc": "2026-11-28T10:00:00Z",
+      "day": "2026-11-28",
+      "eligible_legs": 3,
+      "forecasts": 35,
+      "games": 6,
+      "gaps": [
+        {
+          "field": "pickcenter",
+          "game_id": "401876392",
+          "league": "fra.1",
+          "reason": "no odds offers on event"
+        }
+      ],
+      "lane": "fra.1",
+      "reason": "decision cutoff 2026-11-28T10:00:00Z not reached; scan only",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "pre_cutoff_scan",
+      "ticket_markets": [
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "tickets": 1
+    },
+    {
+      "candidate_pool": 0,
+      "cutoff_utc": null,
+      "day": "2026-11-28",
+      "eligible_legs": 0,
+      "forecasts": 0,
+      "games": 0,
+      "gaps": [],
+      "lane": "uefa.champions",
+      "reason": "no scheduled fixtures on the requested day",
+      "receipt_path": null,
+      "refreshed_finals": 0,
+      "status": "no_slate",
+      "ticket_markets": [],
+      "tickets": 0
+    }
+  ],
+  "sast_day": "2026-11-28",
+  "schema_version": "bullion.daily_run",
+  "seeded_ml": {
+    "fit_seconds": 0.04,
+    "lanes": {
+      "cfb": {
+        "inserted": 10,
+        "matchdays_below_min_history": 6,
+        "matchdays_scored": 1,
+        "rows": 10
+      },
+      "eng.1": {
+        "inserted": 0,
+        "matchdays_below_min_history": 9,
+        "matchdays_scored": 0,
+        "rows": 0
+      },
+      "esp.1": {
+        "inserted": 0,
+        "matchdays_below_min_history": 5,
+        "matchdays_scored": 0,
+        "rows": 0
+      },
+      "fra.1": {
+        "inserted": 0,
+        "matchdays_below_min_history": 6,
+        "matchdays_scored": 0,
+        "rows": 0
+      },
+      "ger.1": {
+        "inserted": 0,
+        "matchdays_below_min_history": 4,
+        "matchdays_scored": 0,
+        "rows": 0
+      },
+      "ita.1": {
+        "inserted": 0,
+        "matchdays_below_min_history": 5,
+        "matchdays_scored": 0,
+        "rows": 0
+      },
+      "nfl": {
+        "inserted": 0,
+        "matchdays_below_min_history": 2,
+        "matchdays_scored": 0,
+        "rows": 0
+      },
+      "nhl": {
+        "inserted": 6,
+        "matchdays_below_min_history": 3,
+        "matchdays_scored": 1,
+        "rows": 6
+      }
+    },
+    "seconds": 0.1
+  }
+}

@@ -1,7 +1,15 @@
 {
   "history": [
     {
-      "candidate_pool_outcomes": {},
+      "candidate_pool_outcomes": {
+        "0dee4f96e34bf1120e45": "win",
+        "2135ba1f22d58a223b4b": "loss",
+        "5256ed757ce3257ad1eb": "loss",
+        "7d403cb9f7c8698f05ac": "loss",
+        "a2e7140dbce387771a6a": "win",
+        "b9cae058bd7aa941b325": "win",
+        "c1f67df2e49e13e12c6d": "loss"
+      },
       "date": "2026-11-27",
       "decision_id": "04606686f066d29e9248",
       "frozen_at": "2026-11-27T10:15:19Z",

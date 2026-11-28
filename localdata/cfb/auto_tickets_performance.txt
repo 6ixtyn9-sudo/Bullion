@@ -4,7 +4,7 @@ BANK     101.040 units   x1.010 of the 100-unit base
 CAPITAL  101.040 free / 0.000 reserved paper units
 RECORD   ✅ WIN 1W / ❌ LOSS 1L (50.0% hit) · ROI +52.0%
 OPEN     0 held paper positions · 0 awaiting legs in open tickets
-LEGS     3 settled legs across 2 settled positions
+LEGS     4 settled legs across 2 settled positions
 SAMPLE   [LOW SAMPLE: n < 30] no profit, edge, or readiness claim is supported
 
 BET-DAYS, oldest first (1)
@@ -18,7 +18,7 @@ SETTLED (most recent 1 of 1 bet-days)
       Iowa Hawkeyes vs Nebraska Cornhuskers · MONEYLINE -> HOME @1.505 · ✅ WIN · FINAL 31-7
       UTSA Roadrunners vs Tulsa Golden Hurricane · MONEYLINE -> HOME @2.020 · ✅ WIN · FINAL 28-22
   2026-11-27 PAPER 2-LEG ACCA #2 @3.192 stake 1.000 · ❌ LOSS · net -1.000u
-      New Mexico Lobos vs Air Force Falcons · MONEYLINE -> HOME @1.388 · ⏳ PENDING
+      New Mexico Lobos vs Air Force Falcons · MONEYLINE -> HOME @1.388 · ✅ WIN · FINAL 42-19
       Ohio Bobcats vs Toledo Rockets · MONEYLINE -> HOME @2.300 · ❌ LOSS · FINAL 31-34
 
 NOTES
