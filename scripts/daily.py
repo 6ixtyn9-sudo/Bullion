@@ -90,7 +90,11 @@ def _merge_previous_run(path: Path, summary: Dict[str, Any]) -> Dict[str, Any]:
 
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--league", default="all", help="lane key, 'soccer', or 'all'")
+    parser.add_argument(
+        "--league",
+        default="all",
+        help="lane key (or comma list), 'soccer', 'basketball', or 'all'",
+    )
     parser.add_argument("--date", default=None, help="SAST day (YYYY-MM-DD); default today")
     parser.add_argument("--as-of", default=None, help="decision-time UTC override (testing)")
     parser.add_argument("--db", default="localdata/bullion.db")
