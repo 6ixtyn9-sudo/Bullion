@@ -13,7 +13,7 @@ candidates or a terminal no-bet lock. Neither is ever rotated.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
@@ -35,7 +35,8 @@ from .espn import (
     parse_pickcenter,
     parse_predictor,
     parse_summary,
-    summary_state,
+    summary_scheduled_utc,
+    summary_status,
 )
 from .models import (
     LEAGUES,
@@ -66,6 +67,7 @@ from .tickets import (
     decision_cutoff,
     eligible_rows,
     freeze_receipt,
+    latest_quotes,
     pick_row,
     resolve_outcome,
     roi_band,
@@ -200,15 +202,21 @@ def _reports(
 #: A game whose tip passed more than this long ago should already have a final.
 #: The 06:15Z grade cron only discovers "today", so without a lookback a game
 #: that finished after rollover stays ``scheduled`` in SQLite and starves both
-#: calibration (``WHERE g.status='final'``) and settlement. There is no upper
-#: bound: a backlog that took a week to appear must still drain, oldest first,
-#: so the gap cannot widen. ``REFRESH_MAX_GAMES`` bounds one run's work, and a
-#: larger backlog is reported rather than silently dropped.
+#: calibration (``WHERE g.status='final'``) and settlement. The queue is bounded
+#: at both ends and drained newest-first (see ``REFRESH_LOOKBACK_DAYS`` and
+#: ``REFRESH_MAX_GAMES``) so the games that just finished are always graded and
+#: the queue cannot grow an unfetchable tail.
 REFRESH_AFTER_HOURS = 2.0
 #: 120, not 40: an NCAA Saturday plus a Sunday rollover can leave 80+ finals
 #: unseen by the scoreboard scan, and a cap of 40 turns that into a backlog that
-#: never drains (each run re-checks the same oldest 40 and reports the rest).
+#: never drains (each run re-checks the same 120 and reports the rest).
 REFRESH_MAX_GAMES = 120
+#: How far back the refresh queue may reach. Without a floor, a fixture ESPN
+#: never resolves (placeholder bracket slot, abandoned event on an old payload)
+#: would be re-fetched on every tick forever, and with a bounded cap it would
+#: eventually crowd out the games that just finished. Two weeks covers every real
+#: rollover gap many times over.
+REFRESH_LOOKBACK_DAYS = 14
 
 
 def _scoring_quotes(
@@ -259,7 +267,9 @@ def _scoring_quotes(
     for game in scheduled:
         for quote in store.quotes_for_game(game.game_id):
             _add(quote, game)
-    return quotes
+    # Same rule as forecasting: a stale earlier-tick snapshot may not shadow the
+    # book's live board for that game/market.
+    return latest_quotes(quotes)
 
 
 def _refresh_recent_finals(
@@ -269,27 +279,41 @@ def _refresh_recent_finals(
     as_of_utc: str,
     gaps: List[CoverageGap],
 ) -> int:
-    """Re-check recently tipped, still-unscheduled games and store their finals.
+    """Re-check recently tipped, still-unsettled games and store their outcome.
 
     Discovery only asks ESPN for the ET days that can hold *this* SAST day, so a
     game that tipped yesterday evening and finished after rollover is never
     revisited. Grading, settlement and calibration all read ``status='final'``,
     so that game would sit as ``scheduled`` forever.
+
+    The queue is deliberately small in *kind*: it holds only games that can still
+    produce a result. A summary that reports the fixture canceled or postponed
+    persists that status and leaves the queue (it will never have a score), and a
+    fixture ESPN has moved is re-dated so the entry clocks off its new tip. One
+    unfetchable event therefore costs one summary call in total, not one per tick.
     """
     as_of = parse_utc(as_of_utc)
     newest = as_of - timedelta(hours=REFRESH_AFTER_HOURS)
+    oldest = as_of - timedelta(days=REFRESH_LOOKBACK_DAYS)
     stale = [
         game
         for game in store.games_for_league(league.key)
-        if game.status is not Status.FINAL and parse_utc(game.scheduled_utc) <= newest
+        # A canceled or postponed fixture is terminal for the refresh queue: it
+        # has no result to fetch, and leaving it in would burn a summary call on
+        # every tick for the rest of the season. If ESPN reschedules one, the
+        # scoreboard scan on its new day upserts it back to ``scheduled``.
+        if game.status not in {Status.FINAL, Status.CANCELLED, Status.POSTPONED}
+        and oldest <= parse_utc(game.scheduled_utc) <= newest
     ]
-    stale.sort(key=lambda game: game.scheduled_utc)
+    # Newest first: yesterday's finals must drain before a month-old backlog,
+    # otherwise a growing tail starves the games that actually need grading.
+    stale.sort(key=lambda game: game.scheduled_utc, reverse=True)
     if len(stale) > REFRESH_MAX_GAMES:
         gaps.append(
             CoverageGap(
                 league.key,
                 "summary.refresh.backlog",
-                f"{len(stale)} unsettled past-tip games; this run drains the oldest "
+                f"{len(stale)} unsettled past-tip games; this run drains the newest "
                 f"{REFRESH_MAX_GAMES}",
             )
         )
@@ -300,9 +324,23 @@ def _refresh_recent_finals(
         except (EspnFetchError, EspnParseError, ValueError) as exc:
             gaps.append(CoverageGap(league.key, "summary.refresh", str(exc), game.game_id))
             continue
-        state = summary_state(payload)
-        if state != "post":
-            # Still in progress (or the event moved): the next run re-checks it.
+        status = summary_status(payload)
+        if status in {Status.CANCELLED, Status.POSTPONED}:
+            # Terminal, but not a result: persist the status so the next tick
+            # skips the fixture instead of re-fetching it forever. No gap — an
+            # off fixture is a fact, not a parser failure.
+            store.upsert_game(replace(game, status=status))
+            continue
+        if status is Status.SCHEDULED:
+            # ESPN moved the fixture. Adopt the new tip time when it is later
+            # than ours; the queue entry now clocks off the new date.
+            rescheduled = summary_scheduled_utc(payload)
+            if rescheduled and parse_utc(rescheduled) > parse_utc(game.scheduled_utc):
+                store.upsert_game(replace(game, scheduled_utc=rescheduled))
+            continue
+        if status is not Status.FINAL:
+            # In progress, or a payload that is neither pre nor post: the next
+            # run re-checks it. Never forced to a final.
             continue
         try:
             final_game, summary_gaps = parse_summary(payload, game, league)
@@ -325,7 +363,12 @@ def _forecasts_for_game(
     observed_utc: str,
     gaps: List[CoverageGap],
 ) -> List[Forecast]:
-    quotes = [quote for quote in store.quotes_for_game(game.game_id) if quote.pre_match]
+    # Latest board per book only: the warehouse keeps every snapshot it has ever
+    # seen, and pricing off the best of several ticks would quote a line the book
+    # has already moved away from.
+    quotes = [
+        quote for quote in latest_quotes(store.quotes_for_game(game.game_id)) if quote.pre_match
+    ]
     if not quotes:
         # LIVE_VERIFIED 2026-11-26: scoreboard odds arrays can be empty while the
         # summary carries a populated ``pickcenter``. Fetch it once per game

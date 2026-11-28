@@ -102,6 +102,12 @@ class Status(str, Enum):
     LIVE = "live"
     FINAL = "final"
     UNKNOWN = "unknown"
+    #: Terminal-but-unplayed. ESPN reports these with ``state="post"`` and
+    #: ``completed=false`` (sometimes with placeholder ``"0"`` scores), so they
+    #: must never be mistaken for a 0-0 final: a canceled fixture voids, a
+    #: postponed one stays pending.
+    POSTPONED = "postponed"
+    CANCELLED = "cancelled"
 
 
 @dataclass(frozen=True)

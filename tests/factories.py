@@ -22,6 +22,8 @@ def event(
     away_name: str = "Away Club",
     date: str = "2026-11-28T23:00:00Z",
     state: str = "pre",
+    status_name: Optional[str] = None,
+    completed: Optional[bool] = None,
     offers: Optional[List[Dict[str, Any]]] = None,
     home_score: Optional[str] = None,
     away_score: Optional[str] = None,
@@ -44,6 +46,11 @@ def event(
         home_competitor["linescores"] = home_lines
     if away_lines is not None:
         away_competitor["linescores"] = away_lines
+    status_type: Dict[str, Any] = {"state": state}
+    if status_name is not None:
+        status_type["name"] = status_name
+    if completed is not None:
+        status_type["completed"] = completed
     return {
         "id": event_id,
         "date": date,
@@ -51,7 +58,7 @@ def event(
         "competitions": [
             {
                 "date": date,
-                "status": {"type": {"state": state}},
+                "status": {"type": status_type},
                 "competitors": [away_competitor, home_competitor],
                 "odds": offers or [],
                 "neutralSite": False,
@@ -96,19 +103,27 @@ def summary(
     home: str = "10",
     away: str = "20",
     state: str = "post",
+    status_name: Optional[str] = None,
+    completed: Optional[bool] = None,
+    date: str = "2026-11-28T23:00:00Z",
     home_score: str = "3",
     away_score: str = "2",
     home_lines: Optional[List[Dict[str, Any]]] = None,
     away_lines: Optional[List[Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
+    status_type: Dict[str, Any] = {"state": state}
+    if status_name is not None:
+        status_type["name"] = status_name
+    if completed is not None:
+        status_type["completed"] = completed
     return {
         "header": {
             "id": event_id,
             "season": {"year": 2026},
             "competitions": [
                 {
-                    "date": "2026-11-28T23:00:00Z",
-                    "status": {"type": {"state": state}},
+                    "date": date,
+                    "status": {"type": status_type},
                     "competitors": [
                         {
                             "homeAway": "away",

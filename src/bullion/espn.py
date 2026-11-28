@@ -276,7 +276,40 @@ def _verify_league_identity(payload: Dict[str, Any], league: League) -> None:
         )
 
 
-_STATUS = {"pre": Status.SCHEDULED, "in": Status.LIVE, "post": Status.FINAL}
+#: Status names ESPN uses for an event that is finished as a fixture but never
+#: played to a result. ``state`` alone cannot separate them from a final: canceled
+#: and postponed events arrive as ``state="post"`` and, worse, frequently carry
+#: ``completed=false`` with placeholder ``"0"`` scores. Grading those as a 0-0
+#: final invents a result; refusing them forever strands the refresh queue.
+_CANCELLED_TOKENS = ("CANCEL", "ABANDON", "FORFEIT")
+_POSTPONED_TOKENS = ("POSTPON",)
+
+
+def _competition_status(competition: Dict[str, Any]) -> Status:
+    """Map one competition's ``status.type`` block to a :class:`Status`.
+
+    Order matters. The *name* is checked first because ESPN reuses
+    ``state="post"`` for a canceled or postponed fixture; ``completed is False``
+    is then honoured only as an explicit boolean, because minimal payloads (and
+    synthetic tests) omit ``completed`` on genuine finals and ``None`` is not
+    evidence that the game was unplayed.
+    """
+    name = str(nested(competition, "status", "type", "name") or "").upper()
+    state = _state(competition)
+    if any(token in name for token in _CANCELLED_TOKENS):
+        return Status.CANCELLED
+    if any(token in name for token in _POSTPONED_TOKENS):
+        return Status.POSTPONED
+    if state == "post":
+        if nested(competition, "status", "type", "completed") is False:
+            return Status.UNKNOWN
+        return Status.FINAL
+    if state == "pre":
+        return Status.SCHEDULED
+    if state == "in":
+        return Status.LIVE
+    return Status.UNKNOWN
+
 
 _TEAM_REF_RE = re.compile(r"/teams/(\d+)")
 
@@ -404,8 +437,9 @@ def scoreboard_finals(
         except EspnParseError as exc:
             gaps.append(CoverageGap(league.key, "competition", str(exc), event_id))
             continue
-        if _state(competition) != "post":
-            # Pre-tip or in-progress: this function's contract is finals only.
+        if _competition_status(competition) is not Status.FINAL:
+            # Pre-tip, in-progress, or terminal-but-unplayed: this function's
+            # contract is finals only, so a canceled 0-0 placeholder is skipped.
             continue
         if is_placeholder(competition):
             gaps.append(
@@ -470,7 +504,7 @@ def _game_from_event(
         home_name=str(nested(home, "team", "displayName") or "").strip(),
         away_name=str(nested(away, "team", "displayName") or "").strip(),
         scheduled_utc=to_utc_z(raw_date),
-        status=_STATUS.get(_state(competition), Status.UNKNOWN),
+        status=_competition_status(competition),
         neutral_site=bool(competition.get("neutralSite")),
         venue=str(nested(competition, "venue", "fullName") or ""),
     )
@@ -865,10 +899,10 @@ def parse_summary(
     if not competitions:
         raise EspnParseError(f"event {game.game_id}: summary carries no competition")
     competition = competitions[0]
-    state = _state(competition)
-    if state != "post":
+    status = _competition_status(competition)
+    if status is not Status.FINAL:
         raise EspnIdentityError(
-            f"event {game.game_id}: summary state={state!r}; result quarantined"
+            f"event {game.game_id}: summary status={status.value!r}; result quarantined"
         )
     home, away = sides(competition)
     ids = {team_ref_id(home.get("team") or {}), team_ref_id(away.get("team") or {})}
@@ -1272,6 +1306,35 @@ def summary_state(payload: Dict[str, Any]) -> str:
     return _state(competitions[0])
 
 
+def summary_status(payload: Dict[str, Any]) -> Status:
+    """Full status of a summary's first competition.
+
+    ``summary_state`` answers "is it pre/in/post"; this answers "is there a
+    result", which is the only question grading may ask. A payload with no
+    competition is ``Status.UNKNOWN`` — an absent header is not a final.
+    """
+    competitions = nested(payload, "header", "competitions") or []
+    if not competitions:
+        return Status.UNKNOWN
+    return _competition_status(competitions[0])
+
+
+def summary_scheduled_utc(payload: Dict[str, Any]) -> Optional[str]:
+    """The tip time a summary reports, normalised to ``...Z`` (``None`` if absent)."""
+    competitions = nested(payload, "header", "competitions") or []
+    raw: Any = None
+    if competitions:
+        raw = competitions[0].get("date") if isinstance(competitions[0], dict) else None
+    if not raw:
+        raw = nested(payload, "header", "date")
+    if not raw:
+        return None
+    try:
+        return to_utc_z(raw)
+    except (TypeError, ValueError):
+        return None
+
+
 def _provider_name(offer: Dict[str, Any]) -> str:
     provider = offer.get("provider")
     if isinstance(provider, dict):
@@ -1478,9 +1541,10 @@ def game_from_summary(
     if not competitions:
         raise EspnParseError("summary carries no competition")
     competition = competitions[0]
-    if _state(competition) != "post":
+    status = _competition_status(competition)
+    if status is not Status.FINAL:
         raise EspnIdentityError(
-            f"summary state={_state(competition)!r}; refusing to build a fixture"
+            f"summary status={status.value!r}; refusing to build a fixture"
         )
     home, away = sides(competition)
     home_id = team_ref_id(home.get("team") or {})

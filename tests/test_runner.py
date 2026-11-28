@@ -6,9 +6,18 @@ import json
 
 import pytest
 
+import bullion.runner as runner_module
 from bullion.espn import EspnClient
-from bullion.models import LEAGUES, ActualResult, Forecast, Game, Status, sast_day
-from bullion.runner import run_lane
+from bullion.models import (
+    LEAGUES,
+    ActualResult,
+    BookQuote,
+    Forecast,
+    Game,
+    Status,
+    sast_day,
+)
+from bullion.runner import _refresh_recent_finals, run_lane
 from bullion.store import Store
 
 from .factories import close, event, offer, summary
@@ -591,3 +600,199 @@ def test_in_progress_game_is_not_forced_to_a_final(tmp_path):
     assert run.refreshed_finals == 0
     gaps = [gap for gap in run.gaps if gap.field == "summary.refresh"]
     assert gaps == []
+
+
+# ---------------------------------------------------------------------------
+# Multi-tick quote hygiene: an earlier tick may not price the live board
+# ---------------------------------------------------------------------------
+
+
+def test_second_tick_prices_off_the_live_board_not_the_best_stale_price(tmp_path):
+    """The 08:15Z price is dead once the same book quotes 15:00Z."""
+    with Store(tmp_path / "db.sqlite") as store:
+        _seed_history(store)
+        store.record_quotes(
+            [
+                BookQuote(
+                    game_id="e0",
+                    book="DraftKings",
+                    market="moneyline",
+                    observed_utc="2026-11-28T08:15:00Z",
+                    side_prices={"home": 2.60, "away": 1.50},
+                    pre_match=True,
+                )
+            ],
+            "nhl",
+        )
+        run_lane(
+            league=LEAGUES["nhl"],
+            day=DAY,
+            store=store,
+            localdata=tmp_path,
+            client=EspnClient(fetch=FakeEspn()),
+            as_of_utc=CUTOFF_SAST,
+            probe_report=_probe_report(),
+        )
+    rows = [row for row in _pool_rows(tmp_path) if row["game_id"] == "e0"]
+    assert rows, "e0 is on the live board and must still be priced"
+    assert {row["book"]["observed_utc"] for row in rows} == {CUTOFF_SAST}
+    assert all(row["book"]["selected_decimal_price"] < 2.60 for row in rows)
+
+
+# ---------------------------------------------------------------------------
+# Refresh queue: terminal-but-unplayed fixtures and a bounded, newest-first drain
+# ---------------------------------------------------------------------------
+
+
+class SummaryClient:
+    """Minimal ``EspnClient`` stand-in: one canned summary per event id."""
+
+    def __init__(self, payloads: dict | None = None) -> None:
+        self.payloads = payloads or {}
+        self.calls: list[str] = []
+
+    def summary(self, league, game_id):  # duck-typed stand-in for EspnClient
+        self.calls.append(game_id)
+        payload = self.payloads.get(game_id)
+        if isinstance(payload, Exception):
+            raise payload
+        if payload is None:
+            # Unscripted id: report an in-progress game so the queue moves on.
+            return {"header": {"competitions": [{"status": {"type": {"state": "in"}}}]}}
+        return payload
+
+
+def _past_game(store: Store, game_id: str, scheduled_utc: str) -> None:
+    store.upsert_game(
+        Game(
+            game_id=game_id,
+            league="nhl",
+            season="2026",
+            home_team_id="h1",
+            away_team_id="a1",
+            home_name="Home Club",
+            away_name="Away Club",
+            scheduled_utc=scheduled_utc,
+            status=Status.SCHEDULED,
+        )
+    )
+
+
+CANCELED_SUMMARY = {
+    "header": {
+        "competitions": [
+            {
+                "date": "2026-11-27T23:00:00Z",
+                "status": {"type": {"state": "post", "name": "STATUS_CANCELED", "completed": False}},
+                "competitors": [
+                    {
+                        "homeAway": "home",
+                        "team": {"id": "h1", "displayName": "Home Club"},
+                        "score": "0",
+                    },
+                    {
+                        "homeAway": "away",
+                        "team": {"id": "a1", "displayName": "Away Club"},
+                        "score": "0",
+                    },
+                ],
+            }
+        ]
+    }
+}
+
+POSTPONED_SUMMARY = {
+    "header": {
+        "competitions": [
+            {
+                "date": "2026-11-27T23:00:00Z",
+                "status": {
+                    "type": {"state": "post", "name": "STATUS_POSTPONED", "completed": False}
+                },
+                "competitors": [
+                    {"homeAway": "home", "team": {"id": "h1", "displayName": "Home Club"}},
+                    {"homeAway": "away", "team": {"id": "a1", "displayName": "Away Club"}},
+                ],
+            }
+        ]
+    }
+}
+
+
+def test_refresh_persists_canceled_and_postponed_and_stops_re_fetching_them(tmp_path):
+    """A 0-0 ``post`` canceled event is terminal, not a final."""
+    with Store(tmp_path / "db.sqlite") as store:
+        _past_game(store, "cancel1", "2026-11-27T23:00:00Z")
+        _past_game(store, "post1", "2026-11-27T22:00:00Z")
+        client = SummaryClient({"cancel1": CANCELED_SUMMARY, "post1": POSTPONED_SUMMARY})
+        gaps: list = []
+        refreshed = _refresh_recent_finals(
+            store, client, LEAGUES["nhl"], "2026-11-28T06:15:00Z", gaps
+        )
+        assert refreshed == 0
+        assert gaps == [], "an off fixture is a fact, not a parser failure"
+        canceled = store.get_game("cancel1")
+        postponed = store.get_game("post1")
+        assert canceled is not None and canceled.status is Status.CANCELLED
+        assert canceled.actual is None, "no invented 0-0 final"
+        assert postponed is not None and postponed.status is Status.POSTPONED
+
+        # Next tick: terminal fixtures are out of the queue, so zero HTTP calls.
+        second = SummaryClient({})
+        assert _refresh_recent_finals(
+            store, second, LEAGUES["nhl"], "2026-11-28T08:15:00Z", []
+        ) == 0
+        assert second.calls == []
+
+
+def test_refresh_adopts_a_rescheduled_fixture(tmp_path):
+    with Store(tmp_path / "db.sqlite") as store:
+        _past_game(store, "moved1", "2026-11-27T23:00:00Z")
+        rescheduled = {
+            "header": {
+                "competitions": [
+                    {
+                        "date": "2026-12-05T02:00:00Z",
+                        "status": {"type": {"state": "pre", "name": "STATUS_SCHEDULED"}},
+                        "competitors": [
+                            {"homeAway": "home", "team": {"id": "h1", "displayName": "Home Club"}},
+                            {"homeAway": "away", "team": {"id": "a1", "displayName": "Away Club"}},
+                        ],
+                    }
+                ]
+            }
+        }
+        gaps: list = []
+        assert _refresh_recent_finals(
+            store, SummaryClient({"moved1": rescheduled}), LEAGUES["nhl"],
+            "2026-11-28T06:15:00Z", gaps,
+        ) == 0
+        game = store.get_game("moved1")
+        assert game is not None
+        assert game.scheduled_utc == "2026-12-05T02:00:00Z"
+        assert game.status is Status.SCHEDULED
+        assert gaps == []
+
+
+def test_refresh_ignores_fixtures_older_than_the_lookback(tmp_path):
+    with Store(tmp_path / "db.sqlite") as store:
+        _past_game(store, "ancient", "2026-11-01T23:00:00Z")   # 26 days back
+        _past_game(store, "recent", "2026-11-27T23:00:00Z")
+        client = SummaryClient({"recent": POSTPONED_SUMMARY})
+        _refresh_recent_finals(store, client, LEAGUES["nhl"], "2026-11-28T06:15:00Z", [])
+        assert client.calls == ["recent"]
+        ancient = store.get_game("ancient")
+        assert ancient is not None and ancient.status is Status.SCHEDULED
+
+
+def test_refresh_drains_the_newest_backlog_first(tmp_path, monkeypatch):
+    monkeypatch.setattr(runner_module, "REFRESH_MAX_GAMES", 2)
+    with Store(tmp_path / "db.sqlite") as store:
+        for index, day in enumerate(["2026-11-20", "2026-11-22", "2026-11-25", "2026-11-27"]):
+            _past_game(store, f"old{index}", f"{day}T23:00:00Z")
+        client = SummaryClient({})
+        gaps: list = []
+        _refresh_recent_finals(store, client, LEAGUES["nhl"], "2026-11-28T06:15:00Z", gaps)
+    assert client.calls == ["old3", "old2"], "yesterday's finals drain before the tail"
+    backlog = [gap for gap in gaps if gap.field == "summary.refresh.backlog"]
+    assert backlog and "drains the newest 2" in backlog[0].reason

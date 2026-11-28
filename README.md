@@ -467,22 +467,48 @@ integer lines carry a real `push_probability`.
   recently tipped games from the summary (discovery only asks for the current
   SAST day's ET dates) and then settles, so the 06:15Z overnight cron grades
   yesterday instead of returning early on `no_slate`.
+* **The refresh queue drains newest-first, is bounded at both ends, and holds
+  only games that can still produce a result.** It reaches back 14 days
+  (`REFRESH_LOOKBACK_DAYS`) and 120 games per run (`REFRESH_MAX_GAMES`), so a
+  growing tail can never starve yesterday's finals; a larger backlog is reported
+  as `summary.refresh.backlog`. A summary that reports the fixture
+  `canceled`/`postponed` persists that status and leaves the queue — it will
+  never carry a score, and re-fetching it every tick is how the queue used to
+  jam — and a fixture ESPN has moved has its `scheduled_utc` updated so the
+  entry clocks off the new tip. If ESPN later reschedules a postponed game, the
+  scoreboard scan on its new day sets it back to `scheduled`.
+* **A canceled fixture voids; a postponed one stays pending.** ESPN sends both
+  with `state="post"` and often `completed=false` plus placeholder `"0"` scores,
+  so status is read from `status.type.name` before `state`: a `0-0` that nobody
+  played is never stored as a final. A canceled leg grades `push`, which voids
+  it out of a multi-leg ticket (the remaining prices still pay) instead of
+  booking a loss; a postponed leg stays `None`, because it will be played.
+* **One book, one live board.** The warehouse keeps every snapshot it has ever
+  seen, keyed by observation time, but pricing never reads across ticks:
+  `latest_quotes()` reduces each `(game, book, market)` group to its most recent
+  `observed_utc` before `quoted_lines()`, the college anchor or `attach_quotes()`
+  can see it. A `-3.5` that this book moved to `-6.5` is dead, an 08:15Z price of
+  `2.20` cannot outbid the same book's live `1.75`, distinct books still compete
+  on their live prices, and every alt line quoted in one snapshot survives. A
+  post-tip snapshot still raises at the ticket boundary whether or not a newer
+  one covered it.
 * Live paper tickets are flat 1.00u. Aggressive sizing (`--stake-mode daily_pct`,
   `kelly`, `skim`, `--daily-pct 0.25`) exists only in the replay harness and is
   flagged `[LOW SAMPLE: n < 30]` until 30 clean settled bet-days accumulate.
 
 ## Status
 
-* **250 offline unit tests** (`pytest -q`), sockets blocked. They cover: side
+* **274 offline unit tests** (`pytest -q`), sockets blocked. They cover: side
   resolution from `homeAway`, odds nesting and coverage gaps, `$ref` predictor
   orientation and contradiction handling, post-tip rejection, summary/OT period
   parsing, engine probability identities, Dixon-Coles rho behaviour, basketball
   prior/half-life shrinkage, college line anchoring, calibration leakage guards,
   gate rejection paths, receipt schema/immutability, settlement, 100% replay
   parity, paired A/B NO-OP refusal, cross-sport acca assembly, zero-settled-day
-  handling, and the probe's per-league `captured_utc` stamping and
-  non-destructive merge (carried-over lanes never look fresher than their
-  measurement).
+  handling, multi-tick quote freshness (a stale snapshot may not price the live
+  board), canceled/postponed status mapping and refresh-queue bounds, and the
+  probe's per-league `captured_utc` stamping and non-destructive merge
+  (carried-over lanes never look fresher than their measurement).
 * `scripts/replay_harness.py --parity` rebuilds each frozen receipt and diffs
   ticket id, combined price, and every leg price, not just the selected legs; it
   exits 1 on any mismatch, and reports `vacuous: true` when there is no receipt
