@@ -6,6 +6,9 @@
 # Subset runs (e.g. `leagues: basketball`) merge into espn_probe_latest.json
 # without erasing other lanes' captured coverage.
 #
+# Scheduled Mon/Thu at 07:00 SAST (05:00 UTC) so per-league probe evidence
+# stays inside PROBE_MAX_AGE_HOURS (168h / 7 days).
+#
 # Deliberately NOT here: any claim that a route resolving means a market is
 # priced. A window with no upcoming fixture reports status "no_pre_match_events"
 # and leaves that lane in research_only.
@@ -13,6 +16,8 @@
 name: probe-espn
 
 on:
+  schedule:
+    - cron: "0 5 * * 1,4"   # Mon & Thu 07:00 SAST (05:00 UTC)
   workflow_dispatch:
     inputs:
       date:
@@ -63,8 +68,8 @@ jobs:
       - name: Run live ESPN probe
         env:
           PROBE_DATE: ${{ inputs.date }}
-          PROBE_DAYS: ${{ inputs.days_ahead }}
-          PROBE_LEAGUES: ${{ inputs.leagues }}
+          PROBE_DAYS: ${{ inputs.days_ahead || '2' }}
+          PROBE_LEAGUES: ${{ inputs.leagues || 'all' }}
           PROBE_SEASON: ${{ inputs.season }}
         run: |
           mkdir -p localdata/_probes
