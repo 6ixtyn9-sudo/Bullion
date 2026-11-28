@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Optional
 from zoneinfo import ZoneInfo
 
 SAST = ZoneInfo("Africa/Johannesburg")
+ET = ZoneInfo("America/New_York")
 UTC = timezone.utc
 
 
@@ -56,6 +57,11 @@ def now_utc() -> str:
 def sast_day(value: Any) -> str:
     """SAST calendar day (the day a lane's card belongs to)."""
     return parse_utc(value).astimezone(SAST).strftime("%Y-%m-%d")
+
+
+def et_day(value: Any) -> str:
+    """US Eastern calendar day of an instant (DST-aware)."""
+    return parse_utc(value).astimezone(ET).strftime("%Y-%m-%d")
 
 
 def format_sast(value: Any) -> str:
@@ -163,6 +169,18 @@ class League:
     @property
     def has_draw(self) -> bool:
         return self.sport is Sport.SOCCER
+
+    def schedule_day(self, scheduled_utc: Any) -> str:
+        """The calendar day this fixture's SLATE belongs to.
+
+        US sports bucket by ET game day (a 02:00 SAST tip is the *previous* ET
+        evening); soccer keeps SAST. ``Result.day`` and a forecast's
+        ``reference_day`` must BOTH use this, or a night-game back-to-back
+        straddles the boundary and escapes the fatigue penalty.
+        """
+        if self.sport is Sport.SOCCER:
+            return sast_day(scheduled_utc)
+        return et_day(scheduled_utc)
 
 
 LEAGUES: Dict[str, League] = {

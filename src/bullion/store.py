@@ -320,6 +320,39 @@ class Store:
         ).fetchall()
         return [_quote_from_row(row) for row in rows]
 
+    def latest_pre_tip_main_lines(self, league: str) -> Dict[str, Dict[str, float]]:
+        """``game_id -> {"spread": line, "total": line}`` from the newest pre-tip
+        main-line snapshot per (game, market).
+
+        ONE bulk query per league: ``_results`` runs on thousands of settled
+        games, so this must never become a per-game quote query. Ties on
+        ``observed_utc`` resolve to the alphabetically first book, which is
+        deterministic.
+        """
+        rows = self.conn.execute(
+            """
+            SELECT bs.game_id AS game_id, bs.market AS market, bs.line AS line, bs.book AS book
+            FROM book_snapshots bs
+            JOIN (
+                SELECT game_id, market, MAX(observed_utc) AS observed_utc
+                FROM book_snapshots
+                WHERE league = ? AND main_line = 1 AND pre_match = 1
+                  AND market IN ('spread', 'total') AND line IS NOT NULL
+                GROUP BY game_id, market
+            ) latest
+              ON latest.game_id = bs.game_id AND latest.market = bs.market
+             AND latest.observed_utc = bs.observed_utc
+            WHERE bs.league = ? AND bs.main_line = 1 AND bs.pre_match = 1
+            ORDER BY bs.game_id, bs.market, bs.book
+            """,
+            (league, league),
+        ).fetchall()
+        lines: Dict[str, Dict[str, float]] = {}
+        for row in rows:  # first book per (game, market) in book-ascending order wins
+            slot = lines.setdefault(row["game_id"], {})
+            slot.setdefault(row["market"], float(row["line"]))
+        return lines
+
     # -- predictor ---------------------------------------------------------
     def record_predictor(
         self,
@@ -442,7 +475,8 @@ class Store:
         cutoff = utc_minus_hours(as_of_utc, RESULT_AVAILABLE_AFTER_HOURS)
         rows = self.conn.execute(
             """
-            SELECT f.*, g.scheduled_utc, g.home_score, g.away_score, g.status
+            SELECT f.*, g.scheduled_utc, g.home_score, g.away_score, g.status,
+                   g.overtime_periods, g.periods_json
             FROM forecast_snapshots f JOIN games g ON g.game_id = f.game_id
             WHERE f.league = ? AND g.status = 'final' AND g.home_score IS NOT NULL
               AND g.scheduled_utc <= ?
