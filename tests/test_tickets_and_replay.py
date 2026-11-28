@@ -29,18 +29,21 @@ from bullion.tickets import (
     RANKING_METRIC_BLEND,
     RANKING_METRIC_KELLY,
     GatePolicy,
+    attach_quotes,
     build_accas,
     eligible_rows,
     expected_value,
     kelly_log_growth,
     kelly_stake_fraction,
     freeze_receipt,
+    latest_quotes,
     pick_row,
     render_card,
     render_performance,
     roi_band,
     row_price,
     score_forecasts,
+    grade_row,
     settle_lane,
 )
 
@@ -1928,3 +1931,194 @@ def test_harness_variant_parsing_accepts_option_1_keys():
         harness.parse_variant("not_a_key=1", ReplaySpec())
     with pytest.raises(SystemExit):
         harness.parse_variant("ranking_metric=made_up", ReplaySpec())
+
+
+# ---------------------------------------------------------------------------
+# Multi-tick quote hygiene: the warehouse keeps every snapshot, pricing may not
+# ---------------------------------------------------------------------------
+
+PRE_TIP = "2026-11-28T23:00:00Z"
+
+
+def _quote(
+    *,
+    book: str = "DraftKings",
+    market: str = "moneyline",
+    line=None,
+    observed: str = "2026-11-28T08:15:00Z",
+    prices=None,
+    game_id: str = "q1",
+) -> BookQuote:
+    return BookQuote(
+        game_id=game_id,
+        book=book,
+        market=market,
+        observed_utc=observed,
+        side_prices=dict(prices or {"home": 1.75, "away": 2.10}),
+        line=line,
+        pre_match=True,
+    )
+
+
+def _quote_forecast(
+    *, market: str = "moneyline", line=None, selection: str = "home", game_id: str = "q1"
+) -> Forecast:
+    return Forecast(
+        game_id=game_id,
+        league="nhl",
+        scheduled_utc=PRE_TIP,
+        home_name="Home",
+        away_name="Away",
+        market=market,
+        line=line,
+        selection=selection,
+        raw_probability=0.55,
+        source=SOURCE,
+    )
+
+
+def test_latest_quotes_keeps_the_newest_price_not_the_best_historical_one():
+    """A better 08:15Z price is dead once the book repriced at 16:15Z."""
+    stale = _quote(observed="2026-11-28T08:15:00Z", prices={"home": 2.20, "away": 1.70})
+    fresh = _quote(observed="2026-11-28T16:15:00Z", prices={"home": 1.75, "away": 2.10})
+    assert latest_quotes([stale, fresh]) == [fresh]
+
+    forecast = _quote_forecast()
+    priced = attach_quotes([forecast], [stale, fresh])
+    assert len(priced) == 1
+    assert priced[0].book is fresh
+    assert priced[0].book.price_for("home") == pytest.approx(1.75)
+
+
+def test_latest_quotes_drops_the_dead_line_when_a_book_moves_its_spread():
+    """``line`` is not part of the grouping key: -3.5 is superseded by -6.5."""
+    dead = _quote(
+        market="spread",
+        line=-3.5,
+        observed="2026-11-28T08:15:00Z",
+        prices={"home": 2.05, "away": 1.80},
+    )
+    live = _quote(
+        market="spread",
+        line=-6.5,
+        observed="2026-11-28T16:15:00Z",
+        prices={"home": 1.91, "away": 1.91},
+    )
+    kept = latest_quotes([dead, live])
+    assert kept == [live]
+    assert {quote.line for quote in kept} == {-6.5}
+
+    # The engine inputs are what actually matters: unfiltered history would
+    # average the dead -3.5 into a -5.0 anchor nobody quoted.
+    from bullion.engines import quoted_lines
+    from bullion.engines.basketball import _anchor_line
+
+    assert quoted_lines([dead, live], "spread") == [-6.5, -3.5]
+    assert _anchor_line([dead, live], "spread") == pytest.approx(-5.0)
+    assert quoted_lines(kept, "spread") == [-6.5]
+    assert _anchor_line(kept, "spread") == pytest.approx(-6.5)
+
+    # The dead -3.5 line cannot be priced any more, and it must not price a
+    # forecast that was built on it.
+    assert attach_quotes([_quote_forecast(market="spread", line=-3.5)], [dead, live]) == []
+    priced = attach_quotes([_quote_forecast(market="spread", line=-6.5)], [dead, live])
+    assert len(priced) == 1
+    assert priced[0].book.line == -6.5
+
+
+def test_latest_quotes_still_compares_distinct_books_side_by_side():
+    """Two books are a live choice; one book's two ticks are not."""
+    draftkings_stale = _quote(
+        book="DraftKings", observed="2026-11-28T08:15:00Z", prices={"home": 2.40, "away": 1.55}
+    )
+    draftkings_live = _quote(
+        book="DraftKings", observed="2026-11-28T16:15:00Z", prices={"home": 1.75, "away": 2.10}
+    )
+    bet365_live = _quote(
+        book="Bet365", observed="2026-11-28T16:10:00Z", prices={"home": 1.95, "away": 1.95}
+    )
+    kept = latest_quotes([draftkings_stale, draftkings_live, bet365_live])
+    assert kept == [draftkings_live, bet365_live]
+
+    priced = attach_quotes([_quote_forecast()], kept)
+    assert len(priced) == 1
+    # Best *live* book wins: 1.95 at Bet365, never the dead 2.40 at DraftKings.
+    assert priced[0].book.book == "Bet365"
+    assert priced[0].book.price_for("home") == pytest.approx(1.95)
+
+
+def test_latest_quotes_keeps_every_alt_line_from_one_live_snapshot():
+    """One snapshot legitimately quotes several lines; they all survive."""
+    main = _quote(market="total", line=6.5, observed="2026-11-28T16:15:00Z")
+    alt = _quote(market="total", line=7.5, observed="2026-11-28T16:15:00Z")
+    stale_alt = _quote(market="total", line=5.5, observed="2026-11-28T08:15:00Z")
+    kept = latest_quotes([stale_alt, main, alt])
+    assert kept == [main, alt]
+    assert latest_quotes([]) == []
+
+
+def test_attach_quotes_still_rejects_a_post_tip_snapshot_a_newer_one_covered():
+    """Fail-closed survives the filter: lateness is never forgiven by freshness."""
+    late = _quote(observed="2026-11-28T23:30:00Z", prices={"home": 1.90, "away": 1.90})
+    late.pre_match = False
+    fresh = _quote(observed="2026-11-28T23:40:00Z", prices={"home": 1.80, "away": 2.00})
+    fresh.pre_match = False
+    with pytest.raises(ValueError, match="post-tip"):
+        attach_quotes([_quote_forecast()], [late, fresh])
+
+
+# ---------------------------------------------------------------------------
+# Off fixtures: a canceled leg voids, a postponed leg stays pending
+# ---------------------------------------------------------------------------
+
+
+def test_grade_row_voids_a_canceled_fixture_and_pends_a_postponed_one():
+    row = {"market": "moneyline", "selection": "home", "line": None}
+    canceled = Game(
+        game_id="c1",
+        league="nhl",
+        season="2026",
+        home_team_id="h",
+        away_team_id="a",
+        home_name="Home",
+        away_name="Away",
+        scheduled_utc="2026-11-28T23:00:00Z",
+        status=Status.CANCELLED,
+    )
+    assert canceled.actual is None
+    assert grade_row(row, canceled) == "push", "a fixture that is off cannot lose a stake"
+
+    postponed = Game(
+        game_id="p1",
+        league="nhl",
+        season="2026",
+        home_team_id="h",
+        away_team_id="a",
+        home_name="Home",
+        away_name="Away",
+        scheduled_utc="2026-11-28T23:00:00Z",
+        status=Status.POSTPONED,
+    )
+    assert grade_row(row, postponed) is None, "a postponed leg is pending, not void"
+
+
+def test_settle_lane_voids_a_canceled_leg_inside_a_multileg_ticket(tmp_path):
+    league, rows = _pool(tmp_path, n=4)
+    receipt, _ = _freeze(tmp_path, rows, league=league)
+    assert receipt is not None
+    canceled_leg = receipt["accas"][0]["legs"][0]["game_id"]
+    games = {}
+    for index in range(4):
+        game = _game(index, final="win")
+        games[game.game_id] = game
+    games[canceled_leg].status = Status.CANCELLED
+    games[canceled_leg].actual = None
+    report = settle_lane(tmp_path, league, games)
+    assert report is not None
+    position = report["history"][0]["positions"][0]
+    legs = receipt["accas"][0]["leg_count"]
+    assert position["leg_outcomes"].count("push") == 1
+    assert position["grade_status"] == "win"
+    # The voided leg contributes 1.0 to the product; the others still pay 1.95.
+    assert position["effective_decimal_odds"] == pytest.approx(1.95 ** (legs - 1))
+    assert position["profit_units"] == pytest.approx(1.95 ** (legs - 1) - 1)

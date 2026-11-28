@@ -15,6 +15,9 @@ from bullion.espn import (
     parse_predictor,
     parse_scoreboard,
     parse_summary,
+    scoreboard_finals,
+    summary_scheduled_utc,
+    summary_status,
 )
 from bullion.models import LEAGUES, BookQuote, Forecast, Status
 from bullion.tickets import attach_quotes
@@ -507,3 +510,85 @@ def test_soccer_quarter_lines_are_flagged_instead_of_priced_as_binary():
     )
     parsed = parse_scoreboard({"events": [event(offers=[half])]}, soccer, OBSERVED)
     assert {quote.market for quote in parsed.quotes} == {"moneyline", "spread", "total"}
+
+
+# ---------------------------------------------------------------------------
+# Terminal-but-unplayed events: canceled / postponed must never read as 0-0
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("status_name", "completed", "expected"),
+    [
+        ("STATUS_CANCELED", False, Status.CANCELLED),
+        ("STATUS_CANCELLED", False, Status.CANCELLED),
+        ("STATUS_ABANDONED", False, Status.CANCELLED),
+        ("STATUS_FORFEIT", False, Status.CANCELLED),
+        ("STATUS_POSTPONED", False, Status.POSTPONED),
+        ("STATUS_FINAL", True, Status.FINAL),
+        ("STATUS_FINAL", None, Status.FINAL),
+        # An unfinished "post" without a terminal name is not a result either.
+        ("STATUS_FINAL", False, Status.UNKNOWN),
+    ],
+)
+def test_terminal_status_names_win_over_a_post_state(status_name, completed, expected):
+    """ESPN sends ``state="post"``, ``completed=false`` and ``"0"`` scores for these."""
+    payload = {
+        "events": [
+            event(
+                event_id="t1",
+                state="post",
+                status_name=status_name,
+                completed=completed,
+                home_score="0",
+                away_score="0",
+                offers=[],
+            )
+        ]
+    }
+    parsed = parse_scoreboard(payload, NHL, OBSERVED)
+    assert parsed.games[0].status is expected
+
+    finals, _ = scoreboard_finals(payload, NHL)
+    if expected is Status.FINAL:
+        assert [game.game_id for game in finals] == ["t1"]
+    else:
+        assert finals == [], "a canceled/postponed event is not a final"
+        assert parsed.games[0].actual is None
+
+
+@pytest.mark.parametrize("status_name", ["STATUS_CANCELED", "STATUS_POSTPONED"])
+def test_summary_refuses_a_terminal_but_unplayed_event(status_name):
+    """No fake 0-0 final, and no permanent unparseable-final loop either."""
+    game = parse_scoreboard(_scoreboard_payload(), NHL, OBSERVED).games[0]
+    payload = summary(
+        state="post",
+        status_name=status_name,
+        completed=False,
+        home_score="0",
+        away_score="0",
+    )
+    assert summary_status(payload) in {Status.CANCELLED, Status.POSTPONED}
+    with pytest.raises(EspnIdentityError):
+        parse_summary(payload, game, NHL)
+    with pytest.raises(EspnIdentityError):
+        game_from_summary(payload, NHL, "401")
+
+
+def test_post_without_completed_is_still_a_final():
+    """``completed`` absent is not evidence the game was unplayed."""
+    payload = summary(state="post")
+    assert summary_status(payload) is Status.FINAL
+    payload["header"]["competitions"][0]["status"]["type"]["completed"] = True
+    assert summary_status(payload) is Status.FINAL
+
+    unfinished = summary(state="post", completed=False)
+    assert summary_status(unfinished) is Status.UNKNOWN
+
+
+def test_summary_status_and_scheduled_utc_fail_closed_on_empty_payloads():
+    assert summary_status({}) is Status.UNKNOWN
+    assert summary_scheduled_utc({}) is None
+    payload = summary(state="pre", date="2026-12-05T02:00:00+00:00")
+    assert summary_status(payload) is Status.SCHEDULED
+    assert summary_scheduled_utc(payload) == "2026-12-05T02:00:00Z"

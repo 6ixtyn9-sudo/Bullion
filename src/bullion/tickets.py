@@ -13,6 +13,7 @@ import json
 import math
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
@@ -130,28 +131,82 @@ def claimed_edge(probability: Optional[float], price: Optional[float]) -> Option
 # ---------------------------------------------------------------------------
 
 
+def _line_key(market: str, line: Optional[float]) -> Optional[float]:
+    """Exact-line identity of a quote/forecast (moneyline has no line)."""
+    return None if market == "moneyline" else round(float(line or 0), 3)
+
+
+def _quotes_by_market_line(
+    quotes: Iterable[BookQuote],
+) -> Dict[Tuple[str, str, Optional[float]], List[BookQuote]]:
+    index: Dict[Tuple[str, str, Optional[float]], List[BookQuote]] = {}
+    for quote in quotes:
+        key = (quote.game_id, quote.market, _line_key(quote.market, quote.line))
+        index.setdefault(key, []).append(quote)
+    return index
+
+
+def latest_quotes(quotes: Sequence[BookQuote]) -> List[BookQuote]:
+    """Keep only each book's most recent board for one ``(game, market)``.
+
+    The warehouse stores every snapshot it has ever seen, keyed by observation
+    time, so an 08:15Z scan and a 16:15Z scan of the same fixture sit side by
+    side. Attaching the *best* of both is not a price — it is cherry-picking a
+    line the book has already moved off. Each ``(game, book, market)`` group is
+    therefore reduced to its latest ``observed_utc``:
+
+    * ``line`` is deliberately **not** part of the grouping key, so a book that
+      shifts a spread from ``-3.5`` to ``-6.5`` supersedes the dead ``-3.5``
+      quote instead of offering both;
+    * every quote sharing that latest timestamp survives, because one snapshot
+      legitimately quotes several alt lines;
+    * distinct books stay side by side, so choosing between ``DraftKings`` and
+      ``Bet365`` is still a live comparison.
+
+    Input order is preserved, and an empty input stays empty.
+    """
+    latest: Dict[Tuple[str, str, str], datetime] = {}
+    for quote in quotes:
+        key = (quote.game_id, quote.book, quote.market)
+        stamp = parse_utc(quote.observed_utc)
+        previous = latest.get(key)
+        if previous is None or stamp > previous:
+            latest[key] = stamp
+    if not latest:
+        return []
+    return [
+        quote
+        for quote in quotes
+        if parse_utc(quote.observed_utc) == latest[(quote.game_id, quote.book, quote.market)]
+    ]
+
+
 def attach_quotes(forecasts: Iterable[Forecast], quotes: Sequence[BookQuote]) -> List[Forecast]:
     """Attach the best pre-tip named-book quote per exact market/line/selection.
 
     Post-tip evidence raises ``ValueError`` — it is never silently dropped at
     this boundary, because a dropped price looks like "no edge" instead of
-    "the pipeline was late".
+    "the pipeline was late". The check runs against every supplied quote, not
+    only the ones that survive ``latest_quotes``: a late snapshot is a pipeline
+    failure whether or not a newer one superseded it.
+
+    Pricing itself reads ``latest_quotes(quotes)``, so a stale earlier-tick
+    snapshot cannot outbid the book's live board (whether the price or the line
+    is what moved).
     """
-    by_key: Dict[Tuple[str, str, Optional[float]], List[BookQuote]] = {}
-    for quote in quotes:
-        line_key = None if quote.market == "moneyline" else round(float(quote.line or 0), 3)
-        by_key.setdefault((quote.game_id, quote.market, line_key), []).append(quote)
+    supplied = list(quotes)
+    by_key = _quotes_by_market_line(latest_quotes(supplied))
+    supplied_by_key = _quotes_by_market_line(supplied)
     priced: List[Forecast] = []
     for forecast in forecasts:
-        line_key = None if forecast.market == "moneyline" else round(float(forecast.line or 0), 3)
-        options = [
-            quote
-            for quote in by_key.get((forecast.game_id, forecast.market, line_key), [])
-            if quote.provenance == "named_book" and quote.price_for(forecast.selection)
-        ]
-        if not options:
-            continue
-        for quote in options:
+        key = (
+            forecast.game_id,
+            forecast.market,
+            _line_key(forecast.market, forecast.line),
+        )
+        for quote in supplied_by_key.get(key, []):
+            if quote.provenance != "named_book" or not quote.price_for(forecast.selection):
+                continue
             if not quote.pre_match or parse_utc(quote.observed_utc) >= parse_utc(
                 forecast.scheduled_utc
             ):
@@ -160,6 +215,13 @@ def attach_quotes(forecasts: Iterable[Forecast], quotes: Sequence[BookQuote]) ->
                     f"{forecast.selection}: observed {quote.observed_utc} "
                     f">= scheduled {forecast.scheduled_utc}"
                 )
+        options = [
+            quote
+            for quote in by_key.get(key, [])
+            if quote.provenance == "named_book" and quote.price_for(forecast.selection)
+        ]
+        if not options:
+            continue
         best = max(options, key=lambda quote: quote.price_for(forecast.selection) or 0.0)
         forecast.book = best
         forecast.calibration = dict(forecast.calibration)
@@ -1207,10 +1269,18 @@ def resolve_outcome(
 
 def grade_row(row: Dict[str, Any], game: Any, *, has_draw: bool = True) -> Optional[str]:
     """Grade one frozen row against a reconciled final. Never guesses."""
+    status_value = getattr(game, "status", None)
+    status_value = getattr(status_value, "value", status_value)
+    if status_value == "cancelled":
+        # Standard book rule for a fixture that is off: every leg voids, so a
+        # multi-leg ticket degrades to the product of its remaining prices
+        # rather than dying as a loss. A postponed fixture is different — it
+        # will be played, so its legs stay pending and nothing is refunded.
+        return "push"
     actual = getattr(game, "actual", None)
-    if actual is None or getattr(game, "status", None) is None:
+    if actual is None or status_value is None:
         return None
-    if getattr(game.status, "value", game.status) != "final":
+    if status_value != "final":
         return None
     return resolve_outcome(
         str(row.get("market") or ""),
