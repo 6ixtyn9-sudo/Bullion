@@ -1129,6 +1129,7 @@ def freeze_receipt(
     singles: Optional[List[Dict[str, Any]]] = None,
     selection_policy: Optional[Dict[str, Any]] = None,
     decision_state: Optional[Dict[str, Any]] = None,
+    reason: Optional[str] = None,
 ) -> Optional[Dict[str, Any]]:
     """Write the day's immutable receipt once; return it (existing or new).
 
@@ -1145,6 +1146,21 @@ def freeze_receipt(
     decision_id = hashlib.sha256(
         f"{league.lane}|{day}|{captured_utc}".encode()
     ).hexdigest()[:20]
+
+    def _freeze_age(row: Dict[str, Any]) -> None:
+        """Hours between the observation and the tip, stamped on every row.
+
+        A pool row priced hours before tip and one priced minutes before are
+        not the same evidence; the receipt now says which it was.
+        """
+        scheduled = row.get("scheduled_utc")
+        if scheduled:
+            row["freeze_age_hours"] = round(
+                (parse_utc(scheduled) - parse_utc(captured_utc)).total_seconds() / 3600.0, 2
+            )
+
+    for row in candidate_pool:
+        _freeze_age(row)
     if not accas and not singles:
         # The pool travels with the no-bet lock: it is the only evidence of what
         # the model saw on a day it declined to bet, and settling it is what
@@ -1161,7 +1177,7 @@ def freeze_receipt(
                 "captured_at": captured_utc,
                 "frozen_at": captured_utc,
                 "paper_only": True,
-                "reason": "no_qualifying_pre_tip_ticket_at_decision_cutoff",
+                "reason": reason or "no_qualifying_pre_tip_ticket_at_decision_cutoff",
                 "ticket_decision": decision_state or {},
                 "candidate_pool": candidate_pool,
                 "selection_policy": selection_policy or {},
@@ -1175,6 +1191,8 @@ def freeze_receipt(
     ):
         ticket_type = "single" if ticket.get("leg_count") == 1 else "acca"
         legs = [dict(leg) for leg in ticket["legs"]]
+        for leg in legs:
+            _freeze_age(leg)
         row = {
             "ticket_id": ticket.get("ticket_id") or ticket["acca_id"],
             "ticket_type": ticket_type,
@@ -1282,12 +1300,23 @@ def grade_row(row: Dict[str, Any], game: Any, *, has_draw: bool = True) -> Optio
         return None
     if status_value != "final":
         return None
+    home = float(actual.home_score)
+    away = float(actual.away_score)
+    if has_draw and getattr(actual, "overtime_periods", 0) > 0:
+        # A 3-way (soccer) market settles on 90 minutes + stoppage ONLY. Extra
+        # time and shootout goals must never leak into a regulation grade.
+        regulation = actual.regulation_scores()
+        if regulation is None:
+            # Fail closed: an ET match with no period breakdown stays pending
+            # rather than being graded from the ET-inclusive total.
+            return None
+        home, away = regulation
     return resolve_outcome(
         str(row.get("market") or ""),
         str(row.get("selection") or ""),
         row.get("line"),
-        float(actual.home_score),
-        float(actual.away_score),
+        home,
+        away,
         has_draw=has_draw,
     )
 

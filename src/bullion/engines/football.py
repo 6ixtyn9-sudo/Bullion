@@ -103,8 +103,20 @@ def forecast(
         home_rate, away_rate = rates_for(
             ratings, game.home_team_id, game.away_team_id, neutral=game.neutral_site
         )
-        home_rate *= rest_adjustment(results, game.home_team_id, reference_day, penalty=0.99)
-        away_rate *= rest_adjustment(results, game.away_team_id, reference_day, penalty=0.99)
+        home_rate *= rest_adjustment(
+            results,
+            game.home_team_id,
+            reference_day,
+            penalty=0.99,
+            game_scheduled_utc=game.scheduled_utc,
+        )
+        away_rate *= rest_adjustment(
+            results,
+            game.away_team_id,
+            reference_day,
+            penalty=0.99,
+            game_scheduled_utc=game.scheduled_utc,
+        )
         expected_margin = home_rate - away_rate
         expected_total = home_rate + away_rate
         sigma_margin, sigma_total = _sigmas(game.league, results, ratings, reference_day)

@@ -5,7 +5,9 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from datetime import date
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
+
+from ..models import parse_utc
 
 MAX_GOALS = 10
 
@@ -29,7 +31,15 @@ class Result:
     away_id: str
     home_score: float
     away_score: float
-    day: str  # SAST result day (used for walk-forward filtering)
+    day: str  # schedule day (ET for US sports, SAST for soccer — League.schedule_day)
+    #: Canonical UTC timestamp (``to_utc_z``). Empty for legacy synthetic rows;
+    #: when present it drives the exact UTC-hour rest/fatigue path.
+    scheduled_utc: str = ""
+    #: Latest pre-tip main line quoted for this fixture, when the warehouse has
+    #: one. Used by the anchored-residual sigma estimator — each historical game
+    #: is residualised against ITS OWN market line, never today's.
+    market_spread: Optional[float] = None
+    market_total: Optional[float] = None
 
     @property
     def total(self) -> float:
@@ -235,9 +245,37 @@ def rates_for(
 
 
 def rest_adjustment(
-    results: Sequence[Result], team_id: str, game_day: str, *, penalty: float = 0.975
+    results: Sequence[Result],
+    team_id: str,
+    game_day: str,
+    *,
+    penalty: float = 0.975,
+    game_scheduled_utc: str = "",
 ) -> float:
-    """Back-to-back fatigue multiplier from the team's most recent prior game."""
+    """Back-to-back fatigue multiplier from the team's most recent prior game.
+
+    Exact UTC-hour path: when the game and the prior finals carry canonical
+    ``scheduled_utc`` stamps, rest is elapsed hours and a back-to-back is
+    anything with ``<= 34h`` of rest — which cleanly separates every 9-30h
+    back-to-back from a ``>= 38h`` one-day-rest game regardless of timezone or
+    DST. The legacy calendar-day fallback (``day`` strings only) is preserved
+    for synthetic rows that carry no instants.
+    """
+    if game_scheduled_utc:
+        prior_utc = [
+            row.scheduled_utc
+            for row in results
+            if team_id in (row.home_id, row.away_id)
+            and row.scheduled_utc
+            and row.scheduled_utc < game_scheduled_utc
+        ]
+        if prior_utc:
+            game_dt = parse_utc(game_scheduled_utc)
+            hours = min(
+                (game_dt - parse_utc(previous)).total_seconds() / 3600.0
+                for previous in prior_utc
+            )
+            return penalty if hours <= 34.0 else 1.0
     previous = [
         row.day
         for row in results
@@ -300,6 +338,118 @@ def residual_sigmas(
     var_margin = sum(w * (r - mean_margin) ** 2 for w, r in zip(weights, margin_residuals)) / weight_sum
     var_total = sum(w * (r - mean_total) ** 2 for w, r in zip(weights, total_residuals)) / weight_sum
     return math.sqrt(max(var_margin, 1.0)), math.sqrt(max(var_total, 1.0))
+
+
+def anchored_sigma(sigma_raw: float, sigma_market_prior: float, model_weight: float) -> float:
+    """Exact anchored variance under market orthogonality.
+
+    With ``A = w*M + (1-w)*L``, ``Y - A = w(Y-M) + (1-w)(Y-L)``. Under
+    efficient-market orthogonality ``Y - M = (Y - L) + (L - M)`` with
+    ``Cov(Y-L, L-M) = 0``, so ``Cov(Y-M, Y-L) = sigma_L^2`` and
+
+        Var(Y - A) = w^2*sM^2 + (1-w)^2*sL^2 + 2w(1-w)*sL^2
+                   = w^2*sM^2 + (1 - w^2)*sL^2
+
+    which is NOT ``sqrt(w^2*sM^2 + (1-w)^2*sL^2)``. The market term is floored at
+    ``min(sigma_L, sigma_M)`` so the estimate never claims a residual window
+    tighter than the market's own dispersion:
+
+        sigma_anchor = sqrt((1 - w^2)*min(sL, sM)^2 + w^2*sM^2)
+
+    Equals ``sigma_M`` at ``w=1`` (pure model), ``min(sL, sM)`` at ``w=0`` (pure
+    market), and never drops below the irreducible market variance.
+    """
+    w = _clamp(float(model_weight), 0.0, 1.0)
+    market = min(float(sigma_market_prior), float(sigma_raw))
+    value = math.sqrt((1.0 - w * w) * market * market + w * w * float(sigma_raw) ** 2)
+    return max(value, 0.5)
+
+
+def _weighted_std(values: Sequence[float], weights: Sequence[float]) -> float:
+    total = sum(weights)
+    if not values or total <= 0.0:
+        return 0.0
+    mean = sum(weight * value for weight, value in zip(weights, values)) / total
+    var = sum(weight * (value - mean) ** 2 for weight, value in zip(weights, values)) / total
+    return math.sqrt(max(var, 0.25))
+
+
+def _anchored_margin_residuals(
+    rows: Sequence[Result], ratings: dict, model_weight: float
+) -> List[float]:
+    out: List[float] = []
+    for row in rows:
+        home_rate, away_rate = rates_for(ratings, row.home_id, row.away_id)
+        model = home_rate - away_rate
+        out.append(
+            row.margin
+            - (model_weight * model + (1.0 - model_weight) * (-float(row.market_spread)))
+        )
+    return out
+
+
+def _anchored_total_residuals(
+    rows: Sequence[Result], ratings: dict, model_weight: float
+) -> List[float]:
+    out: List[float] = []
+    for row in rows:
+        home_rate, away_rate = rates_for(ratings, row.home_id, row.away_id)
+        model = home_rate + away_rate
+        out.append(
+            row.total - (model_weight * model + (1.0 - model_weight) * float(row.market_total))
+        )
+    return out
+
+
+def anchored_residual_sigmas(
+    results: Sequence[Result],
+    ratings: dict,
+    *,
+    reference_day: str,
+    half_life_days: float,
+    model_weight: float,
+    sigma_raw: Tuple[float, float],
+    market_priors: Tuple[float, float],
+    min_anchored_rows: int = 30,
+) -> Tuple[float, float]:
+    """Spread/total sigmas measured on ANCHORED residuals, not raw-rating ones.
+
+    For margin, each prior row with its own quoted main spread is residualised as
+    ``row.margin - (w*(home_rate - away_rate) + (1-w)*(-row.market_spread))`` and
+    for total as
+    ``row.total - (w*(home_rate + away_rate) + (1-w)*row.market_total)`` — i.e.
+    exactly the mean the live ladder prices against. Fewer than
+    ``min_anchored_rows`` quoted prior games falls back to the closed-form
+    :func:`anchored_sigma` on the raw sigma and the market prior. Fail-closed:
+    never imputes a line, and never uses today's line on a past game.
+    """
+    raw_margin, raw_total = sigma_raw
+    prior_margin, prior_total = market_priors
+
+    margin_rows = [
+        row
+        for row in results
+        if row.day < reference_day and row.market_spread is not None
+    ]
+    if len(margin_rows) >= min_anchored_rows:
+        margin = _weighted_std(
+            _anchored_margin_residuals(margin_rows, ratings, model_weight),
+            [decay_weight(row.day, reference_day, half_life_days) for row in margin_rows],
+        )
+    else:
+        margin = anchored_sigma(raw_margin, prior_margin, model_weight)
+
+    total_rows = [
+        row for row in results if row.day < reference_day and row.market_total is not None
+    ]
+    if len(total_rows) >= min_anchored_rows:
+        total = _weighted_std(
+            _anchored_total_residuals(total_rows, ratings, model_weight),
+            [decay_weight(row.day, reference_day, half_life_days) for row in total_rows],
+        )
+    else:
+        total = anchored_sigma(raw_total, prior_total, model_weight)
+    return margin, total
 
 
 def normal_line_probs(mean: float, sigma: float, line: float, side: str) -> Tuple[float, float]:

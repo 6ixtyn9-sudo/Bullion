@@ -36,10 +36,11 @@ from __future__ import annotations
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from ..espn import PredictorEvidence
-from ..models import BookQuote, Forecast, Game
+from ..models import BookQuote, Forecast, Game, parse_utc
 from . import (
     DEFAULT_PRIOR_WEIGHT,
     Result,
+    anchored_residual_sigmas,
     fit_ratings,
     normal_cdf,
     normal_line_probs,
@@ -52,7 +53,10 @@ from . import (
 
 #: Both surfaces ride the shared ``fit_ratings`` (symmetric home factor, MAP).
 BPI_SOURCE = "espn_bpi"
-EMPIRICAL_SOURCE = "empirical_score"
+#: Version tag for the empirical surface. Bumped when the fit's arithmetic
+#: changes materially, so the seeder re-seeds history under the new tag instead
+#: of mixing two models inside one calibration segment.
+EMPIRICAL_SOURCE = "empirical_score_v2"
 
 #: Per-lane shrinkage priors (pseudo-games). A 20-game NBA season and a 30-game
 #: NCAA season are different amounts of evidence, and a 360-team D1 pool needs
@@ -89,6 +93,9 @@ POSTED_LINE_MODEL_WEIGHTS: Dict[str, Optional[float]] = {
     "nba": None,
     "wnba": None,
 }
+#: Market-line residual sigma priors for the anchored estimator, per college lane.
+#: (spread, total). These are the dispersion floors of the MAIN market line itself.
+ANCHOR_MARKET_SIGMA_PRIORS = {"ncaa_m": (10.7, 12.5), "ncaa_w": (11.5, 13.0)}
 #: Back-to-back (played yesterday) scoring penalty, applied to the team's rate.
 REST_B2B_PENALTY = 0.975
 #: Third game in four nights, multiplicative on top of the B2B penalty.
@@ -101,14 +108,42 @@ def fatigue_multiplier(
     game_day: str,
     *,
     prior_days: Optional[Dict[str, List[str]]] = None,
+    game_scheduled_utc: str = "",
+    prior_times: Optional[Dict[str, List[str]]] = None,
 ) -> float:
     """Schedule-fatigue multiplier from the team's own strictly-past games.
 
-    ``prior_days`` is an optional precomputed ``team -> [day, ...]`` index so a
-    walk-forward seeder does not rescan the whole result list for every game.
-    Only days strictly before ``game_day`` are read, so a same-day or future
-    final can never leak into a pre-tip forecast.
+    Exact UTC-hour path when timestamps exist: a back-to-back is a minimum rest
+    of ``<= 34h`` (so every 9-30h back-to-back counts, and a ``>= 38h``
+    one-day-rest game does not, whatever the calendar day says), and a
+    third-in-four is two or more games inside ``84h``. Falls back to the
+    calendar-day path otherwise, so legacy synthetic ``Result`` rows without
+    ``scheduled_utc`` behave exactly as before.
+
+    ``prior_days``/``prior_times`` are optional precomputed
+    ``team -> [day|instant, ...]`` indexes so a walk-forward seeder does not
+    rescan the whole result list for every game. Only strictly-past games are
+    read, so a same-day or future final can never leak into a pre-tip forecast.
     """
+    if game_scheduled_utc:
+        times = prior_times.get(team_id) if prior_times is not None else None
+        if times is None:
+            times = [
+                row.scheduled_utc
+                for row in results
+                if team_id in (row.home_id, row.away_id) and row.scheduled_utc
+            ]
+        prior_utc = [stamp for stamp in times if stamp and stamp < game_scheduled_utc]
+        if prior_utc:
+            game_dt = parse_utc(game_scheduled_utc)
+            hours = [(game_dt - parse_utc(stamp)).total_seconds() / 3600.0 for stamp in prior_utc]
+            multiplier = 1.0
+            if min(hours) <= 34.0:
+                multiplier *= REST_B2B_PENALTY
+            if sum(1 for rest in hours if rest <= 84.0) >= 2:
+                multiplier *= REST_3IN4_PENALTY
+            return multiplier
+        # No prior instant: fall through to the calendar-day path below.
     if prior_days is not None:
         days = [day for day in prior_days.get(team_id, []) if day < game_day]
     else:
@@ -198,6 +233,23 @@ def prior_days_index(results: Sequence[Result]) -> Dict[str, List[str]]:
     return index
 
 
+def prior_times_index(results: Sequence[Result]) -> Dict[str, List[str]]:
+    """``team -> [scheduled_utc, ...]`` for the exact-hour fatigue path.
+
+    The exact-hour path reads instants, so a caller that supplies a *different*
+    population through ``prior_days`` (the seeder's in-window finals) must
+    supply the matching instants too, or fatigue silently falls back to the
+    frozen fit's narrower result list.
+    """
+    index: Dict[str, List[str]] = {}
+    for row in results:
+        if not row.scheduled_utc:
+            continue
+        index.setdefault(row.home_id, []).append(row.scheduled_utc)
+        index.setdefault(row.away_id, []).append(row.scheduled_utc)
+    return index
+
+
 def empirical_expectations(
     league: str,
     results: Sequence[Result],
@@ -210,6 +262,8 @@ def empirical_expectations(
     sigmas: Optional[Tuple[float, float]] = None,
     prior_days: Optional[Dict[str, List[str]]] = None,
     fatigue_day: Optional[str] = None,
+    game_scheduled_utc: str = "",
+    prior_times: Optional[Dict[str, List[str]]] = None,
 ) -> Tuple[float, float, float, float, float]:
     """``(margin, total, sigma_margin, sigma_total, prob_home)`` for one fixture.
 
@@ -226,10 +280,20 @@ def empirical_expectations(
     fatigue_reference = fatigue_day or reference_day
     home_rate, away_rate = rates_for(ratings, home_id, away_id, neutral=neutral_site)
     home_rate *= fatigue_multiplier(
-        results, home_id, fatigue_reference, prior_days=prior_days
+        results,
+        home_id,
+        fatigue_reference,
+        prior_days=prior_days,
+        game_scheduled_utc=game_scheduled_utc,
+        prior_times=prior_times,
     )
     away_rate *= fatigue_multiplier(
-        results, away_id, fatigue_reference, prior_days=prior_days
+        results,
+        away_id,
+        fatigue_reference,
+        prior_days=prior_days,
+        game_scheduled_utc=game_scheduled_utc,
+        prior_times=prior_times,
     )
     expected_margin = home_rate - away_rate
     expected_total = home_rate + away_rate
@@ -317,6 +381,7 @@ def forecast(
             away_id=game.away_team_id,
             reference_day=reference_day,
             neutral_site=game.neutral_site,
+            game_scheduled_utc=game.scheduled_utc,
         )
         source = EMPIRICAL_SOURCE
 
@@ -358,11 +423,29 @@ def forecast(
         else _anchored(expected_total, _anchor_line(quotes, "total"), model_weight)
     )
 
+    # College spread/total ladders price against an 80%-market-anchored mean, so
+    # their dispersion must be measured on anchored residuals (or the orthogonal
+    # closed form), never on raw-rating residuals — a raw sigma overstates the
+    # residual scale of the anchored mean and makes every far alt line look
+    # overpriced. Moneyline stays on the unanchored margin/sigma pair.
+    spread_sigma = sigma_margin
+    total_sigma = sigma_total
+    if model_weight is not None:
+        spread_sigma, total_sigma = anchored_residual_sigmas(
+            results,
+            ratings,
+            reference_day=reference_day,
+            half_life_days=HALF_LIFE_DAYS.get(game.league, 120.0),
+            model_weight=model_weight,
+            sigma_raw=(sigma_margin, sigma_total),
+            market_priors=ANCHOR_MARKET_SIGMA_PRIORS.get(game.league, (10.7, 12.5)),
+        )
+
     for line in quoted_lines(quotes, "total"):
         if total is None:
             continue
-        over_probability, over_push = normal_line_probs(total, sigma_total, line, "over")
-        under_probability, _ = normal_line_probs(total, sigma_total, line, "under")
+        over_probability, over_push = normal_line_probs(total, total_sigma, line, "over")
+        under_probability, _ = normal_line_probs(total, total_sigma, line, "under")
         for selection, probability in (
             ("over", over_probability),
             ("under", under_probability),
@@ -393,10 +476,10 @@ def forecast(
         # 6.5, i.e. the market implies a home margin of +6.5.
         threshold = -line
         home_probability, push = normal_line_probs(
-            margin, sigma_margin, threshold, "over"
+            margin, spread_sigma, threshold, "over"
         )
         away_probability, _ = normal_line_probs(
-            margin, sigma_margin, threshold, "under"
+            margin, spread_sigma, threshold, "under"
         )
         for selection, probability in (
             ("home", home_probability),

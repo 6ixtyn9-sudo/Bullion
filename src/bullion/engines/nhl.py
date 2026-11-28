@@ -106,8 +106,12 @@ def forecast(
     home_rate, away_rate = rates_for(ratings, game.home_team_id, game.away_team_id,
                                      neutral=game.neutral_site)
     game_day = reference_day
-    home_rate *= rest_adjustment(results, game.home_team_id, game_day)
-    away_rate *= rest_adjustment(results, game.away_team_id, game_day)
+    home_rate *= rest_adjustment(
+        results, game.home_team_id, game_day, game_scheduled_utc=game.scheduled_utc
+    )
+    away_rate *= rest_adjustment(
+        results, game.away_team_id, game_day, game_scheduled_utc=game.scheduled_utc
+    )
     margin, total, _draw = _final_distributions(home_rate, away_rate)
     prob_home = sum(p for m, p in margin.items() if m > 0)
     prob_away = sum(p for m, p in margin.items() if m < 0)

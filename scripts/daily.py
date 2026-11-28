@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -151,6 +152,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument(
         "--no-combined-band", action="store_true", help="accept any combined price"
     )
+    parser.add_argument(
+        "--max-seconds",
+        type=float,
+        default=2400.0,
+        help="wall-clock budget for the whole run (0 disables)",
+    )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
 
@@ -159,6 +166,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     if not localdata.is_absolute():
         localdata = ROOT / localdata
     localdata.mkdir(parents=True, exist_ok=True)
+    started = time.monotonic()
+    deadline = started + args.max_seconds if args.max_seconds > 0 else None
     db_path = Path(args.db)
     if not db_path.is_absolute():
         db_path = ROOT / db_path
@@ -185,10 +194,23 @@ def main(argv: Optional[List[str]] = None) -> int:
         # indexed queries and zero engine fits; a seeder failure must not cost
         # the run its lanes, so it is isolated like a lane error.
         try:
-            seeded = seed_walk_forward_ml(store)
+            seeded = seed_walk_forward_ml(store, deadline=deadline)
         except Exception as exc:  # noqa: BLE001 - isolation is the point
             seeded = {"error": f"{type(exc).__name__}: {exc}"}
         for league in select_leagues(args.league):
+            if deadline is not None and time.monotonic() >= deadline:
+                # Leave the rest of the lanes unscheduled rather than starting a
+                # lane that cannot finish: a truncated lane is "no evidence",
+                # which is honest, while a half-written one is not.
+                runs.append(
+                    LaneRun(
+                        lane=league.key,
+                        day=day,
+                        status="budget_breached",
+                        reason="wall-clock deadline reached",
+                    )
+                )
+                continue
             # One lane's exception must not cost the other eight. A provider
             # shape change in, say, UCL used to abort the whole run before the
             # summary, the parity gate, and the localdata commit ever happened.
@@ -198,7 +220,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                     day=day,
                     store=store,
                     localdata=localdata,
-                    client=EspnClient(),
+                    client=EspnClient.live(),
                     as_of_utc=args.as_of,
                     probe_report=probe,
                     legs=args.legs,
@@ -210,6 +232,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                     max_combined_odds=None if args.no_combined_band else args.max_odds,
                     ranking_metric=args.ranking_metric,
                     forbid_alt_line_reuse=args.forbid_alt_line_reuse,
+                    deadline=deadline,
                 )
             except Exception as exc:  # noqa: BLE001 - isolation is the point
                 run = LaneRun(
@@ -231,6 +254,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "generated_utc": now_utc(),
         "sast_day": day,
         "probe_report_used": probe is not None,
+        "max_seconds": args.max_seconds,
         "runs": [run.to_dict() for run in runs],
         "rehydrated": rehydrated,
         "seeded_ml": seeded,

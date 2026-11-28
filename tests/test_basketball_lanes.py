@@ -42,6 +42,7 @@ from bullion.models import (
     Sport,
     Status,
     sast_day,
+    to_utc_z,
 )
 from bullion.store import Store
 from tests.factories import close, event, offer
@@ -553,7 +554,10 @@ def _basketball_final(store: Store, game_id: str, day: str, home: str, away: str
         away_team_id=away,
         home_name=f"Home {home}",
         away_name=f"Away {away}",
-        scheduled_utc=f"{day}T00:30:00Z",
+        # 18:00Z is the same calendar day in both ET and SAST, so a test that
+        # labels a game by ``day`` means the same thing under
+        # League.schedule_day (ET for US sports) and under SAST helpers.
+        scheduled_utc=f"{day}T18:00:00Z",
         status=Status.FINAL,
         actual=None,
     )
@@ -664,13 +668,14 @@ def test_basketball_seeded_probability_matches_the_frozen_fit_and_never_sees_its
                 away_id=row["away_team_id"],
                 home_score=float(row["home_score"]),
                 away_score=float(row["away_score"]),
-                day=sast_day(row["scheduled_utc"]),
+                day=LEAGUES["nba"].schedule_day(row["scheduled_utc"]),
+                scheduled_utc=to_utc_z(row["scheduled_utc"]),
             )
             for row in store.conn.execute(
                 "SELECT * FROM games WHERE league='nba' AND status='final' "
                 "AND home_score IS NOT NULL ORDER BY scheduled_utc"
             )
-            if sast_day(row["scheduled_utc"]) < observed_day
+            if LEAGUES["nba"].schedule_day(row["scheduled_utc"]) < observed_day
         ]
         _margin, _total, _sigma_margin, _sigma_total, prob_home = bb.empirical_expectations(
             "nba",
@@ -681,8 +686,11 @@ def test_basketball_seeded_probability_matches_the_frozen_fit_and_never_sees_its
             reference_day=used["reference_day"],
             sigmas=sigmas,
             prior_days=bb.prior_days_index(fatigue_visible),
-            # Fatigue is evaluated on the matchday, not on the window's start.
+            # Fatigue is evaluated on the matchday, not on the window's start,
+            # and on the exact UTC instant so the seeder and a live tick agree.
             fatigue_day=observed_day,
+            game_scheduled_utc=target["scheduled_utc"],
+            prior_times=bb.prior_times_index(fatigue_visible),
         )
         seeded = {row["selection"]: row["raw_probability"] for row in rows}
         assert seeded["home"] == pytest.approx(prob_home, abs=1e-9)

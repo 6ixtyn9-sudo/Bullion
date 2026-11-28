@@ -63,7 +63,7 @@ from bullion.models import (  # noqa: E402
     Sport,
     forecast_id_for,
     now_utc,
-    sast_day,
+    to_utc_z,
 )
 from bullion.store import Store  # noqa: E402
 
@@ -527,6 +527,7 @@ def _score_matchday_moneyline(
     refit_day: Optional[str] = None,
     sigmas: Optional[tuple] = None,
     prior_days: Optional[Dict[str, List[str]]] = None,
+    prior_times: Optional[Dict[str, List[str]]] = None,
 ) -> List[Tuple[str, str, float]]:
     """Production-exact moneyline probabilities for one SAST matchday.
 
@@ -569,6 +570,11 @@ def _score_matchday_moneyline(
                     # frozen fit's reference day: a team that played on D-1 is
                     # on a back-to-back on D even when the window opened on D-6.
                     fatigue_day=day,
+                    # Exact UTC-hour rest, so the seeder and a live tick agree
+                    # on the number for a night game (a 19:30 ET tip is the next
+                    # SAST day, which the calendar path reads as gap 2).
+                    game_scheduled_utc=game["scheduled_utc"],
+                    prior_times=prior_times,
                 )
             )
             scored.append((game["game_id"], "home", prob_home))
@@ -610,8 +616,18 @@ def _score_matchday_moneyline(
                 game["away_team_id"],
                 neutral=bool(game["neutral_site"]),
             )
-            home_rate *= rest_adjustment(results, game["home_team_id"], day)
-            away_rate *= rest_adjustment(results, game["away_team_id"], day)
+            home_rate *= rest_adjustment(
+                results,
+                game["home_team_id"],
+                day,
+                game_scheduled_utc=game["scheduled_utc"],
+            )
+            away_rate *= rest_adjustment(
+                results,
+                game["away_team_id"],
+                day,
+                game_scheduled_utc=game["scheduled_utc"],
+            )
             margin, _total, _draw = nhl_engine._final_distributions(home_rate, away_rate)
             prob_home = sum(p for m, p in margin.items() if m > 0)
             prob_away = sum(p for m, p in margin.items() if m < 0)
@@ -640,8 +656,20 @@ def _score_matchday_moneyline(
             game["away_team_id"],
             neutral=bool(game["neutral_site"]),
         )
-        home_rate *= rest_adjustment(results, game["home_team_id"], day, penalty=0.99)
-        away_rate *= rest_adjustment(results, game["away_team_id"], day, penalty=0.99)
+        home_rate *= rest_adjustment(
+            results,
+            game["home_team_id"],
+            day,
+            penalty=0.99,
+            game_scheduled_utc=game["scheduled_utc"],
+        )
+        away_rate *= rest_adjustment(
+            results,
+            game["away_team_id"],
+            day,
+            penalty=0.99,
+            game_scheduled_utc=game["scheduled_utc"],
+        )
         expected_margin = home_rate - away_rate
         prob_home = 1.0 - normal_cdf((0.0 - expected_margin) / max(sigma_margin, 0.5))
         scored.append((game["game_id"], "home", prob_home))
@@ -650,7 +678,10 @@ def _score_matchday_moneyline(
 
 
 def seed_walk_forward_ml(
-    store: Store, *, leagues: Tuple[str, ...] = SEED_LANES
+    store: Store,
+    *,
+    leagues: Tuple[str, ...] = SEED_LANES,
+    deadline: Optional[float] = None,
 ) -> Dict[str, Any]:
     """Replay each lane's moneyline model over its backfilled finals.
 
@@ -674,6 +705,12 @@ def seed_walk_forward_ml(
     summary: Dict[str, Any] = {"lanes": {}, "fit_seconds": 0.0}
     started = time.monotonic()
     for lane in leagues:
+        if deadline is not None and time.monotonic() >= deadline:
+            # Wall-clock budget spent: commit what is already scored (the
+            # restore below runs outside the lane loop) and let the next tick
+            # resume, which INSERT OR IGNORE makes free.
+            summary["budget_stopped"] = True
+            break
         lane_stats = {
             "matchdays_scored": 0,
             "rows": 0,
@@ -726,7 +763,12 @@ def seed_walk_forward_ml(
         }
         by_day: Dict[str, List[Dict[str, Any]]] = {}
         for row in finals:
-            by_day.setdefault(sast_day(row["scheduled_utc"]), []).append(dict(row))
+            # The SAME schedule day the live engine uses (ET for US sports), so
+            # a seeded night-game back-to-back sees the same rest the live tick
+            # does instead of a SAST-day gap of 2.
+            by_day.setdefault(
+                LEAGUES[lane].schedule_day(row["scheduled_utc"]), []
+            ).append(dict(row))
         prior_results: List[Result] = []
         seeded_rows: List[Dict[str, Any]] = []
         created = now_utc()
@@ -750,6 +792,9 @@ def seed_walk_forward_ml(
         # window opened on D-6). Ratings and sigmas stay frozen per window.
         # Maintained incrementally so a full backfill stays O(results) overall.
         fatigue_index: Dict[str, List[str]] = {}
+        #: Parallel UTC-instant index: the exact-hour fatigue path reads this so
+        #: a seeder and a live tick cannot disagree about a night game's rest.
+        fatigue_times_index: Dict[str, List[str]] = {}
 
         def _batch_fit(day: str) -> Optional[dict]:
             """Fit once per refit window, and only when a day actually needs scoring.
@@ -790,6 +835,9 @@ def seed_walk_forward_ml(
             return batch_sigmas
 
         for position, day in enumerate(lane_days):
+            if deadline is not None and time.monotonic() >= deadline:
+                summary["budget_stopped"] = True
+                break
             games = by_day[day]
             if refit_every > 1 and (
                 batch_day is None
@@ -831,6 +879,9 @@ def seed_walk_forward_ml(
                         # Only finals strictly before ``day`` are in the index;
                         # fatigue_multiplier re-checks that per fixture.
                         prior_days=fatigue_index if lane in BASKETBALL_SEED_LANES else None,
+                        prior_times=(
+                            fatigue_times_index if lane in BASKETBALL_SEED_LANES else None
+                        ),
                     )
                     summary["fit_seconds"] += time.monotonic() - fit_started
                     lane_stats["matchdays_scored"] += 1
@@ -868,7 +919,8 @@ def seed_walk_forward_ml(
                     away_id=row["away_team_id"],
                     home_score=float(row["home_score"]),
                     away_score=float(row["away_score"]),
-                    day=day,
+                    day=day,  # already the schedule day (ET for US sports)
+                    scheduled_utc=to_utc_z(row["scheduled_utc"]),
                 )
                 prior_results.append(settled)
                 if lane in BASKETBALL_SEED_LANES:
@@ -876,6 +928,12 @@ def seed_walk_forward_ml(
                     # holds D-1 and earlier, never D itself.
                     fatigue_index.setdefault(settled.home_id, []).append(day)
                     fatigue_index.setdefault(settled.away_id, []).append(day)
+                    fatigue_times_index.setdefault(settled.home_id, []).append(
+                        settled.scheduled_utc
+                    )
+                    fatigue_times_index.setdefault(settled.away_id, []).append(
+                        settled.scheduled_utc
+                    )
         if seeded_rows:
             lane_stats["inserted"] = store.restore_forecasts(
                 seeded_rows, provenance="walk_forward_seed"
