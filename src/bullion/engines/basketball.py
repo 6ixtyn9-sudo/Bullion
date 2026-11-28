@@ -53,10 +53,11 @@ from . import (
 
 #: Both surfaces ride the shared ``fit_ratings`` (symmetric home factor, MAP).
 BPI_SOURCE = "espn_bpi"
-#: Version tag for the empirical surface. Bumped when the fit's arithmetic
-#: changes materially, so the seeder re-seeds history under the new tag instead
-#: of mixing two models inside one calibration segment.
-EMPIRICAL_SOURCE = "empirical_score_v2"
+#: Model tag for the empirical surface, matching ``football.EMPIRICAL_SOURCE``.
+#: Names the surface, never a version: the same tag in ``football.py`` and here
+#: is deliberate, and a change in arithmetic is fingerprinted in the config the
+#: fit reads rather than suffixed onto the name.
+EMPIRICAL_SOURCE = "empirical_score"
 
 #: Per-lane shrinkage priors (pseudo-games). A 20-game NBA season and a 30-game
 #: NCAA season are different amounts of evidence, and a 360-team D1 pool needs

@@ -247,6 +247,6 @@ def test_the_sigma_model_stamp_is_written_for_anchored_lanes(tmp_path, monkeypat
         )
     policy = _policy(tmp_path, league)
     if anchored:
-        assert policy["sigma_model"] == "anchored_orthogonal_v1"
+        assert policy["sigma_model"] == "anchored_orthogonal"
     else:
         assert "sigma_model" not in policy

@@ -803,7 +803,7 @@ def run_lane(
     if basketball_engine.POSTED_LINE_MODEL_WEIGHTS.get(league.key) is not None:
         # Recorded on the receipt so a later reader can tell which dispersion
         # estimator priced this ladder; parity ignores unknown policy keys.
-        selection_policy["sigma_model"] = "anchored_orthogonal_v1"
+        selection_policy["sigma_model"] = "anchored_orthogonal"
     decision_state = {
         "status": "frozen" if tickets else "frozen_no_bet",
         "planned_cutoff_utc": cutoff,
