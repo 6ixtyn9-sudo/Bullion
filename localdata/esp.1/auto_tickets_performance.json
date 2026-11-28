@@ -16,6 +16,15 @@
       "league": "ESP.1",
       "positions": [],
       "status": "frozen_no_bet"
+    },
+    {
+      "candidate_pool_outcomes": {},
+      "date": "2026-11-28",
+      "decision_id": "8cdd415f67ee30907c35",
+      "frozen_at": "2026-11-28T10:15:27Z",
+      "league": "ESP.1",
+      "positions": [],
+      "status": "frozen_no_bet"
     }
   ],
   "hit_rate": null,

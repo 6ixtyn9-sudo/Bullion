@@ -7,8 +7,9 @@ OPEN     0 held paper positions · 0 awaiting legs in open tickets
 LEGS     0 settled legs across 0 settled positions
 SAMPLE   [LOW SAMPLE: n < 30] no profit, edge, or readiness claim is supported
 
-BET-DAYS, oldest first (1)
+BET-DAYS, oldest first (2)
   2026-11-27  —      staked 0.000  returned —         net —        pending 0.000  bank* 100.000
+  2026-11-28  —      staked 0.000  returned —         net —        pending 0.000  bank* 100.000
 
 HELD (not yet settled; stake counted as committed)
   None.

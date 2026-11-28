@@ -1,0 +1,3006 @@
+{
+  "candidate_pool": [
+    {
+      "alternative_probabilities": {
+        "away": 0.25248,
+        "draw": 0.248691,
+        "home": 0.498829
+      },
+      "away": "Rayo Vallecano",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882796",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.625,
+        "side_prices": {
+          "away": 5.25,
+          "draw": 4.2,
+          "home": 1.625
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.508076,
+      "calibration": {
+        "base_rate_brier": 0.214088,
+        "brier_cap": 0.22,
+        "brier_score": 0.198202,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 1.064948,
+          "b": 0.037295
+        },
+        "reasons": [],
+        "segment": {
+          "league": "esp.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.074204,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.174376,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19820181159051123,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.5389,
+      "expected_total": 2.6753,
+      "forecast_id": "45a0b69ba8e9c44831a8",
+      "game_id": "401882796",
+      "grade_status": "pending",
+      "home": "Real Betis",
+      "league": "esp.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "45a0b69ba8e9c44831a8",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 1.625
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.498829,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T13:00:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.25248,
+        "draw": 0.248691,
+        "home": 0.498829
+      },
+      "away": "Rayo Vallecano",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882796",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 4.2,
+        "side_prices": {
+          "away": 5.25,
+          "draw": 4.2,
+          "home": 1.625
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.242299,
+      "calibration": {
+        "base_rate_brier": 0.214088,
+        "brier_cap": 0.22,
+        "brier_score": 0.198202,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 1.064948,
+          "b": 0.037295
+        },
+        "reasons": [],
+        "segment": {
+          "league": "esp.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.074204,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.017655,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19820181159051123,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.5389,
+      "expected_total": 2.6753,
+      "forecast_id": "2fb0068d245b71abfc8b",
+      "game_id": "401882796",
+      "grade_status": "pending",
+      "home": "Real Betis",
+      "league": "esp.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "2fb0068d245b71abfc8b",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 4.2
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.248691,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T13:00:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.25248,
+        "draw": 0.248691,
+        "home": 0.498829
+      },
+      "away": "Rayo Vallecano",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882796",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 5.25,
+        "side_prices": {
+          "away": 5.25,
+          "draw": 4.2,
+          "home": 1.625
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.246265,
+      "calibration": {
+        "base_rate_brier": 0.214088,
+        "brier_cap": 0.22,
+        "brier_score": 0.198202,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 1.064948,
+          "b": 0.037295
+        },
+        "reasons": [],
+        "segment": {
+          "league": "esp.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.074204,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.292892,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19820181159051123,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.5389,
+      "expected_total": 2.6753,
+      "forecast_id": "c21d31564b202734069c",
+      "game_id": "401882796",
+      "grade_status": "pending",
+      "home": "Real Betis",
+      "league": "esp.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "c21d31564b202734069c",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 5.25
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.25248,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T13:00:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.500312,
+        "under": 0.499688
+      },
+      "away": "Rayo Vallecano",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882796",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.5882352941176472,
+        "side_prices": {
+          "over": 1.5882352941176472,
+          "under": 2.35
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.500312,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.205387,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.6753,
+      "forecast_id": "9a925c156cd4ffbad99d",
+      "game_id": "401882796",
+      "grade_status": "pending",
+      "home": "Real Betis",
+      "league": "esp.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "9a925c156cd4ffbad99d",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 1.5882352941176472
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.500312,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T13:00:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.500312,
+        "under": 0.499688
+      },
+      "away": "Rayo Vallecano",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882796",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.35,
+        "side_prices": {
+          "over": 1.5882352941176472,
+          "under": 2.35
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.499688,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.174267,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.6753,
+      "forecast_id": "6f81e7842b531c205aa8",
+      "game_id": "401882796",
+      "grade_status": "pending",
+      "home": "Real Betis",
+      "league": "esp.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "6f81e7842b531c205aa8",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 2.35
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.499688,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T13:00:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.501171,
+        "home": 0.498829
+      },
+      "away": "Rayo Vallecano",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882796",
+        "line": -0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.5714285714285714,
+        "side_prices": {
+          "away": 2.25,
+          "home": 1.5714285714285714
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.498829,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.216126,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.5389,
+      "expected_total": null,
+      "forecast_id": "547b11027e07c14db21e",
+      "game_id": "401882796",
+      "grade_status": "pending",
+      "home": "Real Betis",
+      "league": "esp.1",
+      "line": -0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "547b11027e07c14db21e",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 1.5714285714285714
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.498829,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T13:00:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.501171,
+        "home": 0.498829
+      },
+      "away": "Rayo Vallecano",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882796",
+        "line": -0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.25,
+        "side_prices": {
+          "away": 2.25,
+          "home": 1.5714285714285714
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.501171,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.127635,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.5389,
+      "expected_total": null,
+      "forecast_id": "cf61e388c7a4d8a92e93",
+      "game_id": "401882796",
+      "grade_status": "pending",
+      "home": "Real Betis",
+      "league": "esp.1",
+      "line": -0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "cf61e388c7a4d8a92e93",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 2.25
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.501171,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T13:00:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.416508,
+        "draw": 0.287804,
+        "home": 0.295688
+      },
+      "away": "Athletic Club",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882790",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 4.7,
+        "side_prices": {
+          "away": 1.7407407407407407,
+          "draw": 3.85,
+          "home": 4.7
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.291731,
+      "calibration": {
+        "base_rate_brier": 0.214088,
+        "brier_cap": 0.22,
+        "brier_score": 0.198202,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 1.064948,
+          "b": 0.037295
+        },
+        "reasons": [],
+        "segment": {
+          "league": "esp.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.074204,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.371137,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19820181159051123,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.2411,
+      "expected_total": 2.2093,
+      "forecast_id": "2b2827fbf71ae95f6833",
+      "game_id": "401882790",
+      "grade_status": "pending",
+      "home": "M\u00e1laga",
+      "league": "esp.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "2b2827fbf71ae95f6833",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 4.7
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.295688,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:15:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.416508,
+        "draw": 0.287804,
+        "home": 0.295688
+      },
+      "away": "Athletic Club",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882790",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.85,
+        "side_prices": {
+          "away": 1.7407407407407407,
+          "draw": 3.85,
+          "home": 4.7
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.283407,
+      "calibration": {
+        "base_rate_brier": 0.214088,
+        "brier_cap": 0.22,
+        "brier_score": 0.198202,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 1.064948,
+          "b": 0.037295
+        },
+        "reasons": [],
+        "segment": {
+          "league": "esp.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.074204,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.091116,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19820181159051123,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.2411,
+      "expected_total": 2.2093,
+      "forecast_id": "898c0845f552161f5f65",
+      "game_id": "401882790",
+      "grade_status": "pending",
+      "home": "M\u00e1laga",
+      "league": "esp.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "898c0845f552161f5f65",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 3.85
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.287804,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:15:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.416508,
+        "draw": 0.287804,
+        "home": 0.295688
+      },
+      "away": "Athletic Club",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882790",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.7407407407407407,
+        "side_prices": {
+          "away": 1.7407407407407407,
+          "draw": 3.85,
+          "home": 4.7
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.420255,
+      "calibration": {
+        "base_rate_brier": 0.214088,
+        "brier_cap": 0.22,
+        "brier_score": 0.198202,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 1.064948,
+          "b": 0.037295
+        },
+        "reasons": [],
+        "segment": {
+          "league": "esp.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.074204,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.268445,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19820181159051123,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.2411,
+      "expected_total": 2.2093,
+      "forecast_id": "8cbd2e89719bb5bde044",
+      "game_id": "401882790",
+      "grade_status": "pending",
+      "home": "M\u00e1laga",
+      "league": "esp.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "8cbd2e89719bb5bde044",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 1.7407407407407407
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.416508,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:15:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.379779,
+        "under": 0.620221
+      },
+      "away": "Athletic Club",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882790",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8,
+        "side_prices": {
+          "over": 1.8,
+          "under": 2.0
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.379779,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.316398,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.2093,
+      "forecast_id": "e51ba521a34037a61189",
+      "game_id": "401882790",
+      "grade_status": "pending",
+      "home": "M\u00e1laga",
+      "league": "esp.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "e51ba521a34037a61189",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 1.8
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.379779,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:15:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.379779,
+        "under": 0.620221
+      },
+      "away": "Athletic Club",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882790",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.0,
+        "side_prices": {
+          "over": 1.8,
+          "under": 2.0
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.620221,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.240443,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.2093,
+      "forecast_id": "94e40b853af965405695",
+      "game_id": "401882790",
+      "grade_status": "pending",
+      "home": "M\u00e1laga",
+      "league": "esp.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "94e40b853af965405695",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 2.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.620221,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:15:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.416508,
+        "home": 0.583492
+      },
+      "away": "Athletic Club",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882790",
+        "line": 0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.1,
+        "side_prices": {
+          "away": 1.6666666666666665,
+          "home": 2.1
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.583492,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.225334,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.2411,
+      "expected_total": null,
+      "forecast_id": "77ccbfa7172bc198b845",
+      "game_id": "401882790",
+      "grade_status": "pending",
+      "home": "M\u00e1laga",
+      "league": "esp.1",
+      "line": 0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "77ccbfa7172bc198b845",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 2.1
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.583492,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:15:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.416508,
+        "home": 0.583492
+      },
+      "away": "Athletic Club",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882790",
+        "line": 0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.6666666666666665,
+        "side_prices": {
+          "away": 1.6666666666666665,
+          "home": 2.1
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.416508,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.30582,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.2411,
+      "expected_total": null,
+      "forecast_id": "50145cb4bfd40f495735",
+      "game_id": "401882790",
+      "grade_status": "pending",
+      "home": "M\u00e1laga",
+      "league": "esp.1",
+      "line": 0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "50145cb4bfd40f495735",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 1.6666666666666665
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.416508,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:15:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.422044,
+        "draw": 0.240064,
+        "home": 0.337892
+      },
+      "away": "Atl\u00e9tico Madrid",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882793",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 6.0,
+        "side_prices": {
+          "away": 1.5,
+          "draw": 4.6,
+          "home": 6.0
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.336462,
+      "calibration": {
+        "base_rate_brier": 0.214088,
+        "brier_cap": 0.22,
+        "brier_score": 0.198202,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 1.064948,
+          "b": 0.037295
+        },
+        "reasons": [],
+        "segment": {
+          "league": "esp.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.074204,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 1.018774,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19820181159051123,
+        "reasons": [
+          "price_outside_ticket_band",
+          "edge_above_sanity_cap",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.1927,
+      "expected_total": 3.0381,
+      "forecast_id": "1075de0d52770f4c9d60",
+      "game_id": "401882793",
+      "grade_status": "pending",
+      "home": "Elche",
+      "league": "esp.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "1075de0d52770f4c9d60",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 6.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.337892,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.422044,
+        "draw": 0.240064,
+        "home": 0.337892
+      },
+      "away": "Atl\u00e9tico Madrid",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882793",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 4.6,
+        "side_prices": {
+          "away": 1.5,
+          "draw": 4.6,
+          "home": 6.0
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.233282,
+      "calibration": {
+        "base_rate_brier": 0.214088,
+        "brier_cap": 0.22,
+        "brier_score": 0.198202,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 1.064948,
+          "b": 0.037295
+        },
+        "reasons": [],
+        "segment": {
+          "league": "esp.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.074204,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.073095,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19820181159051123,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.1927,
+      "expected_total": 3.0381,
+      "forecast_id": "f9796c2283bc85ba700f",
+      "game_id": "401882793",
+      "grade_status": "pending",
+      "home": "Elche",
+      "league": "esp.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "f9796c2283bc85ba700f",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 4.6
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.240064,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.422044,
+        "draw": 0.240064,
+        "home": 0.337892
+      },
+      "away": "Atl\u00e9tico Madrid",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882793",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.5,
+        "side_prices": {
+          "away": 1.5,
+          "draw": 4.6,
+          "home": 6.0
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.426166,
+      "calibration": {
+        "base_rate_brier": 0.214088,
+        "brier_cap": 0.22,
+        "brier_score": 0.198202,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 1.064948,
+          "b": 0.037295
+        },
+        "reasons": [],
+        "segment": {
+          "league": "esp.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.074204,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.360752,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19820181159051123,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.1927,
+      "expected_total": 3.0381,
+      "forecast_id": "254eeddce37f2b4588a0",
+      "game_id": "401882793",
+      "grade_status": "pending",
+      "home": "Elche",
+      "league": "esp.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "254eeddce37f2b4588a0",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 1.5
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.422044,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.585292,
+        "under": 0.414708
+      },
+      "away": "Atl\u00e9tico Madrid",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882793",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.6451612903225805,
+        "side_prices": {
+          "over": 1.6451612903225805,
+          "under": 2.25
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.585292,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.037101,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.0381,
+      "forecast_id": "f5256ac6fec9f13a61a2",
+      "game_id": "401882793",
+      "grade_status": "pending",
+      "home": "Elche",
+      "league": "esp.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "f5256ac6fec9f13a61a2",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 1.6451612903225805
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.585292,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.585292,
+        "under": 0.414708
+      },
+      "away": "Atl\u00e9tico Madrid",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882793",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.25,
+        "side_prices": {
+          "over": 1.6451612903225805,
+          "under": 2.25
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.414708,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.066906,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.0381,
+      "forecast_id": "32798f0365422d9099a7",
+      "game_id": "401882793",
+      "grade_status": "pending",
+      "home": "Elche",
+      "league": "esp.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "32798f0365422d9099a7",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 2.25
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.414708,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.214247,
+        "home": 0.785753
+      },
+      "away": "Atl\u00e9tico Madrid",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882793",
+        "line": 1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.5555555555555556,
+        "side_prices": {
+          "away": 2.3,
+          "home": 1.5555555555555556
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.785753,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.222282,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.1927,
+      "expected_total": null,
+      "forecast_id": "9b91817dc95c0e3ba6a4",
+      "game_id": "401882793",
+      "grade_status": "pending",
+      "home": "Elche",
+      "league": "esp.1",
+      "line": 1.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "9b91817dc95c0e3ba6a4",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 1.5555555555555556
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.785753,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.214247,
+        "home": 0.785753
+      },
+      "away": "Atl\u00e9tico Madrid",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882793",
+        "line": 1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.3,
+        "side_prices": {
+          "away": 2.3,
+          "home": 1.5555555555555556
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.214247,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.507231,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.1927,
+      "expected_total": null,
+      "forecast_id": "69479af216960a7bdec3",
+      "game_id": "401882793",
+      "grade_status": "pending",
+      "home": "Elche",
+      "league": "esp.1",
+      "line": 1.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "69479af216960a7bdec3",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 2.3
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.214247,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.142457,
+        "draw": 0.193651,
+        "home": 0.663891
+      },
+      "away": "Alav\u00e9s",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882789",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.1428571428571428,
+        "side_prices": {
+          "away": 17.0,
+          "draw": 9.0,
+          "home": 1.1428571428571428
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.681829,
+      "calibration": {
+        "base_rate_brier": 0.214088,
+        "brier_cap": 0.22,
+        "brier_score": 0.198202,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 1.064948,
+          "b": 0.037295
+        },
+        "reasons": [],
+        "segment": {
+          "league": "esp.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.074204,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.220767,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19820181159051123,
+        "reasons": [
+          "price_outside_ticket_band",
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.2653,
+      "expected_total": 3.0254,
+      "forecast_id": "1ab2cef09f31c12e809f",
+      "game_id": "401882789",
+      "grade_status": "pending",
+      "home": "Real Madrid",
+      "league": "esp.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "1ab2cef09f31c12e809f",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 1.1428571428571428
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.663891,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T20:00:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.142457,
+        "draw": 0.193651,
+        "home": 0.663891
+      },
+      "away": "Alav\u00e9s",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882789",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 9.0,
+        "side_prices": {
+          "away": 17.0,
+          "draw": 9.0,
+          "home": 1.1428571428571428
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.185155,
+      "calibration": {
+        "base_rate_brier": 0.214088,
+        "brier_cap": 0.22,
+        "brier_score": 0.198202,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 1.064948,
+          "b": 0.037295
+        },
+        "reasons": [],
+        "segment": {
+          "league": "esp.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.074204,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.666391,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19820181159051123,
+        "reasons": [
+          "price_outside_ticket_band",
+          "edge_above_sanity_cap",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.2653,
+      "expected_total": 3.0254,
+      "forecast_id": "6fec7525343717dd4571",
+      "game_id": "401882789",
+      "grade_status": "pending",
+      "home": "Real Madrid",
+      "league": "esp.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "6fec7525343717dd4571",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 9.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.193651,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T20:00:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.142457,
+        "draw": 0.193651,
+        "home": 0.663891
+      },
+      "away": "Alav\u00e9s",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882789",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 17.0,
+        "side_prices": {
+          "away": 17.0,
+          "draw": 9.0,
+          "home": 1.1428571428571428
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.133043,
+      "calibration": {
+        "base_rate_brier": 0.214088,
+        "brier_cap": 0.22,
+        "brier_score": 0.198202,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 1.064948,
+          "b": 0.037295
+        },
+        "reasons": [],
+        "segment": {
+          "league": "esp.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.074204,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 1.26173,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19820181159051123,
+        "reasons": [
+          "price_outside_ticket_band",
+          "edge_above_sanity_cap",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.2653,
+      "expected_total": 3.0254,
+      "forecast_id": "c3a18ffac365adf43053",
+      "game_id": "401882789",
+      "grade_status": "pending",
+      "home": "Real Madrid",
+      "league": "esp.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "c3a18ffac365adf43053",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 17.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.142457,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T20:00:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.358481,
+        "under": 0.641519
+      },
+      "away": "Alav\u00e9s",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882789",
+        "line": 3.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8,
+        "side_prices": {
+          "over": 1.8,
+          "under": 2.0
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.358481,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.354735,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.0254,
+      "forecast_id": "27e0867942be52fae5b2",
+      "game_id": "401882789",
+      "grade_status": "pending",
+      "home": "Real Madrid",
+      "league": "esp.1",
+      "line": 3.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "27e0867942be52fae5b2",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 1.8
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.358481,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T20:00:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.358481,
+        "under": 0.641519
+      },
+      "away": "Alav\u00e9s",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882789",
+        "line": 3.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.0,
+        "side_prices": {
+          "over": 1.8,
+          "under": 2.0
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.641519,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.283039,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.0254,
+      "forecast_id": "01583eae05f8a38111ef",
+      "game_id": "401882789",
+      "grade_status": "pending",
+      "home": "Real Madrid",
+      "league": "esp.1",
+      "line": 3.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "01583eae05f8a38111ef",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 2.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.641519,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T20:00:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.775687,
+        "home": 0.224313
+      },
+      "away": "Alav\u00e9s",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882789",
+        "line": -2.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.1,
+        "side_prices": {
+          "away": 1.6666666666666665,
+          "home": 2.1
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.224313,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.528942,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.2653,
+      "expected_total": null,
+      "forecast_id": "d2f24d074c10a6b3d115",
+      "game_id": "401882789",
+      "grade_status": "pending",
+      "home": "Real Madrid",
+      "league": "esp.1",
+      "line": -2.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "d2f24d074c10a6b3d115",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 2.1
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.224313,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T20:00:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.775687,
+        "home": 0.224313
+      },
+      "away": "Alav\u00e9s",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401882789",
+        "line": -2.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.6666666666666665,
+        "side_prices": {
+          "away": 1.6666666666666665,
+          "home": 2.1
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.775687,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "esp.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.292811,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.2653,
+      "expected_total": null,
+      "forecast_id": "c810cd9867b4dca68846",
+      "game_id": "401882789",
+      "grade_status": "pending",
+      "home": "Real Madrid",
+      "league": "esp.1",
+      "line": -2.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "c810cd9867b4dca68846",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:27Z",
+        "selected_decimal_price": 1.6666666666666665
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.775687,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T20:00:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    }
+  ],
+  "captured_at": "2026-11-28T10:15:27Z",
+  "date": "2026-11-28",
+  "decision_id": "8cdd415f67ee30907c35",
+  "frozen_at": "2026-11-28T10:15:27Z",
+  "league": "ESP.1",
+  "paper_only": true,
+  "positions": [],
+  "reason": "no_qualifying_pre_tip_ticket_at_decision_cutoff",
+  "schema_version": "magolide.no_bet_decision",
+  "selection_policy": {
+    "allow_provisional": false,
+    "brier_cap": 0.22,
+    "brier_cap_three_way": 0.22,
+    "brier_cap_two_way": 0.25,
+    "cap_vs_base_rate": true,
+    "edge_flag_threshold": 0.15,
+    "forbid_alt_line_reuse": true,
+    "forbid_conflicting_game_sides": true,
+    "lane_permission": "probe_covered",
+    "limit": 3,
+    "max_claimed_edge": 0.4,
+    "max_combined_odds": 5.0,
+    "max_leg_odds": 3.0,
+    "max_legs": 3,
+    "min_combined_odds": 3.3,
+    "min_games": 30,
+    "min_leg_odds": 1.2,
+    "min_legs": 2,
+    "min_samples": 30,
+    "paper_only": true,
+    "price_weight": 0.15,
+    "probe_captured_utc": "2026-11-28T08:18:35Z",
+    "probe_market_evidence": {
+      "moneyline": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "moneyline_draw": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "spread": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "total": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      }
+    },
+    "probe_report_used": true,
+    "ranking_metric": "kelly_log_growth",
+    "requested_legs": 3,
+    "require_disjoint_legs": true,
+    "stake_units_per_acca": 1.0,
+    "surface_resolution": "single_surface",
+    "ticket_markets": [
+      "moneyline",
+      "spread",
+      "total"
+    ]
+  },
+  "status": "frozen_no_bet",
+  "target_date": "2026-11-28",
+  "ticket_decision": {
+    "candidate_count": 28,
+    "captured_utc": "2026-11-28T10:15:27Z",
+    "eligible_count": 0,
+    "permission": "probe_covered",
+    "planned_cutoff_utc": "2026-11-28T10:00:00Z",
+    "probe_captured_utc": "2026-11-28T08:18:35Z",
+    "status": "frozen_no_bet"
+  }
+}

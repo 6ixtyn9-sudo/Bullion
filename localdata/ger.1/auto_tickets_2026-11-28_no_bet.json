@@ -1,0 +1,3004 @@
+{
+  "candidate_pool": [
+    {
+      "alternative_probabilities": {
+        "away": 0.410872,
+        "draw": 0.232101,
+        "home": 0.357027
+      },
+      "away": "SV Elversberg",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884721",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.0,
+        "side_prices": {
+          "away": 3.3,
+          "draw": 3.6,
+          "home": 2.0
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.357079,
+      "calibration": {
+        "base_rate_brier": 0.218499,
+        "brier_cap": 0.22,
+        "brier_score": 0.201699,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 0.977522,
+          "b": -0.012998
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ger.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.07689,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.285842,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20169864213554026,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.1295,
+      "expected_total": 3.3909,
+      "forecast_id": "9ed5927ca7d992dde4c0",
+      "game_id": "401884721",
+      "grade_status": "pending",
+      "home": "FC Cologne",
+      "league": "ger.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "9ed5927ca7d992dde4c0",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 2.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.357027,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.410872,
+        "draw": 0.232101,
+        "home": 0.357027
+      },
+      "away": "SV Elversberg",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884721",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.6,
+        "side_prices": {
+          "away": 3.3,
+          "draw": 3.6,
+          "home": 2.0
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.234587,
+      "calibration": {
+        "base_rate_brier": 0.218499,
+        "brier_cap": 0.22,
+        "brier_score": 0.201699,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 0.977522,
+          "b": -0.012998
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ger.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.07689,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.155487,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20169864213554026,
+        "reasons": [
+          "price_outside_ticket_band",
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.1295,
+      "expected_total": 3.3909,
+      "forecast_id": "6777492318af0adb7905",
+      "game_id": "401884721",
+      "grade_status": "pending",
+      "home": "FC Cologne",
+      "league": "ger.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "6777492318af0adb7905",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 3.6
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.232101,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.410872,
+        "draw": 0.232101,
+        "home": 0.357027
+      },
+      "away": "SV Elversberg",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884721",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.3,
+        "side_prices": {
+          "away": 3.3,
+          "draw": 3.6,
+          "home": 2.0
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.409687,
+      "calibration": {
+        "base_rate_brier": 0.218499,
+        "brier_cap": 0.22,
+        "brier_score": 0.201699,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 0.977522,
+          "b": -0.012998
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ger.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.07689,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.351966,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20169864213554026,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.1295,
+      "expected_total": 3.3909,
+      "forecast_id": "4aca9b0959968015584e",
+      "game_id": "401884721",
+      "grade_status": "pending",
+      "home": "FC Cologne",
+      "league": "ger.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "4aca9b0959968015584e",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 3.3
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.410872,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.658515,
+        "under": 0.341485
+      },
+      "away": "SV Elversberg",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884721",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.625,
+        "side_prices": {
+          "over": 1.625,
+          "under": 2.3
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.658515,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.070087,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.3909,
+      "forecast_id": "56fcfacc2ed92a8442ae",
+      "game_id": "401884721",
+      "grade_status": "pending",
+      "home": "FC Cologne",
+      "league": "ger.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "56fcfacc2ed92a8442ae",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 1.625
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.658515,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.658515,
+        "under": 0.341485
+      },
+      "away": "SV Elversberg",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884721",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.3,
+        "side_prices": {
+          "over": 1.625,
+          "under": 2.3
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.341485,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.214584,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.3909,
+      "forecast_id": "4192490b354369469892",
+      "game_id": "401884721",
+      "grade_status": "pending",
+      "home": "FC Cologne",
+      "league": "ger.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "4192490b354369469892",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 2.3
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.341485,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.642973,
+        "home": 0.357027
+      },
+      "away": "SV Elversberg",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884721",
+        "line": -0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.9523809523809523,
+        "side_prices": {
+          "away": 1.7692307692307692,
+          "home": 1.9523809523809523
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.357027,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.302947,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.1295,
+      "expected_total": null,
+      "forecast_id": "79c711cfe7f613d6226f",
+      "game_id": "401884721",
+      "grade_status": "pending",
+      "home": "FC Cologne",
+      "league": "ger.1",
+      "line": -0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "79c711cfe7f613d6226f",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 1.9523809523809523
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.357027,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.642973,
+        "home": 0.357027
+      },
+      "away": "SV Elversberg",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884721",
+        "line": -0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.7692307692307692,
+        "side_prices": {
+          "away": 1.7692307692307692,
+          "home": 1.9523809523809523
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.642973,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.137567,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.1295,
+      "expected_total": null,
+      "forecast_id": "b92aeeeb4c7710d6fdae",
+      "game_id": "401884721",
+      "grade_status": "pending",
+      "home": "FC Cologne",
+      "league": "ger.1",
+      "line": -0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "b92aeeeb4c7710d6fdae",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 1.7692307692307692
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.642973,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.19984,
+        "draw": 0.222191,
+        "home": 0.577969
+      },
+      "away": "1. FC Union Berlin",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884723",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.4545454545454546,
+        "side_prices": {
+          "away": 5.75,
+          "draw": 4.5,
+          "home": 1.4545454545454546
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.573067,
+      "calibration": {
+        "base_rate_brier": 0.218499,
+        "brier_cap": 0.22,
+        "brier_score": 0.201699,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 0.977522,
+          "b": -0.012998
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ger.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.07689,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.166448,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20169864213554026,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.8927,
+      "expected_total": 3.0479,
+      "forecast_id": "b7cf20639197a695f75f",
+      "game_id": "401884723",
+      "grade_status": "pending",
+      "home": "Mainz",
+      "league": "ger.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "b7cf20639197a695f75f",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 1.4545454545454546
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.577969,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.19984,
+        "draw": 0.222191,
+        "home": 0.577969
+      },
+      "away": "1. FC Union Berlin",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884723",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 4.5,
+        "side_prices": {
+          "away": 5.75,
+          "draw": 4.5,
+          "home": 1.4545454545454546
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.224823,
+      "calibration": {
+        "base_rate_brier": 0.218499,
+        "brier_cap": 0.22,
+        "brier_score": 0.201699,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 0.977522,
+          "b": -0.012998
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ger.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.07689,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.011703,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20169864213554026,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.8927,
+      "expected_total": 3.0479,
+      "forecast_id": "b540e6b6875d0239c5a2",
+      "game_id": "401884723",
+      "grade_status": "pending",
+      "home": "Mainz",
+      "league": "ger.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "b540e6b6875d0239c5a2",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 4.5
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.222191,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.19984,
+        "draw": 0.222191,
+        "home": 0.577969
+      },
+      "away": "1. FC Union Berlin",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884723",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 5.75,
+        "side_prices": {
+          "away": 5.75,
+          "draw": 4.5,
+          "home": 1.4545454545454546
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.202763,
+      "calibration": {
+        "base_rate_brier": 0.218499,
+        "brier_cap": 0.22,
+        "brier_score": 0.201699,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 0.977522,
+          "b": -0.012998
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ger.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.07689,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.16589,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20169864213554026,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.8927,
+      "expected_total": 3.0479,
+      "forecast_id": "21659764b1e6ca302519",
+      "game_id": "401884723",
+      "grade_status": "pending",
+      "home": "Mainz",
+      "league": "ger.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "21659764b1e6ca302519",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 5.75
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.19984,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.363513,
+        "under": 0.636487
+      },
+      "away": "1. FC Union Berlin",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884723",
+        "line": 3.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.25,
+        "side_prices": {
+          "over": 2.25,
+          "under": 1.625
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.363513,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.182096,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.0479,
+      "forecast_id": "2d678efdaac168ef8a8f",
+      "game_id": "401884723",
+      "grade_status": "pending",
+      "home": "Mainz",
+      "league": "ger.1",
+      "line": 3.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "2d678efdaac168ef8a8f",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 2.25
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.363513,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.363513,
+        "under": 0.636487
+      },
+      "away": "1. FC Union Berlin",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884723",
+        "line": 3.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.625,
+        "side_prices": {
+          "over": 2.25,
+          "under": 1.625
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.636487,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.034292,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.0479,
+      "forecast_id": "e120e41af061adad66bc",
+      "game_id": "401884723",
+      "grade_status": "pending",
+      "home": "Mainz",
+      "league": "ger.1",
+      "line": 3.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "e120e41af061adad66bc",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 1.625
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.636487,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.653834,
+        "home": 0.346166
+      },
+      "away": "1. FC Union Berlin",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884723",
+        "line": -1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.15,
+        "side_prices": {
+          "away": 1.625,
+          "home": 2.15
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.346166,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.255743,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.8927,
+      "expected_total": null,
+      "forecast_id": "15944228fce0793510f2",
+      "game_id": "401884723",
+      "grade_status": "pending",
+      "home": "Mainz",
+      "league": "ger.1",
+      "line": -1.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "15944228fce0793510f2",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 2.15
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.346166,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.653834,
+        "home": 0.346166
+      },
+      "away": "1. FC Union Berlin",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884723",
+        "line": -1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.625,
+        "side_prices": {
+          "away": 1.625,
+          "home": 2.15
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.653834,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.06248,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.8927,
+      "expected_total": null,
+      "forecast_id": "8f588a2cd8a8e0b1472a",
+      "game_id": "401884723",
+      "grade_status": "pending",
+      "home": "Mainz",
+      "league": "ger.1",
+      "line": -1.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "8f588a2cd8a8e0b1472a",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 1.625
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.653834,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.242385,
+        "draw": 0.348784,
+        "home": 0.408832
+      },
+      "away": "Schalke 04",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884719",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.6,
+        "side_prices": {
+          "away": 2.5,
+          "draw": 3.35,
+          "home": 2.6
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.407694,
+      "calibration": {
+        "base_rate_brier": 0.218499,
+        "brier_cap": 0.22,
+        "brier_score": 0.201699,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 0.977522,
+          "b": -0.012998
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ger.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.07689,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.060005,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20169864213554026,
+        "reasons": [
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.2956,
+      "expected_total": 1.6484,
+      "forecast_id": "ddd07133e6688d1bc9dc",
+      "game_id": "401884719",
+      "grade_status": "pending",
+      "home": "SC Paderborn 07",
+      "league": "ger.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "ddd07133e6688d1bc9dc",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 2.6
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.408832,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.242385,
+        "draw": 0.348784,
+        "home": 0.408832
+      },
+      "away": "Schalke 04",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884719",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.35,
+        "side_prices": {
+          "away": 2.5,
+          "draw": 3.35,
+          "home": 2.6
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.349019,
+      "calibration": {
+        "base_rate_brier": 0.218499,
+        "brier_cap": 0.22,
+        "brier_score": 0.201699,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 0.977522,
+          "b": -0.012998
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ger.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.07689,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.169214,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20169864213554026,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.2956,
+      "expected_total": 1.6484,
+      "forecast_id": "0ce80d7908aaa5085e1c",
+      "game_id": "401884719",
+      "grade_status": "pending",
+      "home": "SC Paderborn 07",
+      "league": "ger.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "0ce80d7908aaa5085e1c",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 3.35
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.348784,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.242385,
+        "draw": 0.348784,
+        "home": 0.408832
+      },
+      "away": "Schalke 04",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884719",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.5,
+        "side_prices": {
+          "away": 2.5,
+          "draw": 3.35,
+          "home": 2.6
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.244709,
+      "calibration": {
+        "base_rate_brier": 0.218499,
+        "brier_cap": 0.22,
+        "brier_score": 0.201699,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 0.977522,
+          "b": -0.012998
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ger.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.07689,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.388227,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20169864213554026,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.2956,
+      "expected_total": 1.6484,
+      "forecast_id": "d3cd2d3e9a63bb8bbb3e",
+      "game_id": "401884719",
+      "grade_status": "pending",
+      "home": "SC Paderborn 07",
+      "league": "ger.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "d3cd2d3e9a63bb8bbb3e",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 2.5
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.242385,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.229223,
+        "under": 0.770777
+      },
+      "away": "Schalke 04",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884719",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.6451612903225805,
+        "side_prices": {
+          "over": 1.6451612903225805,
+          "under": 2.25
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.229223,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.622891,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 1.6484,
+      "forecast_id": "f1630a46fed3ec832774",
+      "game_id": "401884719",
+      "grade_status": "pending",
+      "home": "SC Paderborn 07",
+      "league": "ger.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "f1630a46fed3ec832774",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 1.6451612903225805
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.229223,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.229223,
+        "under": 0.770777
+      },
+      "away": "Schalke 04",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884719",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.25,
+        "side_prices": {
+          "over": 1.6451612903225805,
+          "under": 2.25
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.770777,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.734249,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "edge_above_sanity_cap",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 1.6484,
+      "forecast_id": "5ec3c8369c1615627515",
+      "game_id": "401884719",
+      "grade_status": "pending",
+      "home": "SC Paderborn 07",
+      "league": "ger.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "5ec3c8369c1615627515",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 2.25
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.770777,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.242385,
+        "home": 0.757615
+      },
+      "away": "Schalke 04",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884719",
+        "line": 0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.5,
+        "side_prices": {
+          "away": 2.4,
+          "home": 1.5
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.757615,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.136423,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.2956,
+      "expected_total": null,
+      "forecast_id": "7d9dbcea720c82f456e0",
+      "game_id": "401884719",
+      "grade_status": "pending",
+      "home": "SC Paderborn 07",
+      "league": "ger.1",
+      "line": 0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "7d9dbcea720c82f456e0",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 1.5
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.757615,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.242385,
+        "home": 0.757615
+      },
+      "away": "Schalke 04",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884719",
+        "line": 0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.4,
+        "side_prices": {
+          "away": 2.4,
+          "home": 1.5
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.242385,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.418277,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.2956,
+      "expected_total": null,
+      "forecast_id": "c4b5e8baff6bc69a946e",
+      "game_id": "401884719",
+      "grade_status": "pending",
+      "home": "SC Paderborn 07",
+      "league": "ger.1",
+      "line": 0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "c4b5e8baff6bc69a946e",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 2.4
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.242385,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:30:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.202799,
+        "draw": 0.189975,
+        "home": 0.607226
+      },
+      "away": "Eintracht Frankfurt",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884726",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.7692307692307692,
+        "side_prices": {
+          "away": 3.55,
+          "draw": 4.4,
+          "home": 1.7692307692307692
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.601777,
+      "calibration": {
+        "base_rate_brier": 0.218499,
+        "brier_cap": 0.22,
+        "brier_score": 0.201699,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 0.977522,
+          "b": -0.012998
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ger.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.07689,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.064682,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20169864213554026,
+        "reasons": [
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.0694,
+      "expected_total": 3.8538,
+      "forecast_id": "c585e63eb5c1aed3bd69",
+      "game_id": "401884726",
+      "grade_status": "pending",
+      "home": "VfB Stuttgart",
+      "league": "ger.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "c585e63eb5c1aed3bd69",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 1.7692307692307692
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.607226,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.202799,
+        "draw": 0.189975,
+        "home": 0.607226
+      },
+      "away": "Eintracht Frankfurt",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884726",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 4.4,
+        "side_prices": {
+          "away": 3.55,
+          "draw": 4.4,
+          "home": 1.7692307692307692
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.193009,
+      "calibration": {
+        "base_rate_brier": 0.218499,
+        "brier_cap": 0.22,
+        "brier_score": 0.201699,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 0.977522,
+          "b": -0.012998
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ger.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.07689,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.15076,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20169864213554026,
+        "reasons": [
+          "price_outside_ticket_band",
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.0694,
+      "expected_total": 3.8538,
+      "forecast_id": "8900b32e2ae09ae243af",
+      "game_id": "401884726",
+      "grade_status": "pending",
+      "home": "VfB Stuttgart",
+      "league": "ger.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "8900b32e2ae09ae243af",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 4.4
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.189975,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.202799,
+        "draw": 0.189975,
+        "home": 0.607226
+      },
+      "away": "Eintracht Frankfurt",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884726",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.55,
+        "side_prices": {
+          "away": 3.55,
+          "draw": 4.4,
+          "home": 1.7692307692307692
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.205687,
+      "calibration": {
+        "base_rate_brier": 0.218499,
+        "brier_cap": 0.22,
+        "brier_score": 0.201699,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2208,
+        "n_games": 736,
+        "platt": {
+          "a": 0.977522,
+          "b": -0.012998
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ger.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.07689,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.269809,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20169864213554026,
+        "reasons": [
+          "price_outside_ticket_band",
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.0694,
+      "expected_total": 3.8538,
+      "forecast_id": "589d733dd2d9d254e122",
+      "game_id": "401884726",
+      "grade_status": "pending",
+      "home": "VfB Stuttgart",
+      "league": "ger.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "589d733dd2d9d254e122",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 3.55
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.202799,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2208
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.537522,
+        "under": 0.462478
+      },
+      "away": "Eintracht Frankfurt",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884726",
+        "line": 3.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.7142857142857144,
+        "side_prices": {
+          "over": 1.7142857142857144,
+          "under": 2.1
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.537522,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.078534,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.8538,
+      "forecast_id": "7d5811f270068ab38bbe",
+      "game_id": "401884726",
+      "grade_status": "pending",
+      "home": "VfB Stuttgart",
+      "league": "ger.1",
+      "line": 3.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "7d5811f270068ab38bbe",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 1.7142857142857144
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.537522,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.537522,
+        "under": 0.462478
+      },
+      "away": "Eintracht Frankfurt",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884726",
+        "line": 3.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.1,
+        "side_prices": {
+          "over": 1.7142857142857144,
+          "under": 2.1
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.462478,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.028796,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.8538,
+      "forecast_id": "aaff3abb88f6ad438eec",
+      "game_id": "401884726",
+      "grade_status": "pending",
+      "home": "VfB Stuttgart",
+      "league": "ger.1",
+      "line": 3.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "aaff3abb88f6ad438eec",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 2.1
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.462478,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.392774,
+        "home": 0.607226
+      },
+      "away": "Eintracht Frankfurt",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884726",
+        "line": -0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.7407407407407407,
+        "side_prices": {
+          "away": 2.0,
+          "home": 1.7407407407407407
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.607226,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.057023,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.0694,
+      "expected_total": null,
+      "forecast_id": "2906725c83056d77e8dc",
+      "game_id": "401884726",
+      "grade_status": "pending",
+      "home": "VfB Stuttgart",
+      "league": "ger.1",
+      "line": -0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "2906725c83056d77e8dc",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 1.7407407407407407
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.607226,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.392774,
+        "home": 0.607226
+      },
+      "away": "Eintracht Frankfurt",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401884726",
+        "line": -0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.0,
+        "side_prices": {
+          "away": 2.0,
+          "home": 1.7407407407407407
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.392774,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ger.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.214452,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.0694,
+      "expected_total": null,
+      "forecast_id": "0a1663fc1e120680862a",
+      "game_id": "401884726",
+      "grade_status": "pending",
+      "home": "VfB Stuttgart",
+      "league": "ger.1",
+      "line": -0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "0a1663fc1e120680862a",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:28Z",
+        "selected_decimal_price": 2.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.392774,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    }
+  ],
+  "captured_at": "2026-11-28T10:15:28Z",
+  "date": "2026-11-28",
+  "decision_id": "b7e6bf815341d2341ab2",
+  "frozen_at": "2026-11-28T10:15:28Z",
+  "league": "GER.1",
+  "paper_only": true,
+  "positions": [],
+  "reason": "no_qualifying_pre_tip_ticket_at_decision_cutoff",
+  "schema_version": "magolide.no_bet_decision",
+  "selection_policy": {
+    "allow_provisional": false,
+    "brier_cap": 0.22,
+    "brier_cap_three_way": 0.22,
+    "brier_cap_two_way": 0.25,
+    "cap_vs_base_rate": true,
+    "edge_flag_threshold": 0.15,
+    "forbid_alt_line_reuse": true,
+    "forbid_conflicting_game_sides": true,
+    "lane_permission": "probe_covered",
+    "limit": 3,
+    "max_claimed_edge": 0.4,
+    "max_combined_odds": 5.0,
+    "max_leg_odds": 3.0,
+    "max_legs": 3,
+    "min_combined_odds": 3.3,
+    "min_games": 30,
+    "min_leg_odds": 1.2,
+    "min_legs": 2,
+    "min_samples": 30,
+    "paper_only": true,
+    "price_weight": 0.15,
+    "probe_captured_utc": "2026-11-28T08:18:35Z",
+    "probe_market_evidence": {
+      "moneyline": {
+        "event_coverage": 0.875,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "moneyline_draw": {
+        "event_coverage": 0.875,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "spread": {
+        "event_coverage": 0.875,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "total": {
+        "event_coverage": 0.875,
+        "sample_size": 8,
+        "status": "ok"
+      }
+    },
+    "probe_report_used": true,
+    "ranking_metric": "kelly_log_growth",
+    "requested_legs": 3,
+    "require_disjoint_legs": true,
+    "stake_units_per_acca": 1.0,
+    "surface_resolution": "single_surface",
+    "ticket_markets": [
+      "moneyline",
+      "spread",
+      "total"
+    ]
+  },
+  "status": "frozen_no_bet",
+  "target_date": "2026-11-28",
+  "ticket_decision": {
+    "candidate_count": 28,
+    "captured_utc": "2026-11-28T10:15:28Z",
+    "eligible_count": 0,
+    "permission": "probe_covered",
+    "planned_cutoff_utc": "2026-11-28T10:00:00Z",
+    "probe_captured_utc": "2026-11-28T08:18:35Z",
+    "status": "frozen_no_bet"
+  }
+}

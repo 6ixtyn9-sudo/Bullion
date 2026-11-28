@@ -1,0 +1,2277 @@
+{
+  "candidate_pool": [
+    {
+      "alternative_probabilities": {
+        "away": 0.142745,
+        "draw": 0.276713,
+        "home": 0.580541
+      },
+      "away": "Coventry City",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879227",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.4651162790697674,
+        "side_prices": {
+          "away": 6.5,
+          "draw": 4.6,
+          "home": 1.4651162790697674
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.578781,
+      "calibration": {
+        "base_rate_brier": 0.218409,
+        "brier_cap": 0.22,
+        "brier_score": 0.199705,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2202,
+        "n_games": 734,
+        "platt": {
+          "a": 0.991978,
+          "b": -0.004619
+        },
+        "reasons": [],
+        "segment": {
+          "league": "eng.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.08564,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.152019,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19970464134374918,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.9124,
+      "expected_total": 2.2512,
+      "forecast_id": "5e5e21386dbd36c20f20",
+      "game_id": "401879227",
+      "grade_status": "pending",
+      "home": "Leeds United",
+      "league": "eng.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "5e5e21386dbd36c20f20",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 1.4651162790697674
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.580541,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2202
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.142745,
+        "draw": 0.276713,
+        "home": 0.580541
+      },
+      "away": "Coventry City",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879227",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 4.6,
+        "side_prices": {
+          "away": 6.5,
+          "draw": 4.6,
+          "home": 1.4651162790697674
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.277332,
+      "calibration": {
+        "base_rate_brier": 0.218409,
+        "brier_cap": 0.22,
+        "brier_score": 0.199705,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2202,
+        "n_games": 734,
+        "platt": {
+          "a": 0.991978,
+          "b": -0.004619
+        },
+        "reasons": [],
+        "segment": {
+          "league": "eng.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.08564,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.275727,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19970464134374918,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.9124,
+      "expected_total": 2.2512,
+      "forecast_id": "b9f905b1ea17b6465d3a",
+      "game_id": "401879227",
+      "grade_status": "pending",
+      "home": "Leeds United",
+      "league": "eng.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "b9f905b1ea17b6465d3a",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 4.6
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.276713,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2202
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.142745,
+        "draw": 0.276713,
+        "home": 0.580541
+      },
+      "away": "Coventry City",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879227",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 6.5,
+        "side_prices": {
+          "away": 6.5,
+          "draw": 4.6,
+          "home": 1.4651162790697674
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.143944,
+      "calibration": {
+        "base_rate_brier": 0.218409,
+        "brier_cap": 0.22,
+        "brier_score": 0.199705,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2202,
+        "n_games": 734,
+        "platt": {
+          "a": 0.991978,
+          "b": -0.004619
+        },
+        "reasons": [],
+        "segment": {
+          "league": "eng.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.08564,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.064365,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19970464134374918,
+        "reasons": [
+          "price_outside_ticket_band",
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.9124,
+      "expected_total": 2.2512,
+      "forecast_id": "0ce99ef4ff47f79139bf",
+      "game_id": "401879227",
+      "grade_status": "pending",
+      "home": "Leeds United",
+      "league": "eng.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "0ce99ef4ff47f79139bf",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 6.5
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.142745,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2202
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.390976,
+        "under": 0.609024
+      },
+      "away": "Coventry City",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879227",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.6451612903225805,
+        "side_prices": {
+          "over": 1.6451612903225805,
+          "under": 2.25
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.390976,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "eng.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.356781,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.2512,
+      "forecast_id": "d73a7650d6f1e115c85b",
+      "game_id": "401879227",
+      "grade_status": "pending",
+      "home": "Leeds United",
+      "league": "eng.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "d73a7650d6f1e115c85b",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 1.6451612903225805
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.390976,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.390976,
+        "under": 0.609024
+      },
+      "away": "Coventry City",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879227",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.25,
+        "side_prices": {
+          "over": 1.6451612903225805,
+          "under": 2.25
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.609024,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "eng.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.370304,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.2512,
+      "forecast_id": "eaaa9d39b898216df036",
+      "game_id": "401879227",
+      "grade_status": "pending",
+      "home": "Leeds United",
+      "league": "eng.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "eaaa9d39b898216df036",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 2.25
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.609024,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.677771,
+        "home": 0.322229
+      },
+      "away": "Coventry City",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879227",
+        "line": -1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.25,
+        "side_prices": {
+          "away": 1.5882352941176472,
+          "home": 2.25
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.322229,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "eng.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.274985,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.9124,
+      "expected_total": null,
+      "forecast_id": "44ce10ea5ae4bdb640bb",
+      "game_id": "401879227",
+      "grade_status": "pending",
+      "home": "Leeds United",
+      "league": "eng.1",
+      "line": -1.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "44ce10ea5ae4bdb640bb",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 2.25
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.322229,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.677771,
+        "home": 0.322229
+      },
+      "away": "Coventry City",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879227",
+        "line": -1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.5882352941176472,
+        "side_prices": {
+          "away": 1.5882352941176472,
+          "home": 2.25
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.677771,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "eng.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.07646,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.9124,
+      "expected_total": null,
+      "forecast_id": "6dcc1f01bd4310354bc1",
+      "game_id": "401879227",
+      "grade_status": "pending",
+      "home": "Leeds United",
+      "league": "eng.1",
+      "line": -1.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "6dcc1f01bd4310354bc1",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 1.5882352941176472
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.677771,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.307931,
+        "draw": 0.266808,
+        "home": 0.425261
+      },
+      "away": "Brentford",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879226",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.3,
+        "side_prices": {
+          "away": 2.9,
+          "draw": 3.7,
+          "home": 2.3
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.424723,
+      "calibration": {
+        "base_rate_brier": 0.218409,
+        "brier_cap": 0.22,
+        "brier_score": 0.199705,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2202,
+        "n_games": 734,
+        "platt": {
+          "a": 0.991978,
+          "b": -0.004619
+        },
+        "reasons": [],
+        "segment": {
+          "league": "eng.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.08564,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.023137,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19970464134374918,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.2679,
+      "expected_total": 3.0096,
+      "forecast_id": "e0f963f0718f3ea069e5",
+      "game_id": "401879226",
+      "grade_status": "pending",
+      "home": "Manchester United",
+      "league": "eng.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "e0f963f0718f3ea069e5",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 2.3
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.425261,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2202
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.307931,
+        "draw": 0.266808,
+        "home": 0.425261
+      },
+      "away": "Brentford",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879226",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.7,
+        "side_prices": {
+          "away": 2.9,
+          "draw": 3.7,
+          "home": 2.3
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.267491,
+      "calibration": {
+        "base_rate_brier": 0.218409,
+        "brier_cap": 0.22,
+        "brier_score": 0.199705,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2202,
+        "n_games": 734,
+        "platt": {
+          "a": 0.991978,
+          "b": -0.004619
+        },
+        "reasons": [],
+        "segment": {
+          "league": "eng.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.08564,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.010284,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19970464134374918,
+        "reasons": [
+          "price_outside_ticket_band",
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.2679,
+      "expected_total": 3.0096,
+      "forecast_id": "04a477be999423d98788",
+      "game_id": "401879226",
+      "grade_status": "pending",
+      "home": "Manchester United",
+      "league": "eng.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "04a477be999423d98788",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 3.7
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.266808,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2202
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.307931,
+        "draw": 0.266808,
+        "home": 0.425261
+      },
+      "away": "Brentford",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879226",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.9,
+        "side_prices": {
+          "away": 2.9,
+          "draw": 3.7,
+          "home": 2.3
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.308332,
+      "calibration": {
+        "base_rate_brier": 0.218409,
+        "brier_cap": 0.22,
+        "brier_score": 0.199705,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2202,
+        "n_games": 734,
+        "platt": {
+          "a": 0.991978,
+          "b": -0.004619
+        },
+        "reasons": [],
+        "segment": {
+          "league": "eng.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.08564,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.105839,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19970464134374918,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.2679,
+      "expected_total": 3.0096,
+      "forecast_id": "a784bf8fd8e809b5e444",
+      "game_id": "401879226",
+      "grade_status": "pending",
+      "home": "Manchester United",
+      "league": "eng.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "a784bf8fd8e809b5e444",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 2.9
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.307931,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2202
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.354922,
+        "under": 0.645078
+      },
+      "away": "Brentford",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879226",
+        "line": 3.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.35,
+        "side_prices": {
+          "over": 2.35,
+          "under": 1.5882352941176472
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.354922,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "eng.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.165932,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.0096,
+      "forecast_id": "147d6c2a8b692c46ffb1",
+      "game_id": "401879226",
+      "grade_status": "pending",
+      "home": "Manchester United",
+      "league": "eng.1",
+      "line": 3.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "147d6c2a8b692c46ffb1",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 2.35
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.354922,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.354922,
+        "under": 0.645078
+      },
+      "away": "Brentford",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879226",
+        "line": 3.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.5882352941176472,
+        "side_prices": {
+          "over": 2.35,
+          "under": 1.5882352941176472
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.645078,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "eng.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.024535,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.0096,
+      "forecast_id": "5353c2d21e8c66baba82",
+      "game_id": "401879226",
+      "grade_status": "pending",
+      "home": "Manchester United",
+      "league": "eng.1",
+      "line": 3.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "5353c2d21e8c66baba82",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 1.5882352941176472
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.645078,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.574739,
+        "home": 0.425261
+      },
+      "away": "Brentford",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879226",
+        "line": -0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.2,
+        "side_prices": {
+          "away": 1.5882352941176472,
+          "home": 2.2
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.425261,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "eng.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.064425,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.2679,
+      "expected_total": null,
+      "forecast_id": "2627c9d8a3678f7b5050",
+      "game_id": "401879226",
+      "grade_status": "pending",
+      "home": "Manchester United",
+      "league": "eng.1",
+      "line": -0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "2627c9d8a3678f7b5050",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 2.2
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.425261,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.574739,
+        "home": 0.425261
+      },
+      "away": "Brentford",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401879226",
+        "line": -0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.5882352941176472,
+        "side_prices": {
+          "away": 1.5882352941176472,
+          "home": 2.2
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.574739,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "eng.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.08718,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.2679,
+      "expected_total": null,
+      "forecast_id": "45cb686afcd54afcbf93",
+      "game_id": "401879226",
+      "grade_status": "pending",
+      "home": "Manchester United",
+      "league": "eng.1",
+      "line": -0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "45cb686afcd54afcbf93",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 1.5882352941176472
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.574739,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T15:00:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.441298,
+        "draw": 0.255479,
+        "home": 0.303223
+      },
+      "away": "Aston Villa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401878752",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.4,
+        "side_prices": {
+          "away": 2.05,
+          "draw": 3.75,
+          "home": 3.4
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.303657,
+      "calibration": {
+        "base_rate_brier": 0.218409,
+        "brier_cap": 0.22,
+        "brier_score": 0.199705,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2202,
+        "n_games": 734,
+        "platt": {
+          "a": 0.991978,
+          "b": -0.004619
+        },
+        "reasons": [],
+        "segment": {
+          "league": "eng.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.08564,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.032434,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19970464134374918,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.3248,
+      "expected_total": 3.2083,
+      "forecast_id": "2ea1346b4a3e78d7b7e4",
+      "game_id": "401878752",
+      "grade_status": "pending",
+      "home": "Ipswich Town",
+      "league": "eng.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "2ea1346b4a3e78d7b7e4",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 3.4
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.303223,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2202
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.441298,
+        "draw": 0.255479,
+        "home": 0.303223
+      },
+      "away": "Aston Villa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401878752",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.75,
+        "side_prices": {
+          "away": 2.05,
+          "draw": 3.75,
+          "home": 3.4
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.256233,
+      "calibration": {
+        "base_rate_brier": 0.218409,
+        "brier_cap": 0.22,
+        "brier_score": 0.199705,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2202,
+        "n_games": 734,
+        "platt": {
+          "a": 0.991978,
+          "b": -0.004619
+        },
+        "reasons": [],
+        "segment": {
+          "league": "eng.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.08564,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.039125,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19970464134374918,
+        "reasons": [
+          "price_outside_ticket_band",
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.3248,
+      "expected_total": 3.2083,
+      "forecast_id": "893e4570b1e4fe88dc44",
+      "game_id": "401878752",
+      "grade_status": "pending",
+      "home": "Ipswich Town",
+      "league": "eng.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "893e4570b1e4fe88dc44",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 3.75
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.255479,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2202
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.441298,
+        "draw": 0.255479,
+        "home": 0.303223
+      },
+      "away": "Aston Villa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401878752",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.05,
+        "side_prices": {
+          "away": 2.05,
+          "draw": 3.75,
+          "home": 3.4
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.440626,
+      "calibration": {
+        "base_rate_brier": 0.218409,
+        "brier_cap": 0.22,
+        "brier_score": 0.199705,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2202,
+        "n_games": 734,
+        "platt": {
+          "a": 0.991978,
+          "b": -0.004619
+        },
+        "reasons": [],
+        "segment": {
+          "league": "eng.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.08564,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.096716,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.19970464134374918,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.3248,
+      "expected_total": 3.2083,
+      "forecast_id": "0bca1675838892f932c1",
+      "game_id": "401878752",
+      "grade_status": "pending",
+      "home": "Ipswich Town",
+      "league": "eng.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "0bca1675838892f932c1",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 2.05
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.441298,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2202
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.621839,
+        "under": 0.378161
+      },
+      "away": "Aston Villa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401878752",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.5882352941176472,
+        "side_prices": {
+          "over": 1.5882352941176472,
+          "under": 2.4
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.621839,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "eng.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.012374,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.2083,
+      "forecast_id": "4f8f4140de5de2b16fbf",
+      "game_id": "401878752",
+      "grade_status": "pending",
+      "home": "Ipswich Town",
+      "league": "eng.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "4f8f4140de5de2b16fbf",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 1.5882352941176472
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.621839,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.621839,
+        "under": 0.378161
+      },
+      "away": "Aston Villa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401878752",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.4,
+        "side_prices": {
+          "over": 1.5882352941176472,
+          "under": 2.4
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.378161,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "eng.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.092413,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 3.2083,
+      "forecast_id": "2800dae0ce4b4c77ea62",
+      "game_id": "401878752",
+      "grade_status": "pending",
+      "home": "Ipswich Town",
+      "league": "eng.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "2800dae0ce4b4c77ea62",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 2.4
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.378161,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.441298,
+        "home": 0.558702
+      },
+      "away": "Aston Villa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401878752",
+        "line": 0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.7407407407407407,
+        "side_prices": {
+          "away": 1.9523809523809523,
+          "home": 1.7407407407407407
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.558702,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "eng.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.027445,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.3248,
+      "expected_total": null,
+      "forecast_id": "030f8048fdd9b2d8a20a",
+      "game_id": "401878752",
+      "grade_status": "pending",
+      "home": "Ipswich Town",
+      "league": "eng.1",
+      "line": 0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "030f8048fdd9b2d8a20a",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 1.7407407407407407
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.558702,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.441298,
+        "home": 0.558702
+      },
+      "away": "Aston Villa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401878752",
+        "line": 0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.9523809523809523,
+        "side_prices": {
+          "away": 1.9523809523809523,
+          "home": 1.7407407407407407
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.441298,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "eng.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.138418,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.3248,
+      "expected_total": null,
+      "forecast_id": "f852cc2c941c35e73cf9",
+      "game_id": "401878752",
+      "grade_status": "pending",
+      "home": "Ipswich Town",
+      "league": "eng.1",
+      "line": 0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "f852cc2c941c35e73cf9",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:26Z",
+        "selected_decimal_price": 1.9523809523809523
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.441298,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:30:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    }
+  ],
+  "captured_at": "2026-11-28T10:15:26Z",
+  "date": "2026-11-28",
+  "decision_id": "106627a9513d5129dbe1",
+  "frozen_at": "2026-11-28T10:15:26Z",
+  "league": "ENG.1",
+  "paper_only": true,
+  "positions": [],
+  "reason": "no_qualifying_pre_tip_ticket_at_decision_cutoff",
+  "schema_version": "magolide.no_bet_decision",
+  "selection_policy": {
+    "allow_provisional": false,
+    "brier_cap": 0.22,
+    "brier_cap_three_way": 0.22,
+    "brier_cap_two_way": 0.25,
+    "cap_vs_base_rate": true,
+    "edge_flag_threshold": 0.15,
+    "forbid_alt_line_reuse": true,
+    "forbid_conflicting_game_sides": true,
+    "lane_permission": "probe_covered",
+    "limit": 3,
+    "max_claimed_edge": 0.4,
+    "max_combined_odds": 5.0,
+    "max_leg_odds": 3.0,
+    "max_legs": 3,
+    "min_combined_odds": 3.3,
+    "min_games": 30,
+    "min_leg_odds": 1.2,
+    "min_legs": 2,
+    "min_samples": 30,
+    "paper_only": true,
+    "price_weight": 0.15,
+    "probe_captured_utc": "2026-11-28T08:18:35Z",
+    "probe_market_evidence": {
+      "moneyline": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "moneyline_draw": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "spread": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "total": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      }
+    },
+    "probe_report_used": true,
+    "ranking_metric": "kelly_log_growth",
+    "requested_legs": 3,
+    "require_disjoint_legs": true,
+    "stake_units_per_acca": 1.0,
+    "surface_resolution": "single_surface",
+    "ticket_markets": [
+      "moneyline",
+      "spread",
+      "total"
+    ]
+  },
+  "status": "frozen_no_bet",
+  "target_date": "2026-11-28",
+  "ticket_decision": {
+    "candidate_count": 21,
+    "captured_utc": "2026-11-28T10:15:26Z",
+    "eligible_count": 0,
+    "permission": "probe_covered",
+    "planned_cutoff_utc": "2026-11-28T10:00:00Z",
+    "probe_captured_utc": "2026-11-28T08:18:35Z",
+    "status": "frozen_no_bet"
+  }
+}

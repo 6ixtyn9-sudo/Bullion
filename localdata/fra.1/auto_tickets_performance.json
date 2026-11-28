@@ -16,6 +16,15 @@
       "league": "FRA.1",
       "positions": [],
       "status": "frozen_no_bet"
+    },
+    {
+      "candidate_pool_outcomes": {},
+      "date": "2026-11-28",
+      "decision_id": "9ef798294458036971c8",
+      "frozen_at": "2026-11-28T10:15:30Z",
+      "league": "FRA.1",
+      "positions": [],
+      "status": "frozen_no_bet"
     }
   ],
   "hit_rate": null,

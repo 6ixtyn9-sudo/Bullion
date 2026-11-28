@@ -9,12 +9,12 @@
     "min_roi_samples": 5,
     "require_named_book": true
   },
-  "generated_utc": "2026-11-28T06:15:33Z",
+  "generated_utc": "2026-11-28T10:15:29Z",
   "run": {
     "candidate_pool": 28,
     "cutoff_utc": "2026-11-28T10:00:00Z",
     "day": "2026-11-28",
-    "eligible_legs": 2,
+    "eligible_legs": 0,
     "forecasts": 28,
     "games": 6,
     "gaps": [
@@ -38,16 +38,16 @@
       }
     ],
     "lane": "ger.1",
-    "reason": "decision cutoff 2026-11-28T10:00:00Z not reached; scan only",
+    "reason": "no qualifying pre-tip ticket at cutoff",
     "receipt_path": null,
     "refreshed_finals": 0,
-    "status": "pre_cutoff_scan",
+    "status": "frozen_no_bet",
     "ticket_markets": [
       "moneyline",
       "spread",
       "total"
     ],
-    "tickets": 1
+    "tickets": 0
   },
   "schema_version": "bullion.lane_run"
 }

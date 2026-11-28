@@ -1,0 +1,2275 @@
+{
+  "candidate_pool": [
+    {
+      "alternative_probabilities": {
+        "away": 0.224455,
+        "draw": 0.282672,
+        "home": 0.492872
+      },
+      "away": "Parma",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401875081",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.4,
+        "side_prices": {
+          "away": 6.0,
+          "draw": 5.0,
+          "home": 1.4
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.498446,
+      "calibration": {
+        "base_rate_brier": 0.220513,
+        "brier_cap": 0.22,
+        "brier_score": 0.200196,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2199,
+        "n_games": 733,
+        "platt": {
+          "a": 1.041126,
+          "b": 0.023469
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ita.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.092137,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.302176,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20019584132758955,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.5437,
+      "expected_total": 2.2305,
+      "forecast_id": "9b511bbc0c49e3bd991c",
+      "game_id": "401875081",
+      "grade_status": "pending",
+      "home": "Frosinone",
+      "league": "ita.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "9b511bbc0c49e3bd991c",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 1.4
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.492872,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:00:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2199
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.224455,
+        "draw": 0.282672,
+        "home": 0.492872
+      },
+      "away": "Parma",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401875081",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 5.0,
+        "side_prices": {
+          "away": 6.0,
+          "draw": 5.0,
+          "home": 1.4
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.279675,
+      "calibration": {
+        "base_rate_brier": 0.220513,
+        "brier_cap": 0.22,
+        "brier_score": 0.200196,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2199,
+        "n_games": 733,
+        "platt": {
+          "a": 1.041126,
+          "b": 0.023469
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ita.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.092137,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.398375,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20019584132758955,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.5437,
+      "expected_total": 2.2305,
+      "forecast_id": "bfc6ff92d85fc9df77f6",
+      "game_id": "401875081",
+      "grade_status": "pending",
+      "home": "Frosinone",
+      "league": "ita.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "bfc6ff92d85fc9df77f6",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 5.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.282672,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:00:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2199
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.224455,
+        "draw": 0.282672,
+        "home": 0.492872
+      },
+      "away": "Parma",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401875081",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 6.0,
+        "side_prices": {
+          "away": 6.0,
+          "draw": 5.0,
+          "home": 1.4
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.219701,
+      "calibration": {
+        "base_rate_brier": 0.220513,
+        "brier_cap": 0.22,
+        "brier_score": 0.200196,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2199,
+        "n_games": 733,
+        "platt": {
+          "a": 1.041126,
+          "b": 0.023469
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ita.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.092137,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.318203,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20019584132758955,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.5437,
+      "expected_total": 2.2305,
+      "forecast_id": "c0ee32a7c616d5b57f8d",
+      "game_id": "401875081",
+      "grade_status": "pending",
+      "home": "Frosinone",
+      "league": "ita.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "c0ee32a7c616d5b57f8d",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 6.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.224455,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:00:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2199
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.186672,
+        "under": 0.813328
+      },
+      "away": "Parma",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401875081",
+        "line": 3.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8695652173913042,
+        "side_prices": {
+          "over": 1.8695652173913042,
+          "under": 1.9090909090909092
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.186672,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ita.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.651004,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.2305,
+      "forecast_id": "f32bb2cd2d07aab3cd0e",
+      "game_id": "401875081",
+      "grade_status": "pending",
+      "home": "Frosinone",
+      "league": "ita.1",
+      "line": 3.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "f32bb2cd2d07aab3cd0e",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 1.8695652173913042
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.186672,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:00:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.186672,
+        "under": 0.813328
+      },
+      "away": "Parma",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401875081",
+        "line": 3.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.9090909090909092,
+        "side_prices": {
+          "over": 1.8695652173913042,
+          "under": 1.9090909090909092
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.813328,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ita.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.552717,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "edge_above_sanity_cap",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.2305,
+      "forecast_id": "dbb17c419a3051d30a61",
+      "game_id": "401875081",
+      "grade_status": "pending",
+      "home": "Frosinone",
+      "league": "ita.1",
+      "line": 3.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "dbb17c419a3051d30a61",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 1.9090909090909092
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.813328,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:00:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.758398,
+        "home": 0.241602
+      },
+      "away": "Parma",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401875081",
+        "line": -1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.9523809523809523,
+        "side_prices": {
+          "away": 1.7407407407407407,
+          "home": 1.9523809523809523
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.241602,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ita.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.528301,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.5437,
+      "expected_total": null,
+      "forecast_id": "6c6f67fd65ee220fdc0e",
+      "game_id": "401875081",
+      "grade_status": "pending",
+      "home": "Frosinone",
+      "league": "ita.1",
+      "line": -1.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "6c6f67fd65ee220fdc0e",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 1.9523809523809523
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.241602,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:00:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.758398,
+        "home": 0.241602
+      },
+      "away": "Parma",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401875081",
+        "line": -1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.7407407407407407,
+        "side_prices": {
+          "away": 1.7407407407407407,
+          "home": 1.9523809523809523
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.758398,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ita.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.320174,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 0.5437,
+      "expected_total": null,
+      "forecast_id": "1a553df2382f3a2b341a",
+      "game_id": "401875081",
+      "grade_status": "pending",
+      "home": "Frosinone",
+      "league": "ita.1",
+      "line": -1.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "1a553df2382f3a2b341a",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 1.7407407407407407
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.758398,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T14:00:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.422378,
+        "draw": 0.269597,
+        "home": 0.308025
+      },
+      "away": "Lazio",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874826",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.35,
+        "side_prices": {
+          "away": 2.1,
+          "draw": 3.25,
+          "home": 3.35
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.305936,
+      "calibration": {
+        "base_rate_brier": 0.220513,
+        "brier_cap": 0.22,
+        "brier_score": 0.200196,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2199,
+        "n_games": 733,
+        "platt": {
+          "a": 1.041126,
+          "b": 0.023469
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ita.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.092137,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.024887,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20019584132758955,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.2443,
+      "expected_total": 2.5907,
+      "forecast_id": "74f3f5e9f60cbae64e60",
+      "game_id": "401874826",
+      "grade_status": "pending",
+      "home": "Torino",
+      "league": "ita.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "74f3f5e9f60cbae64e60",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 3.35
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.308025,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:00:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2199
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.422378,
+        "draw": 0.269597,
+        "home": 0.308025
+      },
+      "away": "Lazio",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874826",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 3.25,
+        "side_prices": {
+          "away": 2.1,
+          "draw": 3.25,
+          "home": 3.35
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.266161,
+      "calibration": {
+        "base_rate_brier": 0.220513,
+        "brier_cap": 0.22,
+        "brier_score": 0.200196,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2199,
+        "n_games": 733,
+        "platt": {
+          "a": 1.041126,
+          "b": 0.023469
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ita.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.092137,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.134978,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20019584132758955,
+        "reasons": [
+          "price_outside_ticket_band",
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.2443,
+      "expected_total": 2.5907,
+      "forecast_id": "2aa61a8e3abdb406d692",
+      "game_id": "401874826",
+      "grade_status": "pending",
+      "home": "Torino",
+      "league": "ita.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "2aa61a8e3abdb406d692",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 3.25
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.269597,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:00:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2199
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.422378,
+        "draw": 0.269597,
+        "home": 0.308025
+      },
+      "away": "Lazio",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874826",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.1,
+        "side_prices": {
+          "away": 2.1,
+          "draw": 3.25,
+          "home": 3.35
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.424965,
+      "calibration": {
+        "base_rate_brier": 0.220513,
+        "brier_cap": 0.22,
+        "brier_score": 0.200196,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2199,
+        "n_games": 733,
+        "platt": {
+          "a": 1.041126,
+          "b": 0.023469
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ita.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.092137,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.107573,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20019584132758955,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.2443,
+      "expected_total": 2.5907,
+      "forecast_id": "1316a47bd58f3b5bbc21",
+      "game_id": "401874826",
+      "grade_status": "pending",
+      "home": "Torino",
+      "league": "ita.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "1316a47bd58f3b5bbc21",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 2.1
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.422378,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:00:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2199
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.479226,
+        "under": 0.520774
+      },
+      "away": "Lazio",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874826",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.8695652173913042,
+        "side_prices": {
+          "over": 1.8695652173913042,
+          "under": 1.9090909090909092
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.479226,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ita.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.104056,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.5907,
+      "forecast_id": "8f6e8fa03ccaa60e9bac",
+      "game_id": "401874826",
+      "grade_status": "pending",
+      "home": "Torino",
+      "league": "ita.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "8f6e8fa03ccaa60e9bac",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 1.8695652173913042
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.479226,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:00:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.479226,
+        "under": 0.520774
+      },
+      "away": "Lazio",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874826",
+        "line": 2.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.9090909090909092,
+        "side_prices": {
+          "over": 1.8695652173913042,
+          "under": 1.9090909090909092
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.520774,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ita.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.005795,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.5907,
+      "forecast_id": "182477434aa8d52e4499",
+      "game_id": "401874826",
+      "grade_status": "pending",
+      "home": "Torino",
+      "league": "ita.1",
+      "line": 2.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "182477434aa8d52e4499",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 1.9090909090909092
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.520774,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:00:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.422378,
+        "home": 0.577622
+      },
+      "away": "Lazio",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874826",
+        "line": 0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.6896551724137931,
+        "side_prices": {
+          "away": 2.05,
+          "home": 1.6896551724137931
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.577622,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ita.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.024018,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.2443,
+      "expected_total": null,
+      "forecast_id": "e4d6a780cb311f20aad7",
+      "game_id": "401874826",
+      "grade_status": "pending",
+      "home": "Torino",
+      "league": "ita.1",
+      "line": 0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "e4d6a780cb311f20aad7",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 1.6896551724137931
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.577622,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:00:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.422378,
+        "home": 0.577622
+      },
+      "away": "Lazio",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874826",
+        "line": 0.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.05,
+        "side_prices": {
+          "away": 2.05,
+          "home": 1.6896551724137931
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.422378,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ita.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.134125,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": -0.2443,
+      "expected_total": null,
+      "forecast_id": "4b87965ac7f2b8b540bb",
+      "game_id": "401874826",
+      "grade_status": "pending",
+      "home": "Torino",
+      "league": "ita.1",
+      "line": 0.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "4b87965ac7f2b8b540bb",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 2.05
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.422378,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T17:00:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.136935,
+        "draw": 0.199164,
+        "home": 0.6639
+      },
+      "away": "Genoa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874977",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.2702702702702702,
+        "side_prices": {
+          "away": 9.0,
+          "draw": 5.5,
+          "home": 1.2702702702702702
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.675286,
+      "calibration": {
+        "base_rate_brier": 0.220513,
+        "brier_cap": 0.22,
+        "brier_score": 0.200196,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2199,
+        "n_games": 733,
+        "platt": {
+          "a": 1.041126,
+          "b": 0.023469
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ita.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.092137,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": -0.142205,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20019584132758955,
+        "reasons": [
+          "non_positive_expected_value",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.2752,
+      "expected_total": 2.9977,
+      "forecast_id": "0164903f9e30f58ba232",
+      "game_id": "401874977",
+      "grade_status": "pending",
+      "home": "Internazionale",
+      "league": "ita.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "0164903f9e30f58ba232",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 1.2702702702702702
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.6639,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T19:45:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 2199
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.136935,
+        "draw": 0.199164,
+        "home": 0.6639
+      },
+      "away": "Genoa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874977",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 5.5,
+        "side_prices": {
+          "away": 9.0,
+          "draw": 5.5,
+          "home": 1.2702702702702702
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.193834,
+      "calibration": {
+        "base_rate_brier": 0.220513,
+        "brier_cap": 0.22,
+        "brier_score": 0.200196,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2199,
+        "n_games": 733,
+        "platt": {
+          "a": 1.041126,
+          "b": 0.023469
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ita.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.092137,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.06609,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20019584132758955,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.2752,
+      "expected_total": 2.9977,
+      "forecast_id": "14764159fa5a0adbe59a",
+      "game_id": "401874977",
+      "grade_status": "pending",
+      "home": "Internazionale",
+      "league": "ita.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "14764159fa5a0adbe59a",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 5.5
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.199164,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T19:45:00Z",
+      "selection": "draw",
+      "source": "dixon_coles",
+      "training_games": 2199
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.136935,
+        "draw": 0.199164,
+        "home": 0.6639
+      },
+      "away": "Genoa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874977",
+        "line": null,
+        "main_line": true,
+        "market": "moneyline",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 9.0,
+        "side_prices": {
+          "away": 9.0,
+          "draw": 5.5,
+          "home": 1.2702702702702702
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.130877,
+      "calibration": {
+        "base_rate_brier": 0.220513,
+        "brier_cap": 0.22,
+        "brier_score": 0.200196,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 2199,
+        "n_games": 733,
+        "platt": {
+          "a": 1.041126,
+          "b": 0.023469
+        },
+        "reasons": [],
+        "segment": {
+          "league": "ita.1",
+          "market": "moneyline",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": 0.092137,
+        "status": "calibrated",
+        "sufficient_for_accas": true
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.22,
+        "claimed_edge": 0.177893,
+        "cold_start_admitted": false,
+        "edge_implausible": true,
+        "evidence_state": "walk_forward_calibrated",
+        "model_brier": 0.20019584132758955,
+        "reasons": [
+          "price_outside_ticket_band",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.2752,
+      "expected_total": 2.9977,
+      "forecast_id": "35e0a7687995af8f24fc",
+      "game_id": "401874977",
+      "grade_status": "pending",
+      "home": "Internazionale",
+      "league": "ita.1",
+      "line": null,
+      "market": "moneyline",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "35e0a7687995af8f24fc",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 9.0
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.136935,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T19:45:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 2199
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.352271,
+        "under": 0.647729
+      },
+      "away": "Genoa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874977",
+        "line": 3.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 2.2,
+        "side_prices": {
+          "over": 2.2,
+          "under": 1.6666666666666665
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.352271,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ita.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.225004,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.9977,
+      "forecast_id": "6480e81a353e1e20e134",
+      "game_id": "401874977",
+      "grade_status": "pending",
+      "home": "Internazionale",
+      "league": "ita.1",
+      "line": 3.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "6480e81a353e1e20e134",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 2.2
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.352271,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T19:45:00Z",
+      "selection": "over",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "over": 0.352271,
+        "under": 0.647729
+      },
+      "away": "Genoa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874977",
+        "line": 3.5,
+        "main_line": true,
+        "market": "total",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.6666666666666665,
+        "side_prices": {
+          "over": 2.2,
+          "under": 1.6666666666666665
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.647729,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ita.1",
+          "market": "total",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.079549,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": null,
+      "expected_total": 2.9977,
+      "forecast_id": "b4550abf4649f8ac31d8",
+      "game_id": "401874977",
+      "grade_status": "pending",
+      "home": "Internazionale",
+      "league": "ita.1",
+      "line": 3.5,
+      "market": "total",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "b4550abf4649f8ac31d8",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 1.6666666666666665
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.647729,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T19:45:00Z",
+      "selection": "under",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.573183,
+        "home": 0.426817
+      },
+      "away": "Genoa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874977",
+        "line": -1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.7407407407407407,
+        "side_prices": {
+          "away": 1.9523809523809523,
+          "home": 1.7407407407407407
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.426817,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ita.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": -0.257023,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "non_positive_expected_value",
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.2752,
+      "expected_total": null,
+      "forecast_id": "7cd6c2f47df4e904e529",
+      "game_id": "401874977",
+      "grade_status": "pending",
+      "home": "Internazionale",
+      "league": "ita.1",
+      "line": -1.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "7cd6c2f47df4e904e529",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 1.7407407407407407
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.426817,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T19:45:00Z",
+      "selection": "home",
+      "source": "dixon_coles",
+      "training_games": 0
+    },
+    {
+      "alternative_probabilities": {
+        "away": 0.573183,
+        "home": 0.426817
+      },
+      "away": "Genoa",
+      "book": {
+        "book": "DraftKings",
+        "frozen": true,
+        "game_id": "401874977",
+        "line": -1.5,
+        "main_line": true,
+        "market": "spread",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "operational_validation": "probation",
+        "period": "full_game",
+        "pre_match": true,
+        "price_provenance": "named_book",
+        "provider": "espn",
+        "selected_decimal_price": 1.9523809523809523,
+        "side_prices": {
+          "away": 1.9523809523809523,
+          "home": 1.7407407407407407
+        },
+        "source_modified_utc": null,
+        "source_permission": "unresolved"
+      },
+      "bucket": "OK",
+      "calibrated_probability": 0.573183,
+      "calibration": {
+        "base_rate_brier": null,
+        "brier_cap": 0.25,
+        "brier_score": null,
+        "calibration_version": "platt-walkforward-v1",
+        "minimum_samples": 30,
+        "n": 0,
+        "n_games": 0,
+        "platt": {
+          "a": 1.0,
+          "b": 0.0
+        },
+        "reasons": [
+          "insufficient_walk_forward_samples"
+        ],
+        "segment": {
+          "league": "ita.1",
+          "market": "spread",
+          "period": "full_game",
+          "source": "dixon_coles"
+        },
+        "skill_vs_base_rate": null,
+        "status": "provisional",
+        "sufficient_for_accas": false
+      },
+      "calibration_version": "platt-walkforward-v1",
+      "date": "2026-11-28",
+      "eligibility": {
+        "acca_eligible": false,
+        "brier_cap": 0.25,
+        "claimed_edge": 0.119072,
+        "cold_start_admitted": false,
+        "edge_implausible": false,
+        "evidence_state": "provisional",
+        "model_brier": null,
+        "reasons": [
+          "calibration_not_sufficient_for_accas",
+          "prior_roi_insufficient_sample"
+        ]
+      },
+      "expected_margin": 1.2752,
+      "expected_total": null,
+      "forecast_id": "6cc409c4ad2d47027fa5",
+      "game_id": "401874977",
+      "grade_status": "pending",
+      "home": "Internazionale",
+      "league": "ita.1",
+      "line": -1.5,
+      "market": "spread",
+      "model": "dixon_coles",
+      "outcome": null,
+      "paper_only": true,
+      "period": "full_game",
+      "pick_id": "6cc409c4ad2d47027fa5",
+      "prediction": {
+        "frozen": true,
+        "model": "dixon_coles",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "provider": "espn"
+      },
+      "price_evidence": {
+        "book": "DraftKings",
+        "observed_utc": "2026-11-28T10:15:29Z",
+        "selected_decimal_price": 1.9523809523809523
+      },
+      "prior_heavy": false,
+      "push_probability": 0.0,
+      "raw_probability": 0.573183,
+      "residual_games": 0,
+      "role": null,
+      "scheduled_utc": "2026-11-28T19:45:00Z",
+      "selection": "away",
+      "source": "dixon_coles",
+      "training_games": 0
+    }
+  ],
+  "captured_at": "2026-11-28T10:15:29Z",
+  "date": "2026-11-28",
+  "decision_id": "9837c9a7aa2330c1ed99",
+  "frozen_at": "2026-11-28T10:15:29Z",
+  "league": "ITA.1",
+  "paper_only": true,
+  "positions": [],
+  "reason": "no_qualifying_pre_tip_ticket_at_decision_cutoff",
+  "schema_version": "magolide.no_bet_decision",
+  "selection_policy": {
+    "allow_provisional": false,
+    "brier_cap": 0.22,
+    "brier_cap_three_way": 0.22,
+    "brier_cap_two_way": 0.25,
+    "cap_vs_base_rate": true,
+    "edge_flag_threshold": 0.15,
+    "forbid_alt_line_reuse": true,
+    "forbid_conflicting_game_sides": true,
+    "lane_permission": "probe_covered",
+    "limit": 3,
+    "max_claimed_edge": 0.4,
+    "max_combined_odds": 5.0,
+    "max_leg_odds": 3.0,
+    "max_legs": 3,
+    "min_combined_odds": 3.3,
+    "min_games": 30,
+    "min_leg_odds": 1.2,
+    "min_legs": 2,
+    "min_samples": 30,
+    "paper_only": true,
+    "price_weight": 0.15,
+    "probe_captured_utc": "2026-11-28T08:18:35Z",
+    "probe_market_evidence": {
+      "moneyline": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "moneyline_draw": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "spread": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      },
+      "total": {
+        "event_coverage": 1.0,
+        "sample_size": 8,
+        "status": "ok"
+      }
+    },
+    "probe_report_used": true,
+    "ranking_metric": "kelly_log_growth",
+    "requested_legs": 3,
+    "require_disjoint_legs": true,
+    "stake_units_per_acca": 1.0,
+    "surface_resolution": "single_surface",
+    "ticket_markets": [
+      "moneyline",
+      "spread",
+      "total"
+    ]
+  },
+  "status": "frozen_no_bet",
+  "target_date": "2026-11-28",
+  "ticket_decision": {
+    "candidate_count": 21,
+    "captured_utc": "2026-11-28T10:15:29Z",
+    "eligible_count": 0,
+    "permission": "probe_covered",
+    "planned_cutoff_utc": "2026-11-28T10:00:00Z",
+    "probe_captured_utc": "2026-11-28T08:18:35Z",
+    "status": "frozen_no_bet"
+  }
+}

@@ -16,6 +16,15 @@
       "league": "ITA.1",
       "positions": [],
       "status": "frozen_no_bet"
+    },
+    {
+      "candidate_pool_outcomes": {},
+      "date": "2026-11-28",
+      "decision_id": "9837c9a7aa2330c1ed99",
+      "frozen_at": "2026-11-28T10:15:29Z",
+      "league": "ITA.1",
+      "positions": [],
+      "status": "frozen_no_bet"
     }
   ],
   "hit_rate": null,

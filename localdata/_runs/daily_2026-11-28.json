@@ -1,17 +1,5 @@
 {
-  "carried_over_generated_utc": "2026-11-28T06:15:35Z",
-  "carried_over_lanes": [
-    "cfb",
-    "eng.1",
-    "esp.1",
-    "fra.1",
-    "ger.1",
-    "ita.1",
-    "nfl",
-    "nhl",
-    "uefa.champions"
-  ],
-  "generated_utc": "2026-11-28T08:22:08Z",
+  "generated_utc": "2026-11-28T10:16:21Z",
   "probe_report_used": true,
   "rehydrated": {
     "files": 9,
@@ -273,10 +261,10 @@
         }
       ],
       "lane": "eng.1",
-      "reason": "decision cutoff 2026-11-28T10:00:00Z not reached; scan only",
+      "reason": "no qualifying pre-tip ticket at cutoff",
       "receipt_path": null,
       "refreshed_finals": 0,
-      "status": "pre_cutoff_scan",
+      "status": "frozen_no_bet",
       "ticket_markets": [
         "moneyline",
         "spread",
@@ -300,10 +288,10 @@
         }
       ],
       "lane": "esp.1",
-      "reason": "decision cutoff 2026-11-28T10:00:00Z not reached; scan only",
+      "reason": "no qualifying pre-tip ticket at cutoff",
       "receipt_path": null,
       "refreshed_finals": 0,
-      "status": "pre_cutoff_scan",
+      "status": "frozen_no_bet",
       "ticket_markets": [
         "moneyline",
         "spread",
@@ -315,7 +303,7 @@
       "candidate_pool": 28,
       "cutoff_utc": "2026-11-28T10:00:00Z",
       "day": "2026-11-28",
-      "eligible_legs": 2,
+      "eligible_legs": 0,
       "forecasts": 28,
       "games": 6,
       "gaps": [
@@ -339,16 +327,16 @@
         }
       ],
       "lane": "ger.1",
-      "reason": "decision cutoff 2026-11-28T10:00:00Z not reached; scan only",
+      "reason": "no qualifying pre-tip ticket at cutoff",
       "receipt_path": null,
       "refreshed_finals": 0,
-      "status": "pre_cutoff_scan",
+      "status": "frozen_no_bet",
       "ticket_markets": [
         "moneyline",
         "spread",
         "total"
       ],
-      "tickets": 1
+      "tickets": 0
     },
     {
       "candidate_pool": 21,
@@ -366,10 +354,10 @@
         }
       ],
       "lane": "ita.1",
-      "reason": "decision cutoff 2026-11-28T10:00:00Z not reached; scan only",
+      "reason": "no qualifying pre-tip ticket at cutoff",
       "receipt_path": null,
       "refreshed_finals": 0,
-      "status": "pre_cutoff_scan",
+      "status": "frozen_no_bet",
       "ticket_markets": [
         "moneyline",
         "spread",
@@ -381,7 +369,7 @@
       "candidate_pool": 35,
       "cutoff_utc": "2026-11-28T10:00:00Z",
       "day": "2026-11-28",
-      "eligible_legs": 3,
+      "eligible_legs": 0,
       "forecasts": 35,
       "games": 6,
       "gaps": [
@@ -393,16 +381,16 @@
         }
       ],
       "lane": "fra.1",
-      "reason": "decision cutoff 2026-11-28T10:00:00Z not reached; scan only",
+      "reason": "no qualifying pre-tip ticket at cutoff",
       "receipt_path": null,
       "refreshed_finals": 0,
-      "status": "pre_cutoff_scan",
+      "status": "frozen_no_bet",
       "ticket_markets": [
         "moneyline",
         "spread",
         "total"
       ],
-      "tickets": 1
+      "tickets": 0
     },
     {
       "candidate_pool": 0,
@@ -2800,6 +2788,6 @@
         "rows": 0
       }
     },
-    "seconds": 0.27
+    "seconds": 0.32
   }
 }

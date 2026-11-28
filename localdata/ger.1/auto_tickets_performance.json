@@ -16,6 +16,15 @@
       "league": "GER.1",
       "positions": [],
       "status": "frozen_no_bet"
+    },
+    {
+      "candidate_pool_outcomes": {},
+      "date": "2026-11-28",
+      "decision_id": "b7e6bf815341d2341ab2",
+      "frozen_at": "2026-11-28T10:15:28Z",
+      "league": "GER.1",
+      "positions": [],
+      "status": "frozen_no_bet"
     }
   ],
   "hit_rate": null,
