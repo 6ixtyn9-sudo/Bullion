@@ -1,11 +1,3 @@
-# DROP-IN COPY — paste this whole file over .github/workflows/bullion_daily.yml.
-# Identical to the live workflow except:
-#   * "Show cards" globs the lane-root cards (auto_tickets_<day>.txt and
-#     auto_tickets_performance.txt) instead of the removed cards/ directory;
-#   * the push-retry exit at the bottom of "Commit localdata artifacts", so a run
-#     that never published is red, not green.
-# Nothing else changed; diff it against the live file to confirm.
-
 # Reliable external-trigger workflow for Bullion (mirrors Ma_Golide_Satellites).
 # GitHub Actions `schedule:` cron is deliberately disabled because GitHub delays
 # or silently drops scheduled ticks. Instead, an external scheduler posts a
@@ -15,8 +7,12 @@
 #   06:15Z = 08:15 SAST -> overnight US finals refresh + grading
 #   10:05Z = 12:05 SAST -> after 12:00 SAST Top-6 Soccer cutoff
 #   14:15Z = 16:15 SAST -> after 16:00 SAST NFL/CFB/NHL cutoff
-#   21:15Z = 23:15 SAST -> same-night European Soccer grading + late pre-tip check
-# (Or every 2-4 hours; runs are idempotent and write-once at cutoff.)
+#   15:10Z = 17:10 SAST -> basketball noon ET matinees (12:00 EST / 13:00 EDT)
+#   21:15Z = 23:15 SAST -> EU soccer grading + basketball D+1 early ET (17:00-18:15 EST / 18:00-19:15 EDT)
+#   22:15Z = 00:15 SAST -> basketball prime ET slate (18:30-19:15 EST / 19:30-20:15 EDT)
+#   23:15Z = 01:15 SAST -> basketball late ET slate (19:30-20:15 EST / 20:30-21:15 EDT)
+# Optional: 18:15Z = 20:15 SAST -> weekend 15:00-16:30 EST NCAA afternoon matinees
+# (Runs are idempotent and write-once at cutoff.)
 
 name: bullion-daily
 
@@ -26,7 +22,7 @@ on:
   workflow_dispatch:
     inputs:
       league:
-        description: "Lane key, 'soccer', or 'all'."
+        description: "Lane key (or comma list), 'soccer', 'basketball', or 'all'."
         required: false
         default: "all"
       date:
@@ -49,7 +45,7 @@ concurrency:
 jobs:
   daily:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -106,8 +102,47 @@ jobs:
             python3 scripts/backfill.py \
               --league "${LEAGUE:-all}" \
               --seasons 2024,2025,2026 \
-              --max-events 250
+              --max-events 250 \
+              --max-seconds 1200
           fi
+
+      - name: Basketball scoreboard backfill (cold lanes only)
+        env:
+          LEAGUE: ${{ inputs.league }}
+        run: |
+          LANES=$(LEAGUE="${LEAGUE:-all}" python3 - <<'PY'
+          import importlib.util
+          import os
+          from pathlib import Path
+
+          from bullion.models import BASKETBALL_LEAGUES
+          from bullion.runner import select_leagues
+          from bullion.store import Store
+
+          requested = {
+              league.key
+              for league in select_leagues(os.environ.get("LEAGUE") or "all")
+              if league.key in BASKETBALL_LEAGUES
+          }
+          if not requested:
+              raise SystemExit(0)
+
+          spec = importlib.util.spec_from_file_location("bullion_backfill", "scripts/backfill.py")
+          backfill = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(backfill)
+          db = Path("localdata/bullion.db")
+          db.parent.mkdir(parents=True, exist_ok=True)
+          with Store(db) as store:
+              cold = backfill.cold_lanes(store, min_finals=50)
+          print(",".join(key for key in BASKETBALL_LEAGUES if key in requested and key in cold))
+          PY
+          )
+          if [ -z "${LANES}" ]; then
+            echo "all requested basketball lanes are warm or fully swept; nothing to backfill"
+            exit 0
+          fi
+          echo "cold basketball lanes: ${LANES}"
+          python3 scripts/backfill.py --league "${LANES}" --days-back 400 --max-seconds 600
 
       - name: Run daily lanes
         env:
@@ -117,6 +152,54 @@ jobs:
         run: |
           ARGS=(--league "${LEAGUE:-all}")
           if [ -n "${DAY}" ]; then ARGS+=(--date "${DAY}"); fi
+          if [ -n "${AS_OF}" ]; then ARGS+=(--as-of "${AS_OF}"); fi
+          python3 scripts/daily.py "${ARGS[@]}"
+
+      - name: Run basketball lanes for the next SAST day
+        if: ${{ inputs.date == '' }}
+        env:
+          LEAGUE: ${{ inputs.league }}
+          AS_OF: ${{ inputs.as_of }}
+        run: |
+          # Early ET evening tips (17:00-18:15 EST / 18:00-19:15 EDT) fall on
+          # the NEXT SAST day (00:00-01:15 SAST D+1) while their tip-120m cutoff
+          # (20:00Z-21:15Z) falls BEFORE SAST midnight (22:00Z). Only run D+1 in
+          # that pre-midnight SAST window; at 22:15Z/23:15Z SAST_TODAY is already
+          # D+1 so "Run daily lanes" already covered it.
+          BASKETBALL_LANES=$(LEAGUE="${LEAGUE:-all}" python3 - <<'PY'
+          import os
+          from bullion.models import BASKETBALL_LEAGUES
+          from bullion.runner import select_leagues
+
+          keys = [
+              league.key
+              for league in select_leagues(os.environ.get("LEAGUE") or "all")
+              if league.key in BASKETBALL_LEAGUES
+          ]
+          print(",".join(keys))
+          PY
+          )
+          if [ -z "${BASKETBALL_LANES}" ]; then
+            echo "selector ${LEAGUE:-all}: no basketball lanes requested"
+            exit 0
+          fi
+          TARGET=$(AS_OF="${AS_OF:-}" python3 - <<'PY'
+          import os
+          from datetime import timedelta
+          from bullion.models import now_utc, parse_utc, sast_day
+
+          ref = parse_utc(os.environ["AS_OF"]) if os.environ.get("AS_OF") else parse_utc(now_utc())
+          sast_today = sast_day(ref)
+          utc_tomorrow = (ref + timedelta(days=1)).strftime("%Y-%m-%d")
+          if ref.hour >= 18 and utc_tomorrow != sast_today:
+              print(utc_tomorrow)
+          PY
+          )
+          if [ -z "${TARGET}" ]; then
+            echo "outside pre-midnight SAST next-day window; skipping duplicate next-day run"
+            exit 0
+          fi
+          ARGS=(--league "${BASKETBALL_LANES}" --date "${TARGET}")
           if [ -n "${AS_OF}" ]; then ARGS+=(--as-of "${AS_OF}"); fi
           python3 scripts/daily.py "${ARGS[@]}"
 
