@@ -354,14 +354,16 @@
       "url": "https://sports.core.api.espn.com/v2/sports/basketball/leagues/wnba/events?dates=2026&limit=1000&page=1"
     }
   },
-  "captured_utc": "2026-11-28T08:18:35Z",
+  "captured_utc": "2026-11-28T10:45:10Z",
   "leagues": {
     "cfb": {
-      "book_normalisation": {},
+      "book_normalisation": {
+        "Draft Kings": "DraftKings"
+      },
       "books": [
         "DraftKings"
       ],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
         "named_book_pre_tip": {
@@ -491,7 +493,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 25.5,
           "total_over_line": 53.5
         },
@@ -532,7 +534,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -24.5,
           "total_over_line": 54.5
         },
@@ -573,7 +575,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 3.0,
           "total_over_line": 53.5
         }
@@ -715,16 +717,16 @@
               "name",
               "shortName"
             ],
-            "predicted_margin": -25.289,
-            "prob_home": 0.0489,
+            "predicted_margin": -25.414,
+            "prob_home": 0.0483,
             "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
                 "stat_values": {
-                  "gameProjection": 95.11,
-                  "teamChanceLoss": 4.89,
-                  "teamPredPtDiff": 25.289
+                  "gameProjection": 95.17,
+                  "teamChanceLoss": 4.83,
+                  "teamPredPtDiff": 25.414
                 },
                 "statistics": [
                   "gameProjection",
@@ -740,9 +742,9 @@
               },
               "homeTeam": {
                 "stat_values": {
-                  "gameProjection": 4.89,
-                  "teamChanceLoss": 95.11,
-                  "teamPredPtDiff": -25.289
+                  "gameProjection": 4.83,
+                  "teamChanceLoss": 95.17,
+                  "teamPredPtDiff": -25.414
                 },
                 "statistics": [
                   "gameProjection",
@@ -802,16 +804,16 @@
               "name",
               "shortName"
             ],
-            "predicted_margin": 32.762,
-            "prob_home": 0.979,
+            "predicted_margin": 32.783,
+            "prob_home": 0.9791,
             "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
                 "stat_values": {
-                  "gameProjection": 2.1,
-                  "teamChanceLoss": 97.89999999999999,
-                  "teamPredPtDiff": -32.762
+                  "gameProjection": 2.09,
+                  "teamChanceLoss": 97.91,
+                  "teamPredPtDiff": -32.783
                 },
                 "statistics": [
                   "gameProjection",
@@ -827,9 +829,9 @@
               },
               "homeTeam": {
                 "stat_values": {
-                  "gameProjection": 97.89999999999999,
-                  "teamChanceLoss": 2.1,
-                  "teamPredPtDiff": 32.762
+                  "gameProjection": 97.91,
+                  "teamChanceLoss": 2.09,
+                  "teamPredPtDiff": 32.783
                 },
                 "statistics": [
                   "gameProjection",
@@ -889,16 +891,16 @@
               "name",
               "shortName"
             ],
-            "predicted_margin": -5.055,
-            "prob_home": 0.3559,
+            "predicted_margin": -4.92,
+            "prob_home": 0.3596,
             "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
                 "stat_values": {
-                  "gameProjection": 64.41,
-                  "teamChanceLoss": 35.589999999999996,
-                  "teamPredPtDiff": 5.055
+                  "gameProjection": 64.03999999999999,
+                  "teamChanceLoss": 35.96,
+                  "teamPredPtDiff": 4.92
                 },
                 "statistics": [
                   "gameProjection",
@@ -914,9 +916,9 @@
               },
               "homeTeam": {
                 "stat_values": {
-                  "gameProjection": 35.589999999999996,
-                  "teamChanceLoss": 64.41,
-                  "teamPredPtDiff": -5.055
+                  "gameProjection": 35.96,
+                  "teamChanceLoss": 64.03999999999999,
+                  "teamPredPtDiff": -4.92
                 },
                 "statistics": [
                   "gameProjection",
@@ -3744,7 +3746,7 @@
       "books": [
         "DraftKings"
       ],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
         "named_book_pre_tip": {
@@ -8370,7 +8372,7 @@
       "books": [
         "DraftKings"
       ],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
         "named_book_pre_tip": {
@@ -12987,7 +12989,7 @@
       "books": [
         "DraftKings"
       ],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
         "named_book_pre_tip": {
@@ -17601,7 +17603,7 @@
         "Bet365",
         "DraftKings"
       ],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
         "named_book_pre_tip": {
@@ -21991,7 +21993,7 @@
       "books": [
         "DraftKings"
       ],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
         "named_book_pre_tip": {
@@ -26583,11 +26585,13 @@
       }
     },
     "nba": {
-      "book_normalisation": {},
+      "book_normalisation": {
+        "Draft Kings": "DraftKings"
+      },
       "books": [
         "DraftKings"
       ],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
         "named_book_pre_tip": {
@@ -26717,7 +26721,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 3.5,
           "total_over_line": 220.5
         },
@@ -26758,7 +26762,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -5.5,
           "total_over_line": 213.5
         },
@@ -26799,7 +26803,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -2.5,
           "total_over_line": 234.5
         }
@@ -26943,8 +26947,8 @@
         "samples": [
           {
             "away_team_id": "19",
-            "expected_away": 114.035,
-            "expected_home": 112.97,
+            "expected_away": 113.949,
+            "expected_home": 112.783,
             "game_id": "401910046",
             "home_team_id": "27",
             "paths": [
@@ -26975,16 +26979,16 @@
               "name",
               "shortName"
             ],
-            "predicted_margin": -1.066,
-            "prob_home": 0.46612,
+            "predicted_margin": -1.166,
+            "prob_home": 0.4628,
             "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
                 "stat_values": {
-                  "gameProjection": 53.388000000000005,
-                  "teamChanceLoss": 46.611999999999995,
-                  "teamPredPtDiff": 1.066
+                  "gameProjection": 53.72,
+                  "teamChanceLoss": 46.28,
+                  "teamPredPtDiff": 1.166
                 },
                 "statistics": [
                   "gameProjection",
@@ -27009,8 +27013,8 @@
           },
           {
             "away_team_id": "17",
-            "expected_away": 106.112,
-            "expected_home": 109.87,
+            "expected_away": 106.115,
+            "expected_home": 109.662,
             "game_id": "401910047",
             "home_team_id": "30",
             "paths": [
@@ -27041,16 +27045,16 @@
               "name",
               "shortName"
             ],
-            "predicted_margin": 3.758,
-            "prob_home": 0.61745,
+            "predicted_margin": 3.546,
+            "prob_home": 0.61146,
             "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
                 "stat_values": {
-                  "gameProjection": 38.255,
-                  "teamChanceLoss": 61.745000000000005,
-                  "teamPredPtDiff": -3.758
+                  "gameProjection": 38.854,
+                  "teamChanceLoss": 61.146,
+                  "teamPredPtDiff": -3.546
                 },
                 "statistics": [
                   "gameProjection",
@@ -27075,8 +27079,8 @@
           },
           {
             "away_team_id": "11",
-            "expected_away": 117.587,
-            "expected_home": 119.527,
+            "expected_away": 117.649,
+            "expected_home": 119.543,
             "game_id": "401910048",
             "home_team_id": "4",
             "paths": [
@@ -27107,16 +27111,16 @@
               "name",
               "shortName"
             ],
-            "predicted_margin": 1.94,
-            "prob_home": 0.56147,
+            "predicted_margin": 1.893,
+            "prob_home": 0.56023,
             "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
                 "stat_values": {
-                  "gameProjection": 43.852999999999994,
-                  "teamChanceLoss": 56.147000000000006,
-                  "teamPredPtDiff": -1.94
+                  "gameProjection": 43.977,
+                  "teamChanceLoss": 56.023,
+                  "teamPredPtDiff": -1.893
                 },
                 "statistics": [
                   "gameProjection",
@@ -29770,11 +29774,13 @@
       }
     },
     "ncaa_m": {
-      "book_normalisation": {},
+      "book_normalisation": {
+        "Draft Kings": "DraftKings"
+      },
       "books": [
         "DraftKings"
       ],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
         "named_book_pre_tip": {
@@ -29904,7 +29910,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -17.5,
           "total_over_line": 156.5
         },
@@ -29945,7 +29951,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -2.5,
           "total_over_line": 143.5
         },
@@ -29986,7 +29992,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -20.5,
           "total_over_line": 149.5
         }
@@ -30167,14 +30173,14 @@
               "shortName"
             ],
             "predicted_margin": null,
-            "prob_home": 0.9455,
+            "prob_home": 0.9463,
             "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
                 "stat_values": {
-                  "gameProjection": 5.45,
-                  "teamChanceLoss": 94.55,
+                  "gameProjection": 5.37,
+                  "teamChanceLoss": 94.63000000000001,
                   "teamChanceTie": 0.0
                 },
                 "statistics": [
@@ -30192,8 +30198,8 @@
               },
               "homeTeam": {
                 "stat_values": {
-                  "gameProjection": 94.55,
-                  "teamChanceLoss": 5.45,
+                  "gameProjection": 94.63000000000001,
+                  "teamChanceLoss": 5.37,
                   "teamChanceTie": 0.0
                 },
                 "statistics": [
@@ -30252,14 +30258,14 @@
               "shortName"
             ],
             "predicted_margin": null,
-            "prob_home": 0.5506,
+            "prob_home": 0.5254,
             "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
                 "stat_values": {
-                  "gameProjection": 44.940000000000005,
-                  "teamChanceLoss": 55.059999999999995,
+                  "gameProjection": 47.46,
+                  "teamChanceLoss": 52.54,
                   "teamChanceTie": 0.0
                 },
                 "statistics": [
@@ -30277,8 +30283,8 @@
               },
               "homeTeam": {
                 "stat_values": {
-                  "gameProjection": 55.059999999999995,
-                  "teamChanceLoss": 44.940000000000005,
+                  "gameProjection": 52.54,
+                  "teamChanceLoss": 47.46,
                   "teamChanceTie": 0.0
                 },
                 "statistics": [
@@ -30337,14 +30343,14 @@
               "shortName"
             ],
             "predicted_margin": null,
-            "prob_home": 0.9621,
+            "prob_home": 0.9612,
             "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
                 "stat_values": {
-                  "gameProjection": 3.7900000000000005,
-                  "teamChanceLoss": 96.21,
+                  "gameProjection": 3.88,
+                  "teamChanceLoss": 96.12,
                   "teamChanceTie": 0.0
                 },
                 "statistics": [
@@ -30362,8 +30368,8 @@
               },
               "homeTeam": {
                 "stat_values": {
-                  "gameProjection": 96.21,
-                  "teamChanceLoss": 3.7900000000000005,
+                  "gameProjection": 96.12,
+                  "teamChanceLoss": 3.88,
                   "teamChanceTie": 0.0
                 },
                 "statistics": [
@@ -30580,6 +30586,9 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
+              "header.competitions[0].competitors[].team.groups.parent",
+              "header.competitions[0].competitors[].team.groups.isConference",
+              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -30872,9 +30881,6 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
-              "header.competitions[0].competitors[].team.groups.parent",
-              "header.competitions[0].competitors[].team.groups.isConference",
-              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -31087,6 +31093,7 @@
             "status": "pre",
             "top_level_keys": [
               "againstTheSpread",
+              "article",
               "boxscore",
               "broadcasts",
               "format",
@@ -31744,9 +31751,6 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
-              "header.competitions[0].competitors[].team.groups.parent",
-              "header.competitions[0].competitors[].team.groups.isConference",
-              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -32160,9 +32164,6 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
-              "header.competitions[0].competitors[].team.groups.parent",
-              "header.competitions[0].competitors[].team.groups.isConference",
-              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -32375,6 +32376,7 @@
             "status": "pre",
             "top_level_keys": [
               "againstTheSpread",
+              "article",
               "boxscore",
               "broadcasts",
               "format",
@@ -32443,9 +32445,6 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
-              "header.competitions[0].competitors[].team.groups.parent",
-              "header.competitions[0].competitors[].team.groups.isConference",
-              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -32669,6 +32668,7 @@
             "status": "pre",
             "top_level_keys": [
               "againstTheSpread",
+              "article",
               "boxscore",
               "broadcasts",
               "format",
@@ -32974,7 +32974,7 @@
     "ncaa_w": {
       "book_normalisation": {},
       "books": [],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
         "named_book_pre_tip": {
@@ -33197,15 +33197,7 @@
       "pre_events": 173,
       "predictor": {
         "attempts": 3,
-        "errors": [
-          {
-            "away_team_id": "2182",
-            "error": "fetch: https://sports.core.api.espn.com/v2/sports/basketball/leagues/womens-college-basketball/events/401930115/competitions/401930115/predictor: HTTP Error 400: Bad Request",
-            "game_id": "401930115",
-            "home_team_id": "314",
-            "sample_context": "pre"
-          }
-        ],
+        "errors": [],
         "note": "",
         "samples": [
           {
@@ -33247,14 +33239,14 @@
               "shortName"
             ],
             "predicted_margin": null,
-            "prob_home": 0.2263,
+            "prob_home": 0.2559,
             "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
                 "stat_values": {
-                  "gameProjection": 77.37,
-                  "teamChanceLoss": 22.63,
+                  "gameProjection": 74.41,
+                  "teamChanceLoss": 25.590000000000003,
                   "teamChanceTie": 0.0
                 },
                 "statistics": [
@@ -33272,8 +33264,8 @@
               },
               "homeTeam": {
                 "stat_values": {
-                  "gameProjection": 22.63,
-                  "teamChanceLoss": 77.37,
+                  "gameProjection": 25.590000000000003,
+                  "teamChanceLoss": 74.41,
                   "teamChanceTie": 0.0
                 },
                 "statistics": [
@@ -33288,6 +33280,91 @@
                 ],
                 "team_id": null,
                 "team_ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/womens-college-basketball/seasons/2027/teams/344?lang=en&region=us"
+              }
+            },
+            "stats_side": "home",
+            "tie_rule": ""
+          },
+          {
+            "away_team_id": "2182",
+            "expected_away": null,
+            "expected_home": null,
+            "game_id": "401930115",
+            "home_team_id": "314",
+            "paths": [
+              "predictor.$ref",
+              "predictor.name",
+              "predictor.shortName",
+              "predictor.lastModified",
+              "predictor.homeTeam",
+              "predictor.homeTeam.team",
+              "predictor.homeTeam.team.$ref",
+              "predictor.homeTeam.statistics",
+              "predictor.homeTeam.statistics[].name",
+              "predictor.homeTeam.statistics[].displayName",
+              "predictor.homeTeam.statistics[].description",
+              "predictor.homeTeam.statistics[].value",
+              "predictor.homeTeam.statistics[].displayValue",
+              "predictor.awayTeam",
+              "predictor.awayTeam.team",
+              "predictor.awayTeam.team.$ref",
+              "predictor.awayTeam.statistics",
+              "predictor.awayTeam.statistics[].name",
+              "predictor.awayTeam.statistics[].displayName",
+              "predictor.awayTeam.statistics[].description",
+              "predictor.awayTeam.statistics[].value",
+              "predictor.awayTeam.statistics[].displayValue"
+            ],
+            "payload_keys": [
+              "$ref",
+              "awayTeam",
+              "homeTeam",
+              "lastModified",
+              "name",
+              "shortName"
+            ],
+            "predicted_margin": null,
+            "prob_home": 0.3393,
+            "prob_tie": 0.0,
+            "sample_context": "pre",
+            "sides": {
+              "awayTeam": {
+                "stat_values": {
+                  "gameProjection": 66.07,
+                  "teamChanceLoss": 33.93,
+                  "teamChanceTie": 0.0
+                },
+                "statistics": [
+                  "matchupquality",
+                  "rawgamescore",
+                  "teampredwinpct",
+                  "teampredmov",
+                  "opponentpredwinpct",
+                  "gameProjection",
+                  "teamChanceLoss",
+                  "teamChanceTie"
+                ],
+                "team_id": null,
+                "team_ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/womens-college-basketball/seasons/2027/teams/2182?lang=en&region=us"
+              },
+              "homeTeam": {
+                "stat_values": {
+                  "gameProjection": 33.93,
+                  "teamChanceLoss": 66.07,
+                  "teamChanceTie": 0.0
+                },
+                "statistics": [
+                  "matchupquality",
+                  "rawgamescore",
+                  "teampredwinpct",
+                  "teampredmov",
+                  "opponentpredwinpct",
+                  "gameProjection",
+                  "teamChanceLoss",
+                  "teamChanceTie"
+                ],
+                "team_id": null,
+                "team_ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/womens-college-basketball/seasons/2027/teams/314?lang=en&region=us"
               }
             },
             "stats_side": "home",
@@ -33332,14 +33409,14 @@
               "shortName"
             ],
             "predicted_margin": null,
-            "prob_home": 0.6301,
+            "prob_home": 0.6674,
             "prob_tie": 0.0,
             "sample_context": "pre",
             "sides": {
               "awayTeam": {
                 "stat_values": {
-                  "gameProjection": 36.99,
-                  "teamChanceLoss": 63.01,
+                  "gameProjection": 33.26,
+                  "teamChanceLoss": 66.74,
                   "teamChanceTie": 0.0
                 },
                 "statistics": [
@@ -33357,8 +33434,8 @@
               },
               "homeTeam": {
                 "stat_values": {
-                  "gameProjection": 63.01,
-                  "teamChanceLoss": 36.99,
+                  "gameProjection": 66.74,
+                  "teamChanceLoss": 33.26,
                   "teamChanceTie": 0.0
                 },
                 "statistics": [
@@ -33453,9 +33530,6 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
-              "header.competitions[0].competitors[].team.groups.parent",
-              "header.competitions[0].competitors[].team.groups.isConference",
-              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -33539,7 +33613,7 @@
             "has_odds": true,
             "has_odds_flag": null,
             "has_pickcenter": true,
-            "has_predictor": false,
+            "has_predictor": true,
             "header_paths": [
               "header.competitions[0].id",
               "header.competitions[0].uid",
@@ -33573,6 +33647,9 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
+              "header.competitions[0].competitors[].team.groups.parent",
+              "header.competitions[0].competitors[].team.groups.isConference",
+              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -33621,6 +33698,7 @@
               "news",
               "odds",
               "pickcenter",
+              "predictor",
               "standings",
               "videos",
               "wallclockAvailable",
@@ -33677,6 +33755,9 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
+              "header.competitions[0].competitors[].team.groups.parent",
+              "header.competitions[0].competitors[].team.groups.isConference",
+              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -33782,6 +33863,9 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
+              "header.competitions[0].competitors[].team.groups.parent",
+              "header.competitions[0].competitors[].team.groups.isConference",
+              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -33886,6 +33970,9 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
+              "header.competitions[0].competitors[].team.groups.parent",
+              "header.competitions[0].competitors[].team.groups.isConference",
+              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -34002,6 +34089,9 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
+              "header.competitions[0].competitors[].team.groups.parent",
+              "header.competitions[0].competitors[].team.groups.isConference",
+              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -34118,6 +34208,9 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
+              "header.competitions[0].competitors[].team.groups.parent",
+              "header.competitions[0].competitors[].team.groups.isConference",
+              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -34235,6 +34328,9 @@
               "header.competitions[0].competitors[].team.logos",
               "header.competitions[0].competitors[].team.groups",
               "header.competitions[0].competitors[].team.groups.id",
+              "header.competitions[0].competitors[].team.groups.parent",
+              "header.competitions[0].competitors[].team.groups.isConference",
+              "header.competitions[0].competitors[].team.groups.slug",
               "header.competitions[0].competitors[].team.links",
               "header.competitions[0].competitors[].record",
               "header.competitions[0].competitors[].record[].type",
@@ -34587,11 +34683,13 @@
       }
     },
     "nfl": {
-      "book_normalisation": {},
+      "book_normalisation": {
+        "Draft Kings": "DraftKings"
+      },
       "books": [
         "DraftKings"
       ],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
         "named_book_pre_tip": {
@@ -34721,7 +34819,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -9.5,
           "total_over_line": 48.5
         },
@@ -34762,7 +34860,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 5.5,
           "total_over_line": 41.5
         },
@@ -34803,7 +34901,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 5.5,
           "total_over_line": 39.5
         }
@@ -38285,11 +38383,13 @@
       }
     },
     "nhl": {
-      "book_normalisation": {},
+      "book_normalisation": {
+        "Draft Kings": "DraftKings"
+      },
       "books": [
         "DraftKings"
       ],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "summary_pickcenter_pre_match_events",
         "named_book_pre_tip": {
@@ -38419,7 +38519,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -1.5,
           "total_over_line": 6.5
         },
@@ -38460,7 +38560,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -1.5,
           "total_over_line": 6.5
         },
@@ -38501,7 +38601,7 @@
             "home",
             "shortDisplayName"
           ],
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -1.5,
           "total_over_line": 5.5
         }
@@ -39125,6 +39225,7 @@
             "status": "pre",
             "top_level_keys": [
               "againstTheSpread",
+              "article",
               "boxscore",
               "broadcasts",
               "format",
@@ -39479,6 +39580,7 @@
             "status": "pre",
             "top_level_keys": [
               "againstTheSpread",
+              "article",
               "boxscore",
               "broadcasts",
               "format",
@@ -39833,6 +39935,7 @@
             "status": "pre",
             "top_level_keys": [
               "againstTheSpread",
+              "article",
               "boxscore",
               "broadcasts",
               "format",
@@ -40187,6 +40290,7 @@
             "status": "pre",
             "top_level_keys": [
               "againstTheSpread",
+              "article",
               "boxscore",
               "broadcasts",
               "format",
@@ -40541,6 +40645,7 @@
             "status": "pre",
             "top_level_keys": [
               "againstTheSpread",
+              "article",
               "boxscore",
               "broadcasts",
               "format",
@@ -40895,6 +41000,7 @@
             "status": "pre",
             "top_level_keys": [
               "againstTheSpread",
+              "article",
               "boxscore",
               "broadcasts",
               "format",
@@ -41249,6 +41355,7 @@
             "status": "pre",
             "top_level_keys": [
               "againstTheSpread",
+              "article",
               "boxscore",
               "broadcasts",
               "format",
@@ -41603,6 +41710,7 @@
             "status": "pre",
             "top_level_keys": [
               "againstTheSpread",
+              "article",
               "boxscore",
               "broadcasts",
               "format",
@@ -41937,7 +42045,7 @@
     "uefa.champions": {
       "book_normalisation": {},
       "books": [],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "scoreboard_pre_match_events",
         "named_book_pre_tip": {
@@ -42068,7 +42176,7 @@
     "wnba": {
       "book_normalisation": {},
       "books": [],
-      "captured_utc": "2026-11-28T08:18:35Z",
+      "captured_utc": "2026-11-28T10:45:10Z",
       "coverage": {
         "denominator": "scoreboard_pre_match_events",
         "named_book_pre_tip": {
